@@ -4,16 +4,6 @@ stages:
   - build
   - test
 
-services:
-  - docker:dind
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-
-before_script:
-  - apt-get update
-  - apt-get install -y docker-compose
-
 build:
   stage: build
   script:
@@ -24,11 +14,14 @@ build:
 
 test:
   stage: test
+  services:
+    - name: mysql:latest
+      alias: test-db
   script:
-    - docker-compose up -d test-db
-    - mvn test
+    - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: test_db
     MYSQL_USER: testuser
     MYSQL_PASSWORD: testpassword
     MYSQL_ROOT_PASSWORD: rootpassword
+    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
