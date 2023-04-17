@@ -14,24 +14,13 @@ build:
 
 test:
   stage: test
+  script:
+    - docker-compose up -d test-db
+    - mvn test
   services:
     - docker:dind
-    - name: mysql:latest
-      alias: test-db
-    # Make the environment variables available to the test environment
-    # so that the application knows which database to use
-    variables:
-      MYSQL_DATABASE: test_db
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpassword
-      MYSQL_ROOT_PASSWORD: rootpassword
-  script:
-    # Start the test database container
-    - docker-compose up -d test-db
-    # Wait for the database to be ready
-    - while ! mysqladmin ping -h test-db --silent; do sleep 1; done
-    # Run the tests
-    - mvn test
-  # Stop the test database container when the test stage finishes
-  after_script:
-    - docker-compose down
+  variables:
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: testuser
+    MYSQL_PASSWORD: testpassword
+    MYSQL_ROOT_PASSWORD: rootpassword
