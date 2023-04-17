@@ -15,4 +15,13 @@ build:
 test:
   stage: test
   script:
+    - docker-compose up -d db
+    - docker-compose up -d test-db
     - mvn test
+    services:
+      - docker:dind
+    variables:
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
