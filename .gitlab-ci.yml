@@ -4,6 +4,12 @@ stages:
   - build
   - test
 
+services:
+  - docker:dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+
 before_script:
   - apt-get update
   - apt-get install -y docker-compose
@@ -21,9 +27,6 @@ test:
   script:
     - docker-compose up -d test-db
     - mvn test
-  services:
-    - name: docker:19.03.12-dind
-      alias: docker
   variables:
     MYSQL_DATABASE: test_db
     MYSQL_USER: testuser
