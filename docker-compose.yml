@@ -1,0 +1,17 @@
+version: "3.8"
+
+# Define the services that make up the application
+services:
+  # The database service
+  db:
+    # Use the latest version of the MySQL image from Docker Hub
+    image: mysql:latest
+    # Set environment variables for the MySQL container
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myusername
+      MYSQL_PASSWORD: mypassword
+    # Expose port 3306 on the host to access the MySQL server
+    ports:
+      - "3306:3306"

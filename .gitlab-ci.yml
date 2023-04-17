@@ -1,0 +1,18 @@
+image: maven:3.6-jdk-17
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - mvn package -B -DskipTests=true
+  artifacts:
+    paths:
+      - target/*.jar
+
+test:
+  stage: test
+  script:
+    - mvn test
