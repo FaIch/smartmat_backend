@@ -4,6 +4,10 @@ stages:
   - build
   - test
 
+before_script:
+  - apt-get update
+  - apt-get install -y docker-compose
+
 build:
   stage: build
   script:
