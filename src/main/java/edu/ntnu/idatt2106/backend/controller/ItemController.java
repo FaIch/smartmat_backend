@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
@@ -9,9 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
 import java.util.List;
 
 @RestController
@@ -20,14 +20,19 @@ import java.util.List;
 @RequestMapping(value = "/items")
 public class ItemController {
 
-    @Autowired
-    ItemService itemService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("name")String name, @RequestParam("shortDesc") String shortDesc, @RequestParam("category") String category,
-                                    @RequestParam("price") double price, @RequestParam("image") MultipartFile image, @AuthenticationPrincipal User user) throws IOException {
-        /*itemService.saveOrUpdate(new ItemEntity(name, shortDesc, Category.valueOf(category),
-               price,user, Base64.getEncoder().encodeToString(image.getBytes())));*/
+    private final ItemService itemService;
+
+    @Autowired
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @PostMapping("/addCustom")
+    public ResponseEntity<?> upload(@RequestParam("name")String name, @AuthenticationPrincipal User user) {
+        System.out.println("name " + name);
+        System.out.println("user " + user.getEmail());
+        itemService.saveOrUpdate(new CustomItem(name, user));
         return ResponseEntity.ok().build();
     }
 

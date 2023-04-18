@@ -9,7 +9,8 @@ import lombok.*;
  * This is an entity for storing a user in the database
  */
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -17,20 +18,29 @@ public class User {
     @Id
     private String email;
 
-    private String nickname;
     private Long phoneNumber;
     private String address;
-    private Role role;
+
+    @OneToMany(mappedBy = "mainUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubUser> subUsers = new ArrayList<>();
+
     private byte[] password;
     private byte[] salt;
 
-    public User(String email, String nickname, Long phoneNumber, String address, Role role) {
+    public User(String email, Long phoneNumber, String address) {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.role = role;
     }
 
+    public void addSubUser(SubUser subUser) {
+        subUsers.add(subUser);
+        subUser.setMainUser(this);
+    }
+
+    public void removeSubUser(SubUser subUser) {
+        subUsers.remove(subUser);
+    }
 
     /**
      * The overwritten equals method
@@ -52,5 +62,10 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    @Override
+    public String toString(){
+        return "";
     }
 }
