@@ -1,15 +1,15 @@
-package edu.ntnu.idatt2106.backend.model;
+package edu.ntnu.idatt2106.backend.model.item;
 
 /**
  * Entity for when saving in database(?)
  */
-import edu.ntnu.idatt2106.backend.model.enums.Category;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
 
 
 @Entity
 @Table(name = "item")
-public class ItemEntity {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,11 @@ public class ItemEntity {
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public ItemEntity() {
+    public Item() {
 
     }
 }
