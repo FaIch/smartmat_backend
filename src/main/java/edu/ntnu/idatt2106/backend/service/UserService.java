@@ -78,8 +78,7 @@ public class UserService {
         }
 
         // Generates a salt and hashes the user's password before saving the user to the repository
-        User user = new User(userRequest.getEmail(), userRequest.getPhoneNumber(),
-                userRequest.getAddress());
+        User user = new User(userRequest.getEmail());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -146,28 +145,25 @@ public class UserService {
      */
     public ResponseEntity<Map<String, Object>> loginAndGetToken(String email, String password) {
         // Attempts to log in the user and generates a JWT token if successful
+        Optional<User> optionalUser = userRepository.findById(email);
+        if (optionalUser.isEmpty()){
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User with given email does not exist");
+            response.put("userRequest", null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
         if (tryLogin(email, password)) {
-            Optional<User> optionalUser = userRepository.findById(email);
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                // Checks if the user in the repository matches the given email
-                if (!optionalUser.get().getEmail().equals(email)) {
-                    Map<String, Object> response = new HashMap<>();
-                    response.put("message", "User with given email does not exist");
-                    response.put("userRequest", null);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                }
-                String token = jwtService.generateJWT(user);
-                UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
-                Map<String, Object> response = new HashMap<>();
-                response.put("message", "Login successful");
-                response.put("userRequest", userRequest);
-                return ResponseEntity.ok(response);
-            }
+            User user = optionalUser.get();
+            String token = jwtService.generateJWT(user);
+            UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Login successful");
+            response.put("userRequest", userRequest);
+            return ResponseEntity.ok(response);
         }
         // Returns a response indicating that the login was unsuccessful
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Username or password is incorrect");
+        response.put("message", "Password is incorrect");
         response.put("userRequest", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
