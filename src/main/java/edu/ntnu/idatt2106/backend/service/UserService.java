@@ -1,8 +1,7 @@
 package edu.ntnu.idatt2106.backend.service;
 
 
-import edu.ntnu.idatt2106.backend.model.user.User;
-import edu.ntnu.idatt2106.backend.model.user.UserRequest;
+import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -70,14 +71,17 @@ public class UserService {
         }
 
         // Generates a salt and hashes the user's password before saving the user to the repository
-        User user = new User(userRequest.getEmail(), userRequest.getNickname(), userRequest.getPhoneNumber(),
-                userRequest.getAddress(), userRequest.getRole());
+        User user = new User(userRequest.getEmail(), userRequest.getPhoneNumber(),
+                userRequest.getAddress());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         user.setSalt(salt);
         byte[] hashedPassword = hashPassword(userRequest.getPassword(), salt);
         user.setPassword(hashedPassword);
+
+        SubUser subUser = new SubUser("Your User", Role.PARENT);
+        user.addSubUser(subUser);
         userRepository.save(user);
 
         return ResponseEntity.ok("User created");
@@ -177,5 +181,54 @@ public class UserService {
                 .withIssuedAt(now)
                 .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
                 .sign(hmac512);
+    }
+
+    /**
+     * Adds a new subuser to the specified user account with the given nickname and role.
+     *
+     * @param subUserRequest The request object containing the email of the main user, the nickname,
+     *                      and the role of the subuser.
+     * @return A ResponseEntity containing a success message if the subuser was added successfully,
+     * or an error message if the user does not exist or a subuser with the same nickname already exists.
+     */
+    public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest) {
+        Optional<User> optionalUser = userRepository.findById(subUserRequest.getUserEmail());
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
+        }
+        User user = optionalUser.get();
+        for (SubUser subUser : user.getSubUsers()) {
+            if (subUser.getNickname().equals(subUserRequest.getNickname())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given nickname already exists");
+            }
+        }
+        SubUser subUser = new SubUser(subUserRequest.getNickname(), subUserRequest.getRole());
+        user.addSubUser(subUser);
+        userRepository.save(user);
+        return ResponseEntity.ok("Sub User added");
+    }
+
+    /**
+     * Changes the nickname of the specified subuser to the given name.
+     *
+     * @param subUserRequest The request object containing the email of the main user,
+     *                       the current nickname of the subuser, and the new nickname of the subuser.
+     * @return A ResponseEntity containing a success message if the nickname was changed successfully,
+     * or an error message if the user does not exist or the subuser does not exist.
+     */
+    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest){
+        Optional<User> optionalUser = userRepository.findById(subUserRequest.getUserEmail());
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
+        }
+        User user = optionalUser.get();
+        for (SubUser subUser : user.getSubUsers()) {
+            if (subUser.getNickname().equals(subUserRequest.getNickname())) {
+                subUser.setNickname(subUserRequest.getNickname());
+                userRepository.save(user);
+                return ResponseEntity.ok("Name changed");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given id does not exist");
     }
 }

@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,12 @@ public class UserController {
 
     /**
      * Post endpoint for saving a user
-     * @param user email, phone number, address, role and password for the user being saved
+     * @param userRequest email, phone number, address, role and password for the user being saved
      * @return the saved user
      */
     @PostMapping("/user")
-    public ResponseEntity<String> createUser(@RequestBody UserRequest user) {
-        return service.createUser(user);
+    public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
+        return service.createUser(userRequest);
     }
 
     /**
@@ -53,5 +54,17 @@ public class UserController {
             @RequestBody UserRequest user
     ) {
         return service.loginAndGetToken(user.getEmail(), user.getPassword());
+    }
+
+    /**
+     * Creates a sub user with the provided user request and admin email.
+     *
+     * @param subUserRequest the user request containing the user's details
+     * @return the newly created sub user
+     * @throws IllegalArgumentException if the provided user details are incomplete or null
+     */
+    @PostMapping("/user/subUser")
+    public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest) {
+        return service.createSubUser(subUserRequest);
     }
 }

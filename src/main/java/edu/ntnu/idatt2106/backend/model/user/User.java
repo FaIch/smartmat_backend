@@ -17,20 +17,25 @@ public class User {
     @Id
     private String email;
 
-    private String nickname;
     private Long phoneNumber;
     private String address;
-    private Role role;
+
+    @OneToMany(mappedBy = "mainUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubUser> subUsers = new ArrayList<>();
+
     private byte[] password;
     private byte[] salt;
 
-    public User(String email, String nickname, Long phoneNumber, String address, Role role) {
+    public User(String email, Long phoneNumber, String address) {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.role = role;
     }
 
+    public void addSubUser(SubUser subUser) {
+        subUsers.add(subUser);
+        subUser.setMainUser(this);
+    }
 
     /**
      * The overwritten equals method
