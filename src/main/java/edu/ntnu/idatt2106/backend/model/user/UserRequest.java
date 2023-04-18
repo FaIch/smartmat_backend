@@ -7,6 +7,7 @@ import lombok.*;
  * This is used for login and creating of users
  */
 @Data
+@AllArgsConstructor
 public class UserRequest {
 
     private String email;

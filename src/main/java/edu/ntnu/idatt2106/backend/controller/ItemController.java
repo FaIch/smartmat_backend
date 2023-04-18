@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -24,10 +26,10 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("name")String name, @RequestParam("shortDesc") String shortDesc, @RequestParam("category") String category,
-                                    @RequestParam("price") double price, @RequestParam("image") MultipartFile image, @AuthenticationPrincipal User user) throws IOException {
-        /*itemService.saveOrUpdate(new ItemEntity(name, shortDesc, Category.valueOf(category),
-               price,user, Base64.getEncoder().encodeToString(image.getBytes())));*/
+    public ResponseEntity<?> upload(@RequestParam("name")String name, @RequestParam("desc") String desc, @RequestParam("category") String category,
+                                    @RequestParam("price") double price, @RequestParam("image") MultipartFile image/*, @AuthenticationPrincipal User user*/) throws IOException {
+        itemService.saveOrUpdate(new Item(name, desc, Category.valueOf(category),
+               price/*,user*/, Base64.getEncoder().encodeToString(image.getBytes())));
         return ResponseEntity.ok().build();
     }
 

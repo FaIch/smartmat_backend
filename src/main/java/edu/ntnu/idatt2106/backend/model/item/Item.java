@@ -1,14 +1,19 @@
 package edu.ntnu.idatt2106.backend.model.item;
 
+import edu.ntnu.idatt2106.backend.model.user.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
 /**
  * Entity for when saving in database(?)
  */
-import edu.ntnu.idatt2106.backend.model.user.User;
-import jakarta.persistence.*;
-
-
 @Entity
-@Table(name = "item")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -35,7 +40,11 @@ public class Item {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Item() {
-
+    public Item(String name, String desc, Category category, double price, String encodeToString) {
+        this.name = name;
+        this.shortDesc = desc;
+        this.category = category;
+        this.price = price;
+        this.image = encodeToString;
     }
 }

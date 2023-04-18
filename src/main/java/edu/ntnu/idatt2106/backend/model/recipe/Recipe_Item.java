@@ -2,7 +2,14 @@ package edu.ntnu.idatt2106.backend.model.recipe;
 
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Recipe_Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,10 +23,4 @@ public class Recipe_Item {
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-
-    public Recipe_Item(Long id, Item item, Recipe recipe) {
-        this.id = id;
-        this.item = item;
-        this.recipe = recipe;
-    }
 }
