@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.model.enums;
+package edu.ntnu.idatt2106.backend.model.item;
 
 public enum Category {
     DRINKS,

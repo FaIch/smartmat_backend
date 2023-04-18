@@ -1,34 +1,44 @@
 package edu.ntnu.idatt2106.backend.controller;
 
-import edu.ntnu.idatt2106.backend.model.ItemEntity;
+import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @EnableAutoConfiguration
 @CrossOrigin("*")
-@RequestMapping(value = "/api/items")
+@RequestMapping(value = "/items")
 public class ItemController {
 
     @Autowired
     ItemService itemService;
 
-    //Todo: create upload endpoint(??) when have user and know what parameters
+    @PostMapping("/upload")
+    public ResponseEntity<?> upload(@RequestParam("name")String name, @RequestParam("shortDesc") String shortDesc, @RequestParam("category") String category,
+                                    @RequestParam("price") double price, @RequestParam("image") MultipartFile image, @AuthenticationPrincipal User user) throws IOException {
+        /*itemService.saveOrUpdate(new ItemEntity(name, shortDesc, Category.valueOf(category),
+               price,user, Base64.getEncoder().encodeToString(image.getBytes())));*/
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/list")
-    public List<ItemEntity> list(){
+    public List<Item> list(){
         return itemService.getAllItems();
     }
 
     @GetMapping("/list/{id}")
-    public ResponseEntity<ItemEntity> getItemById(@PathVariable Long id){
-        ItemEntity item = itemService.getItem(id);
+    public ResponseEntity<Item> getItemById(@PathVariable Long id){
+        Item item = itemService.getItem(id);
         if(item == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }else{
@@ -42,7 +52,7 @@ public class ItemController {
     }*/
 
     @GetMapping("/list/category")
-    public List<ItemEntity> getItemsByCategory(@RequestParam("category") String category){
+    public List<Item> getItemsByCategory(@RequestParam("category") String category){
         return itemService.getItemByCategory(category);
     }
 
