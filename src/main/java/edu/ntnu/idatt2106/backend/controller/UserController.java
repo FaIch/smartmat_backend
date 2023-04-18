@@ -1,10 +1,13 @@
 package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

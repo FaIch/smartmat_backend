@@ -9,7 +9,8 @@ import lombok.*;
  * This is an entity for storing a user in the database
  */
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -61,5 +62,10 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    @Override
+    public String toString(){
+        return "";
     }
 }

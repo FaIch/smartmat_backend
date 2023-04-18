@@ -48,15 +48,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final SubUserRepository subUserRepository;
 
+    private final JWTService jwtService;
     /**
      * Constructs a new UserService instance.
      *
      * @param userRepository the repository for managing User entities.
+     * @param jwtService jwt service class
      */
     @Autowired
-    public UserService(UserRepository userRepository, SubUserRepository subUserRepository) {
+    public UserService(UserRepository userRepository, JWTService jwtService, SubUserRepository subUserRepository) {
+
         this.userRepository = userRepository;
         this.subUserRepository = subUserRepository;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -153,7 +157,7 @@ public class UserService {
                     response.put("userRequest", null);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
                 }
-                String token = generateToken(email);
+                String token = jwtService.generateJWT(user);
                 UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
                 Map<String, Object> response = new HashMap<>();
                 response.put("message", "Login successful");
@@ -265,8 +269,6 @@ public class UserService {
         SubUser subUser = new SubUser(subUserRequest.getNickname(), subUserRequest.getRole());
         user.addSubUser(subUser);
         userRepository.save(user);
-        subUserRepository.save(subUser);
-
         return ResponseEntity.ok("Sub User added");
     }
 
