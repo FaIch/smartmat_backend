@@ -33,6 +33,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/user")
                 .permitAll()
+                .requestMatchers("/items/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
