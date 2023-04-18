@@ -5,10 +5,7 @@ import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -57,6 +54,41 @@ public class UserController {
     }
 
     /**
+     * Edits the phone number for the specified user.
+     * @param email The email of the user to be edited.
+     * @param phoneNumber The new phone number for the user.
+     * @return A ResponseEntity containing a success or error message.
+     */
+    @PostMapping("/user/editPhoneNumber")
+    public ResponseEntity<String> editPhoneNumber(@RequestParam String email, @RequestParam String phoneNumber){
+        return service.editPhoneNumber(email, phoneNumber);
+    }
+
+    /**
+     * Edits the address for the specified user.
+     * @param email The email of the user to be edited.
+     * @param address The new address for the user.
+     * @return A ResponseEntity containing a success or error message.
+     */
+    @PostMapping("/user/editAddress")
+    public ResponseEntity<String> editAddress(@RequestParam String email, @RequestParam String address){
+        return service.editAddress(email, address);
+    }
+
+    /**
+     * Edits the password for the specified user.
+     * @param email The email of the user to be edited.
+     * @param oldPassword The user's current password.
+     * @param newPassword The user's new password.
+     * @return A ResponseEntity containing a success or error message.
+     */
+    @PostMapping("/user/editPassword")
+    public ResponseEntity<String> editPassword(@RequestParam String email, @RequestParam String oldPassword,
+                                               @RequestParam String newPassword){
+        return service.editPassword(email, oldPassword, newPassword);
+    }
+
+    /**
      * Creates a sub user with the provided user request and admin email.
      *
      * @param subUserRequest the user request containing the user's details
@@ -66,5 +98,15 @@ public class UserController {
     @PostMapping("/user/subUser")
     public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest) {
         return service.createSubUser(subUserRequest);
+    }
+
+    @PostMapping("/user/subUser/edit")
+    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest) {
+        return service.editSubUserName(subUserRequest);
+    }
+
+    @DeleteMapping("/user/subUser/delete")
+    public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest) {
+        return service.deleteSubUser(subUserRequest);
     }
 }

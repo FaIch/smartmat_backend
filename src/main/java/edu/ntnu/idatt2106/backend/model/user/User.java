@@ -37,6 +37,10 @@ public class User {
         subUser.setMainUser(this);
     }
 
+    public void removeSubUser(SubUser subUser) {
+        subUsers.remove(subUser);
+    }
+
     /**
      * The overwritten equals method
      * @param o the object being compared
