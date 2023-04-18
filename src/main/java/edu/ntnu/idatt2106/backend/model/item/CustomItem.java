@@ -6,33 +6,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-/**
- * Entity for when saving in database(?)
- */
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item {
-
+public class CustomItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Column(name = "short_desc")
-    private String shortDesc;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Category category;
-    @Column
-    private double price;
-
-    @Column
-    private double weight;
-
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private String image;
+    public CustomItem(String name, User user) {
+        this.name = name;
+        this.user = user;
+    }
 }

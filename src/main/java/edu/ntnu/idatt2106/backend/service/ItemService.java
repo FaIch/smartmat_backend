@@ -1,6 +1,8 @@
 package edu.ntnu.idatt2106.backend.service;
 
+import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.repository.CustomItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +14,12 @@ public class ItemService {
 
 
     private ItemRepository itemRepository;
+    private CustomItemRepository customItemRepository;
 
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, CustomItemRepository customItemRepository) {
         this.itemRepository = itemRepository;
+        this.customItemRepository = customItemRepository;
     }
 
     //Todo: fix methods when connected backend to database
@@ -60,11 +64,11 @@ public class ItemService {
 
     /**
      * Method saveOrUpdate
-     * @param item entity of the item which we want to save or update
+     * @param customItem entity of the item which we want to save or update
      */
 
-    public void saveOrUpdate(Item item) {
-        itemRepository.save(item);
+    public void saveOrUpdate(CustomItem customItem) {
+        customItemRepository.save(customItem);
     }
 
 }
