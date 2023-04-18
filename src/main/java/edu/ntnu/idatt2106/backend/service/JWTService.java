@@ -7,6 +7,7 @@ import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
  * JWTService class,
  * contains methods for encryption
  */
+@Component
 @Service
 public class JWTService {
 

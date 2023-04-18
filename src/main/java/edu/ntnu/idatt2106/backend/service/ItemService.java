@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.repository.CustomItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.List;
 public class ItemService {
 
 
+
     private ItemRepository itemRepository;
     private CustomItemRepository customItemRepository;
 
-
+    @Autowired
     public ItemService(ItemRepository itemRepository, CustomItemRepository customItemRepository) {
         this.itemRepository = itemRepository;
         this.customItemRepository = customItemRepository;
@@ -68,6 +70,7 @@ public class ItemService {
      */
 
     public void saveOrUpdate(CustomItem customItem) {
+        System.out.println(customItem.getUser());
         customItemRepository.save(customItem);
     }
 

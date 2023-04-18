@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,11 +20,18 @@ import java.util.List;
 @RequestMapping(value = "/items")
 public class ItemController {
 
+
+    private final ItemService itemService;
+
     @Autowired
-    ItemService itemService;
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
 
     @PostMapping("/addCustom")
     public ResponseEntity<?> upload(@RequestParam("name")String name, @AuthenticationPrincipal User user) {
+        System.out.println("name " + name);
+        System.out.println("user " + user.getEmail());
         itemService.saveOrUpdate(new CustomItem(name, user));
         return ResponseEntity.ok().build();
     }
