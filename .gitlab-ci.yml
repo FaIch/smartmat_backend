@@ -14,5 +14,14 @@ build:
 
 test:
   stage: test
+  services:
+    - name: mysql:latest
+      alias: test-db
   script:
-    - mvn test
+    - mvn test -Dspring.profiles.active=test
+  variables:
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: testuser
+    MYSQL_PASSWORD: testpassword
+    MYSQL_ROOT_PASSWORD: rootpassword
+    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
