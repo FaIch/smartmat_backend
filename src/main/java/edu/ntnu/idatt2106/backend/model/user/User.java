@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.model.user;
 
-
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.*;

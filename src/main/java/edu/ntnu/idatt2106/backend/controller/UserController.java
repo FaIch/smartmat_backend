@@ -30,7 +30,7 @@ public class UserController {
 
     /**
      * Post endpoint for saving a user
-     * @param user nickname, email and password for the user being saved
+     * @param user email, phone number, address, role and password for the user being saved
      * @return the saved user
      */
     @PostMapping("/user")
