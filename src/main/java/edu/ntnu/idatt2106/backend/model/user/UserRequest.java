@@ -10,12 +10,13 @@ import lombok.*;
 public class UserRequest {
 
     private String email;
+    private String nickname;
     private Long phoneNumber;
     private String address;
     private String password;
     private Role role;
 
-    public UserRequest(String email, Long phoneNumber, String address, Role role) {
+    public UserRequest(String email, String nickname, Long phoneNumber, String address, Role role) {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;

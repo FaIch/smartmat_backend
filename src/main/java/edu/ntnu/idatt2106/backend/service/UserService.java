@@ -70,7 +70,8 @@ public class UserService {
         }
 
         // Generates a salt and hashes the user's password before saving the user to the repository
-        User user = new User(userRequest.getEmail(), userRequest.getPhoneNumber(), userRequest.getAddress(), userRequest.getRole());
+        User user = new User(userRequest.getEmail(), userRequest.getNickname(), userRequest.getPhoneNumber(),
+                userRequest.getAddress(), userRequest.getRole());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
