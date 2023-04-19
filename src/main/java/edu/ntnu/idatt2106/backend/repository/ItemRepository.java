@@ -1,6 +1,8 @@
 package edu.ntnu.idatt2106.backend.repository;
 
+import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,11 +18,4 @@ public interface ItemRepository  extends JpaRepository<Item, Long> {
      */
     List<Item> findByCategory(String category);
 
-  /*  *//**
-     * Method findAllByUser
-     * @param user entity of user which we want to find all items
-     * @return list of all items which specific user sells
-     *//*
-    List<ItemEntity> findAllByUser(User user);
-*/
 }
