@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -21,10 +20,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A service class that provides user management functionality, such as user creation, login and JWT token generation.
@@ -49,11 +45,12 @@ public class UserService {
     private final SubUserRepository subUserRepository;
 
     private final JWTService jwtService;
+
     /**
      * Constructs a new UserService instance.
      *
      * @param userRepository the repository for managing User entities.
-     * @param jwtService jwt service class
+     * @param jwtService     jwt service class
      */
     @Autowired
     public UserService(UserRepository userRepository, JWTService jwtService, SubUserRepository subUserRepository) {
@@ -78,8 +75,7 @@ public class UserService {
         }
 
         // Generates a salt and hashes the user's password before saving the user to the repository
-        User user = new User(userRequest.getEmail(), userRequest.getPhoneNumber(),
-                userRequest.getAddress());
+        User user = new User(userRequest.getEmail());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -90,7 +86,6 @@ public class UserService {
         SubUser subUser = new SubUser("Your User", Role.PARENT);
         user.addSubUser(subUser);
         userRepository.save(user);
-        subUserRepository.save(subUser);
 
         return ResponseEntity.ok("User created");
     }
@@ -146,28 +141,25 @@ public class UserService {
      */
     public ResponseEntity<Map<String, Object>> loginAndGetToken(String email, String password) {
         // Attempts to log in the user and generates a JWT token if successful
+        Optional<User> optionalUser = userRepository.findById(email);
+        if (optionalUser.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User with given email does not exist");
+            response.put("userRequest", null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
         if (tryLogin(email, password)) {
-            Optional<User> optionalUser = userRepository.findById(email);
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                // Checks if the user in the repository matches the given email
-                if (!optionalUser.get().getEmail().equals(email)) {
-                    Map<String, Object> response = new HashMap<>();
-                    response.put("message", "User with given email does not exist");
-                    response.put("userRequest", null);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-                }
-                String token = jwtService.generateJWT(user);
-                UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
-                Map<String, Object> response = new HashMap<>();
-                response.put("message", "Login successful");
-                response.put("userRequest", userRequest);
-                return ResponseEntity.ok(response);
-            }
+            User user = optionalUser.get();
+            String token = jwtService.generateJWT(user);
+            UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Login successful");
+            response.put("userRequest", userRequest);
+            return ResponseEntity.ok(response);
         }
         // Returns a response indicating that the login was unsuccessful
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Username or password is incorrect");
+        response.put("message", "Password is incorrect");
         response.put("userRequest", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -193,7 +185,8 @@ public class UserService {
 
     /**
      * Edits the password for the specified user.
-     * @param email The email of the user to be edited.
+     *
+     * @param email       The email of the user to be edited.
      * @param oldPassword The user's current password.
      * @param newPassword The user's new password.
      * @return A ResponseEntity containing a success or error message.
@@ -215,7 +208,8 @@ public class UserService {
 
     /**
      * Edits the phone number for the specified user.
-     * @param email The email of the user to be edited.
+     *
+     * @param email       The email of the user to be edited.
      * @param phoneNumber The new phone number for the user.
      * @return A ResponseEntity containing a success or error message.
      */
@@ -232,7 +226,8 @@ public class UserService {
 
     /**
      * Edits the address for the specified user.
-     * @param email The email of the user to be edited.
+     *
+     * @param email   The email of the user to be edited.
      * @param address The new address for the user.
      * @return A ResponseEntity containing a success or error message.
      */
@@ -251,12 +246,12 @@ public class UserService {
      * Adds a new subuser to the specified user account with the given nickname and role.
      *
      * @param subUserRequest The request object containing the email of the main user, the nickname,
-     *                      and the role of the subuser.
+     *                       and the role of the subuser.
      * @return A ResponseEntity containing a success message if the subuser was added successfully,
      * or an error message if the user does not exist or a subuser with the same nickname already exists.
      */
-    public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findById(subUserRequest.getUserEmail());
+    public ResponseEntity<String> createSubUser(String userEmail, SubUserRequest subUserRequest) {
+        Optional<User> optionalUser = userRepository.findById(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -280,8 +275,8 @@ public class UserService {
      * @return A ResponseEntity containing a success message if the nickname was changed successfully,
      * or an error message if the user does not exist or the subuser does not exist.
      */
-    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest){
-        Optional<User> optionalUser = userRepository.findById(subUserRequest.getUserEmail());
+    public ResponseEntity<String> editSubUserName(String userEmail, SubUserRequest subUserRequest) {
+        Optional<User> optionalUser = userRepository.findById(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -303,10 +298,10 @@ public class UserService {
      * @param subUserRequest The request object containing the email of the main user and the nickname of
      *                       the subuser to be deleted.
      * @return A ResponseEntity containing a success message if the subuser was deleted successfully,
-     *                       or an error message if the user or subuser does not exist.
+     * or an error message if the user or subuser does not exist.
      */
-    public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest){
-        Optional<User> optionalUser = userRepository.findById(subUserRequest.getUserEmail());
+    public ResponseEntity<String> deleteSubUser(String userEmail, SubUserRequest subUserRequest) {
+        Optional<User> optionalUser = userRepository.findById(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -320,5 +315,22 @@ public class UserService {
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given id does not exist");
+    }
+
+    /**
+     * Gets the list of subusers for the specified user.
+     * @param email The email of the user to get the subusers for.
+     * @return A ResponseEntity containing the list of subusers if the user exists, or null if the user does not exist.
+     */
+    public ResponseEntity<List<SubUser>> getSubUsers(String email) {
+        Optional<User> optionalUser = userRepository.findById(email);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        List<SubUser> optionalSubUserList = subUserRepository.findSubUserByMainUser(optionalUser.get());
+        if (optionalSubUserList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+        return ResponseEntity.ok(optionalSubUserList);
     }
 }

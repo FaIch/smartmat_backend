@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.model.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class User {
     private String address;
 
     @OneToMany(mappedBy = "mainUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SubUser> subUsers = new ArrayList<>();
 
     private byte[] password;
@@ -31,6 +33,10 @@ public class User {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
+    }
+
+    public User(String email) {
+        this.email = email;
     }
 
     public void addSubUser(SubUser subUser) {

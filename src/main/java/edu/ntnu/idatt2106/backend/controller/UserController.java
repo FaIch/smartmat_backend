@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.user.SubUser;
 import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
@@ -8,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -58,37 +59,34 @@ public class UserController {
 
     /**
      * Edits the phone number for the specified user.
-     * @param email The email of the user to be edited.
      * @param phoneNumber The new phone number for the user.
      * @return A ResponseEntity containing a success or error message.
      */
     @PostMapping("/user/editPhoneNumber")
-    public ResponseEntity<String> editPhoneNumber(@RequestParam String email, @RequestParam String phoneNumber){
-        return service.editPhoneNumber(email, phoneNumber);
+    public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
+        return service.editPhoneNumber(user.getEmail(), phoneNumber);
     }
 
     /**
      * Edits the address for the specified user.
-     * @param email The email of the user to be edited.
      * @param address The new address for the user.
      * @return A ResponseEntity containing a success or error message.
      */
     @PostMapping("/user/editAddress")
-    public ResponseEntity<String> editAddress(@RequestParam String email, @RequestParam String address){
-        return service.editAddress(email, address);
+    public ResponseEntity<String> editAddress(@RequestParam String address, @AuthenticationPrincipal User user){
+        return service.editAddress(user.getEmail(), address);
     }
 
     /**
      * Edits the password for the specified user.
-     * @param email The email of the user to be edited.
      * @param oldPassword The user's current password.
      * @param newPassword The user's new password.
      * @return A ResponseEntity containing a success or error message.
      */
     @PostMapping("/user/editPassword")
-    public ResponseEntity<String> editPassword(@RequestParam String email, @RequestParam String oldPassword,
-                                               @RequestParam String newPassword){
-        return service.editPassword(email, oldPassword, newPassword);
+    public ResponseEntity<String> editPassword(@RequestParam String oldPassword,
+                                               @RequestParam String newPassword, @AuthenticationPrincipal User user){
+        return service.editPassword(user.getEmail(), oldPassword, newPassword);
     }
 
     /**
@@ -99,17 +97,40 @@ public class UserController {
      * @throws IllegalArgumentException if the provided user details are incomplete or null
      */
     @PostMapping("/user/subUser")
-    public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest) {
-        return service.createSubUser(subUserRequest);
+    public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest
+            , @AuthenticationPrincipal User user) {
+        return service.createSubUser(user.getEmail(), subUserRequest);
     }
 
+    /**
+     * Edits the name of a sub user.
+     * @param subUserRequest the user request containing the user's details
+     * @return ResponseEntity containing a success or error message
+     */
     @PostMapping("/user/subUser/edit")
-    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest) {
-        return service.editSubUserName(subUserRequest);
+    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
+            , @AuthenticationPrincipal User user) {
+        return service.editSubUserName(user.getEmail(), subUserRequest);
     }
 
+    /**
+     * Deletes a sub user with the provided user request and admin email.
+     * @param subUserRequest the user request containing the user's details
+     * @return the deleted sub user
+     */
     @DeleteMapping("/user/subUser/delete")
-    public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest) {
-        return service.deleteSubUser(subUserRequest);
+    public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest
+            , @AuthenticationPrincipal User user) {
+        return service.deleteSubUser(user.getEmail(), subUserRequest);
+    }
+
+    /**
+     * Get endpoint for getting all sub users for a user
+     * @param user the user to get sub users for
+     * @return a list of sub users
+     */
+    @GetMapping("/user/getSubUsers")
+    public ResponseEntity<List<SubUser>> getSubUsers(@AuthenticationPrincipal User user) {
+        return service.getSubUsers(user.getEmail());
     }
 }
