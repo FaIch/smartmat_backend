@@ -1,10 +1,10 @@
 package edu.ntnu.idatt2106.backend.model.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -20,6 +20,7 @@ public class SubUser implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "mainUser_email")
+    @JsonBackReference
     private User mainUser;
 
     private String nickname;

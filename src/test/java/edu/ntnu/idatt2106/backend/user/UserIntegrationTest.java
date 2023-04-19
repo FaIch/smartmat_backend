@@ -112,7 +112,6 @@ public class UserIntegrationTest {
     @Test
     @DisplayName("Test that logging in with a wrong password returns a HTTP Unauthorized status")
     public void testLoginWithWrongPassword() throws IOException {
-        UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
         restTemplate.postForEntity(baseURL + "/user", request, String.class);
 
@@ -125,5 +124,31 @@ public class UserIntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Password is incorrect", responseMap.get("message"));
     }
+
+    @Test
+    @DisplayName("Test that getting subusers returns the subusers of the logged in user")
+    public void testGetSubusers() throws IOException {
+        HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
+        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
+        Map<String, Object> responseMap = new ObjectMapper()
+                .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
+
+        Map<String, Object> userRequestMap = (Map<String, Object>) responseMap.get("userRequest");
+
+        token = (String) userRequestMap.get("password");
+        System.out.println(token);
+
+        HttpHeaders authHeaders = new HttpHeaders();
+        authHeaders.setBearerAuth(token);
+
+        HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
+
+        ResponseEntity<String> subUsersResponse = restTemplate.exchange(baseURL + "/user/getSubUsers",
+                HttpMethod.GET, authRequest, String.class);
+        assertEquals(HttpStatus.OK, subUsersResponse.getStatusCode());
+    }
+
 
 }
