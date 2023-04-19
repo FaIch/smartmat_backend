@@ -3,7 +3,8 @@ image: maven:latest
 stages:
   - build
   - test
-  - code-analysis
+  - jacoco
+  - owasp
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -35,12 +36,18 @@ test:
     SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
   coverage: '/Total\s*:\s*([\d\.]+)%/'
 
-code-analysis:
-  stage: code-analysis
+jacoco:
+  stage: jacoco
   script:
     - mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify
-    - mvn org.owasp:dependency-check-maven:check
   artifacts:
     paths:
       - target/site/jacoco/
+
+owasp:
+  stage: owasp
+  script:
+    - mvn org.owasp:dependency-check-maven:check
+  artifacts:
+    paths:
       - target/dependency-check-report.html
