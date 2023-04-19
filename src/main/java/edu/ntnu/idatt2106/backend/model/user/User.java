@@ -17,8 +17,11 @@ import lombok.*;
 public class User {
 
     @Id
-    private String email;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(unique = true)
+    private String email;
     private Long phoneNumber;
     private String address;
 
