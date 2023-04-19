@@ -1,0 +1,11 @@
+# Build and run Docker containers using Docker Compose
+docker-compose up --build
+
+# Run Docker containers using Docker Compose
+docker-compose up
+
+# Stop and remove Docker containers using Docker Compose
+docker-compose down
+
+# Stop Docker containers using Docker Compose
+docker-compose stop
