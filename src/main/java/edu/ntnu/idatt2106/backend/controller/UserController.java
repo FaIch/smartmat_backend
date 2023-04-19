@@ -62,7 +62,7 @@ public class UserController {
      * @param phoneNumber The new phone number for the user.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PostMapping("/user/editPhoneNumber")
+    @PutMapping("/user/editPhoneNumber")
     public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
         return service.editPhoneNumber(user.getEmail(), phoneNumber);
     }
@@ -72,7 +72,7 @@ public class UserController {
      * @param address The new address for the user.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PostMapping("/user/editAddress")
+    @PutMapping("/user/editAddress")
     public ResponseEntity<String> editAddress(@RequestParam String address, @AuthenticationPrincipal User user){
         return service.editAddress(user.getEmail(), address);
     }
@@ -83,7 +83,7 @@ public class UserController {
      * @param newPassword The user's new password.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PostMapping("/user/editPassword")
+    @PutMapping("/user/editPassword")
     public ResponseEntity<String> editPassword(@RequestParam String oldPassword,
                                                @RequestParam String newPassword, @AuthenticationPrincipal User user){
         return service.editPassword(user.getEmail(), oldPassword, newPassword);
@@ -107,7 +107,7 @@ public class UserController {
      * @param subUserRequest the user request containing the user's details
      * @return ResponseEntity containing a success or error message
      */
-    @PostMapping("/user/subUser/edit")
+    @PutMapping("/user/subUser/edit")
     public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
         return service.editSubUserName(user.getEmail(), subUserRequest);
