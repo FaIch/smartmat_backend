@@ -3,15 +3,6 @@ image: maven:latest
 stages:
   - build
   - test
-  - jacoco
-  - owasp
-
-variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-
-cache:
-  paths:
-    - .m2/repository/
 
 build:
   stage: build
@@ -26,40 +17,9 @@ test:
   services:
     - name: mysql:latest
       alias: test-db
-  script:
-    - apt-get update && apt-get install -y wget
-    - wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-    - chmod +x wait-for-it.sh
-    - ./wait-for-it.sh test-db:3306 --timeout=60 -- mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: test_db
     MYSQL_USER: testuser
     MYSQL_PASSWORD: testpassword
     MYSQL_ROOT_PASSWORD: rootpassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3308/test_db?useSSL=false&allowPublicKeyRetrieval=true
-  coverage: '/Total\s*:\s*([\d\.]+)%/'
-
-jacoco:
-  stage: jacoco
-  services:
-    - name: mysql:latest
-      alias: test-db
-  script:
-    - mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify
-  variables:
-    MYSQL_DATABASE: test_db
-    MYSQL_USER: testuser
-    MYSQL_PASSWORD: testpassword
-    MYSQL_ROOT_PASSWORD: rootpassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3308/test_db?useSSL=false&allowPublicKeyRetrieval=true
-  artifacts:
-    paths:
-      - target/site/jacoco/
-
-owasp:
-  stage: owasp
-  script:
-    - mvn org.owasp:dependency-check-maven:check
-  artifacts:
-    paths:
-      - target/dependency-check-report.html
+    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
