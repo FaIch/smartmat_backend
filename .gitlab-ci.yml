@@ -17,6 +17,8 @@ test:
   services:
     - name: mysql:latest
       alias: test-db
+  script:
+    - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: test_db
     MYSQL_USER: testuser
