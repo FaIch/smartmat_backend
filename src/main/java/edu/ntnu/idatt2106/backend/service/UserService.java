@@ -68,7 +68,7 @@ public class UserService {
      */
     public ResponseEntity<String> createUser(UserRequest userRequest) {
         // Checks if the user already exists in the repository
-        Optional<User> existingUser = userRepository.findById(userRequest.getEmail());
+        Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
             String response = "User with given email already exists";
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -124,7 +124,7 @@ public class UserService {
      * @return true if the email and password match a user in the repository, false otherwise.
      */
     private boolean tryLogin(String email, String password) {
-        Optional<User> user = userRepository.findById(email);
+        Optional<User> user = userRepository.findByEmailIgnoreCase(email);
         if (user.isEmpty()) {
             return false;
         }
@@ -141,7 +141,7 @@ public class UserService {
      */
     public ResponseEntity<Map<String, Object>> loginAndGetToken(String email, String password) {
         // Attempts to log in the user and generates a JWT token if successful
-        Optional<User> optionalUser = userRepository.findById(email);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isEmpty()) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User with given email does not exist");
@@ -193,7 +193,7 @@ public class UserService {
      */
     public ResponseEntity<String> editPassword(String email, String oldPassword, String newPassword) {
         if (tryLogin(email, oldPassword)) {
-            Optional<User> optionalUser = userRepository.findById(email);
+            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 byte[] salt = user.getSalt();
@@ -214,7 +214,7 @@ public class UserService {
      * @return A ResponseEntity containing a success or error message.
      */
     public ResponseEntity<String> editPhoneNumber(String email, String phoneNumber) {
-        Optional<User> optionalUser = userRepository.findById(email);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setPhoneNumber(Long.parseLong(phoneNumber));
@@ -232,7 +232,7 @@ public class UserService {
      * @return A ResponseEntity containing a success or error message.
      */
     public ResponseEntity<String> editAddress(String email, String address) {
-        Optional<User> optionalUser = userRepository.findById(email);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setAddress(address);
@@ -251,7 +251,7 @@ public class UserService {
      * or an error message if the user does not exist or a subuser with the same nickname already exists.
      */
     public ResponseEntity<String> createSubUser(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findById(userEmail);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -276,7 +276,7 @@ public class UserService {
      * or an error message if the user does not exist or the subuser does not exist.
      */
     public ResponseEntity<String> editSubUserName(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findById(userEmail);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -301,7 +301,7 @@ public class UserService {
      * or an error message if the user or subuser does not exist.
      */
     public ResponseEntity<String> deleteSubUser(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findById(userEmail);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
@@ -323,7 +323,7 @@ public class UserService {
      * @return A ResponseEntity containing the list of subusers if the user exists, or null if the user does not exist.
      */
     public ResponseEntity<List<SubUser>> getSubUsers(String email) {
-        Optional<User> optionalUser = userRepository.findById(email);
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
