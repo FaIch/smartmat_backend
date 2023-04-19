@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.CustomItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +70,12 @@ public class ItemService {
      * @param customItem entity of the item which we want to save or update
      */
 
-    public void saveOrUpdate(CustomItem customItem) {
+    public void saveOrUpdateCustomItem(CustomItem customItem) {
         System.out.println(customItem.getUser());
         customItemRepository.save(customItem);
     }
 
+    public List<CustomItem> getCustomItemByUser(User user) {
+        return customItemRepository.findAllByUser(user);
+    }
 }

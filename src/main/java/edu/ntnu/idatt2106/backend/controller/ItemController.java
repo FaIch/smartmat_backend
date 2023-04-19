@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.User;
@@ -12,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,42 +31,31 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    @PostMapping("/addCustom")
-    public ResponseEntity<?> upload(@RequestParam("name")String name, @AuthenticationPrincipal User user) {
-        System.out.println("name " + name);
-        System.out.println("user " + user.getEmail());
-        itemService.saveOrUpdate(new CustomItem(name, user));
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/list")
     public List<Item> list(){
         return itemService.getAllItems();
     }
 
-    @GetMapping("/list/{id}")
-    public ResponseEntity<Item> getItemById(@PathVariable Long id){
-        Item item = itemService.getItem(id);
-        if(item == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else{
-            return ResponseEntity.ok(item);
-        }
-    }
-
-  /*  @GetMapping("/list/me")
-    public List<ItemEntity> getItemsByUser(@AuthenticationPrincipal UserEntity user){
-        return itemService.getItemByUser(user);
-    }*/
-
     @GetMapping("/list/category")
     public List<Item> getItemsByCategory(@RequestParam("category") String category){
         return itemService.getItemByCategory(category);
     }
 
-  /*  @GetMapping("categories")
+   @GetMapping("categories")
     public List<Category> getCategories(){
         return Arrays.stream(Category.values()).toList();
     }
-*/
+
+  @PostMapping("/addCustom")
+  public ResponseEntity<?> uploadCustomItem(@RequestParam("name")String name, @RequestParam("weight") double weight,
+                                            @RequestParam("date") String date,  @AuthenticationPrincipal User user) {
+      itemService.saveOrUpdateCustomItem(new CustomItem(name,weight,LocalDate.parse(date), user));
+      return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/getCustom")
+  public List<CustomItem>  getCustomItemsByUser(@AuthenticationPrincipal User user){
+      return itemService.getCustomItemByUser(user);
+  }
 }
