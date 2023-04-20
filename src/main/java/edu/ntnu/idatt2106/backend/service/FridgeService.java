@@ -8,6 +8,7 @@ import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,7 @@ public class FridgeService {
      * added successfully, or a NOT_FOUND status code if the fridge is not found
      */
     public ResponseEntity<String> addFridgeItem(Long userId, FridgeItem fridgeItem) {
+        //tar inn parameter på item id, finner it by id, legge til i fridgeitem, sette fridgeitem id til item vi finner 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -131,4 +133,10 @@ public class FridgeService {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
     }
+
+    public ResponseEntity<List<FridgeItem>> expirationDate() {
+        Sort sort = Sort.by(Sort.Direction.ASC, "expirationDate");
+        return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
+    }
+
 }
