@@ -3,6 +3,8 @@ image: maven:latest
 stages:
   - build
   - test
+  - owasp_dependency_check
+  - code_coverage
 
 build:
   stage: build
@@ -25,3 +27,23 @@ test:
     MYSQL_PASSWORD: testpassword
     MYSQL_ROOT_PASSWORD: rootpassword
     SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
+
+owasp_dependency_check:
+  stage: owasp_dependency_check
+  script:
+    - mvn dependency-check:check
+  allow_failure: true
+  artifacts:
+    paths:
+      - target/dependency-check-report.html
+      - target/dependency-check-report.xml
+
+code_coverage:
+  stage: code_coverage
+  script:
+    - mvn test -Dspring.profiles.active=test jacoco:report
+  artifacts:
+    paths:
+      - target/site/jacoco
+    reports:
+      codequality: target/site/jacoco/jacoco.xml
