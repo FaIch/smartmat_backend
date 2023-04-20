@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.service;
 
 
+import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
@@ -84,6 +85,9 @@ public class UserService {
         user.setPassword(hashedPassword);
 
         SubUser subUser = new SubUser("Your User", Role.PARENT);
+        Fridge fridge = new Fridge();
+        fridge.setUser(user);
+        user.setFridge(fridge);
         user.addSubUser(subUser);
         userRepository.save(user);
 

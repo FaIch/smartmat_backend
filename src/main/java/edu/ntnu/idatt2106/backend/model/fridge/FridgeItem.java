@@ -27,7 +27,6 @@ public class FridgeItem {
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
-    // You can add a reference to the original Item class if needed
     @OneToOne
     @JoinColumn(name = "item_id")
     private Item item;
