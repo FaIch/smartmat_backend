@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.model.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class User {
     @OneToMany(mappedBy = "mainUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<SubUser> subUsers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Fridge fridge;
 
     private byte[] password;
     private byte[] salt;

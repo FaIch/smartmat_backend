@@ -1,20 +1,20 @@
 version: "3.8"
 
-# Define the services that make up the application
 services:
-  # The database service
   db:
-    # Use the latest version of the MySQL image from Docker Hub
     image: mysql:latest
-    # Set environment variables for the MySQL container
     environment:
       MYSQL_ROOT_PASSWORD: mypassword
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: myusername
       MYSQL_PASSWORD: mypassword
-    # Expose port 3306 on the host to access the MySQL server
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "myusername", "--password=mypassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   test-db:
     image: mysql:latest
@@ -25,3 +25,15 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
       - "3308:3306"
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: myusername
+      SPRING_DATASOURCE_PASSWORD: mypassword
