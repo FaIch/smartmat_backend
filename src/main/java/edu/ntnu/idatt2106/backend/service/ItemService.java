@@ -88,8 +88,9 @@ public class ItemService {
 
     public ResponseEntity<String> saveOrUpdateCustomItemWithDate(CustomItem customItem, LocalDate date) {
 
-        Optional<User> optionalUser = userRepository.findById(customItem.getUser().getEmail());
-        if (optionalUser.isPresent()) {
+        // Checks if the user already exists in the repository
+        Optional<User> existingUser = userRepository.findByEmailIgnoreCase(customItem.getUser().getEmail());
+        if (existingUser.isPresent()) {
             LocalDate presentDate = LocalDate.now();
             long daysUntilBad = presentDate.until(date, ChronoUnit.DAYS);
             customItem.setBad_in_days(daysUntilBad);
@@ -101,8 +102,8 @@ public class ItemService {
     }
 
     public ResponseEntity<String> saveOrUpdateCustomItemWithoutDate(CustomItem customItem) {
-        Optional<User> optionalUser = userRepository.findById(customItem.getUser().getEmail());
-        if (optionalUser.isPresent()) {
+        Optional<User> existingUser = userRepository.findByEmailIgnoreCase(customItem.getUser().getEmail());
+        if (existingUser.isPresent()) {
 
             try {
                 System.setProperty("jdbc.drivers", "com.mysql.jdbc.Driver");
