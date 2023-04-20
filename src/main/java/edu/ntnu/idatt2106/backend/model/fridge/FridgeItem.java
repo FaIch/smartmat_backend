@@ -30,4 +30,10 @@ public class FridgeItem {
     @OneToOne
     @JoinColumn(name = "item_id")
     private Item item;
+
+    public FridgeItem(int quantity, LocalDate expirationDate, Item itemById) {
+        this.quantity = quantity;
+        this.expirationDate = expirationDate;
+        this.item = itemById;
+    }
 }

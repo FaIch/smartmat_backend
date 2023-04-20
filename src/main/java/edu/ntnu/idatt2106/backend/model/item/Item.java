@@ -28,9 +28,9 @@ public class Item {
 
     private double weight;
 
-   /* @Lob
+   @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
-    private String image;*/
+    private String image;
 
 
 }

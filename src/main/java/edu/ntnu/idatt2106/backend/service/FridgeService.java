@@ -65,6 +65,7 @@ public class FridgeService {
      * added successfully, or a NOT_FOUND status code if the fridge is not found
      */
     public ResponseEntity<String> addFridgeItem(Long userId, FridgeItem fridgeItem) {
+        //tar inn parameter på item id, finner it by id, legge til i fridgeitem, sette fridgeitem id til item vi finner 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

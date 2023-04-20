@@ -61,8 +61,12 @@ public class ItemService {
      * @return list of items with the specific category
      */
 
-    public  ResponseEntity<List<Item>> getItemByCategory(String category) {
+    public  ResponseEntity<List<Item>> getItemByCategory(Category category) {
         return ResponseEntity.status(HttpStatus.OK).body(itemRepository.findByCategory(category));
+    }
+
+    public Item getItemById(Long id) {
+        return itemRepository.findById(id).orElse(null);
     }
     /**
      * Method saveOrUpdate
@@ -78,7 +82,6 @@ public class ItemService {
         if (existingUser.isPresent()) {
             LocalDate presentDate = LocalDate.now();
             long daysUntilBad = presentDate.until(date, ChronoUnit.DAYS);
-            customItem.setBad_in_days(daysUntilBad);
             customItemRepository.save(customItem);
             return ResponseEntity.ok("Custom item added");
         }
@@ -105,7 +108,7 @@ public class ItemService {
 
                 while (resultSet.next()) {
                     int badInDays = resultSet.getInt("bad_in_days");
-                    customItem.setBad_in_days(badInDays);
+
                 }
                 resultSet.close();
                 statement.close();

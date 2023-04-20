@@ -46,7 +46,7 @@ public class ItemController {
     @GetMapping("/list/category")
     public ResponseEntity<List<Item>>  getItemsByCategory(@RequestParam("category") String category){
         System.out.println(category);
-        return itemService.getItemByCategory(category);
+        return itemService.getItemByCategory(Category.valueOf(category));
     }
 
     //Date must be on form yyyy-mm-dd

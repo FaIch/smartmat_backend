@@ -36,8 +36,8 @@ public class BackendApplication {
             String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
             Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
 
-            String sql = " insert into item (category, name, price, short_desc, weight, bad_in_days )"
-                    + " values (?, ?, ?, ?, ?, ?)";
+            String sql = " insert into item (category, name, price, short_desc, weight )"
+                    + " values (?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStmtMeat = conn.prepareStatement(sql);
             preparedStmtMeat.setString(1, Category.MEAT.toString());
@@ -45,7 +45,6 @@ public class BackendApplication {
             preparedStmtMeat.setDouble(3, 129);
             preparedStmtMeat.setString(4, "Finest steak from nmdkd");
             preparedStmtMeat.setDouble(5,250);
-            preparedStmtMeat.setInt(6, 10);
 
             preparedStmtMeat.execute();
 
@@ -55,7 +54,6 @@ public class BackendApplication {
             preparedStmtPotatoes.setDouble(3, 70);
             preparedStmtPotatoes.setString(4, "Mashed potatoes from Stryn");
             preparedStmtPotatoes.setDouble(5,450);
-            preparedStmtPotatoes.setInt(6, 2);
 
             preparedStmtPotatoes.execute();
         }catch (Exception e) {

@@ -23,7 +23,6 @@ public class CustomItem {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private long bad_in_days;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
