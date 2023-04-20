@@ -47,12 +47,13 @@ public class FridgeService {
      */
     public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            Fridge fridge = user.getFridge();
-            return ResponseEntity.status(HttpStatus.OK).body(fridge.getFridgeItems());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        User user = userOptional.get();
+        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
+        return fridgeOptional.map(fridge -> ResponseEntity.status(HttpStatus.OK).body(fridge.getFridgeItems()))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
     }
 
     /**

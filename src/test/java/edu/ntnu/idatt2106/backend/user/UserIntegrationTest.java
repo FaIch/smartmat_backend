@@ -145,6 +145,7 @@ public class UserIntegrationTest {
 
         HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
 
+
         ResponseEntity<String> subUsersResponse = restTemplate.exchange(baseURL + "/user/getSubUsers",
                 HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, subUsersResponse.getStatusCode());
