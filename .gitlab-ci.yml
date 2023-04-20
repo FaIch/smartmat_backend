@@ -40,8 +40,17 @@ owasp_dependency_check:
 
 code_coverage:
   stage: code_coverage
+  services:
+    - name: mysql:latest
+      alias: test-db
   script:
     - mvn test -Dspring.profiles.active=test jacoco:report
+  variables:
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: testuser
+    MYSQL_PASSWORD: testpassword
+    MYSQL_ROOT_PASSWORD: rootpassword
+    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
   artifacts:
     paths:
       - target/site/jacoco
