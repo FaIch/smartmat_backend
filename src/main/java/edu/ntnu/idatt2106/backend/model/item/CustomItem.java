@@ -21,17 +21,19 @@ public class CustomItem {
 
     private double weight;
 
-    private LocalDate date;
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    private long bad_in_days;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    public CustomItem(String name, double weight, LocalDate date, User user) {
+    public CustomItem(String name, double weight, Category category, User user) {
         this.name = name;
         this.weight = weight;
-        this.date = date;
+        this.category = category;
         this.user = user;
     }
 }

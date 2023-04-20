@@ -7,7 +7,6 @@ import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,13 +48,19 @@ public class ItemController {
 
   @PostMapping("/addCustom")
   public ResponseEntity<?> uploadCustomItem(@RequestParam("name")String name, @RequestParam("weight") double weight,
-                                            @RequestParam("date") String date,  @AuthenticationPrincipal User user) {
-      itemService.saveOrUpdateCustomItem(new CustomItem(name,weight,LocalDate.parse(date), user));
-      return ResponseEntity.ok().build();
+                                           @RequestParam("category") String category, @RequestParam("date") String date,
+                                            @AuthenticationPrincipal User user) {
+      //Date must be on form yyyy-mm-dd
+
+      if (date.isEmpty()) {
+            return itemService.saveOrUpdateCustomItemWithoutDate(new CustomItem(name,weight, Category.valueOf(category),user));
+        } else {
+           return itemService.saveOrUpdateCustomItemWithDate(new CustomItem(name,weight,Category.valueOf(category),user), LocalDate.parse(date));
+        }
   }
 
   @GetMapping("/getCustom")
-  public List<CustomItem>  getCustomItemsByUser(@AuthenticationPrincipal User user){
+  public ResponseEntity<List<CustomItem>>  getCustomItemsByUser(@AuthenticationPrincipal User user){
       return itemService.getCustomItemByUser(user);
   }
 }
