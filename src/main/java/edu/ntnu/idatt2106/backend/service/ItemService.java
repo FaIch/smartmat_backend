@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.service;
 
+import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.User;
@@ -7,9 +8,13 @@ import edu.ntnu.idatt2106.backend.repository.CustomItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.sql.*;
 
 
@@ -27,10 +32,10 @@ public class ItemService {
 
 
 
-    private ItemRepository itemRepository;
-    private CustomItemRepository customItemRepository;
+    private final ItemRepository itemRepository;
+    private final CustomItemRepository customItemRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public ItemService(ItemRepository itemRepository, CustomItemRepository customItemRepository, UserRepository userRepository) {
@@ -39,35 +44,16 @@ public class ItemService {
         this.userRepository = userRepository;
     }
 
-    //Todo: fix methods when connected backend to database
     /**
      * Method getAllItems
      * @return list of all items in database
      */
 
-    public List<Item> getAllItems() {
-        return (List<Item>) itemRepository.findAll();
+    public ResponseEntity<List<Item>> getAllItems() {
+
+        return ResponseEntity.status(HttpStatus.OK).body(itemRepository.findAll());
     }
 
-    /**
-     * Method getItems
-     * @param id long of item
-     * @return item entity which has specific id
-     */
-
-    public Item getItem(Long id) {
-        return itemRepository.findById(id).orElse(null);
-    }
-
-   /* *//**
-     * Method getItemByUser
-     * @param user entity of specific user which we want to get items of
-     * @return list of items of specific user
-     *//*
-
-    public List<ItemEntity> getItemByUser(User user) {
-        return itemRepository.findAllByUser(user);
-    }*/
 
     /**
      * Method getItemByCategory
@@ -75,10 +61,9 @@ public class ItemService {
      * @return list of items with the specific category
      */
 
-    public List<Item> getItemByCategory(String category) {
-        return itemRepository.findByCategory(category);
+    public  ResponseEntity<List<Item>> getItemByCategory(String category) {
+        return ResponseEntity.status(HttpStatus.OK).body(itemRepository.findByCategory(category));
     }
-
     /**
      * Method saveOrUpdate
      *

@@ -48,4 +48,10 @@ public class FridgeController {
             , @RequestBody FridgeItem updatedFridgeItem) {
         return fridgeService.updateFridgeItemExpirationDate(fridgeItemId, updatedFridgeItem);
     }
+
+    //Not tested!!!
+    @GetMapping("fridge-items/list/date")
+    public ResponseEntity<List<FridgeItem>>  getItemsByDate(){
+        return fridgeService.expirationDate();
+    }
 }

@@ -8,6 +8,7 @@ import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -131,4 +132,10 @@ public class FridgeService {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
     }
+
+    public ResponseEntity<List<FridgeItem>> expirationDate() {
+        Sort sort = Sort.by(Sort.Direction.ASC, "expirationDate");
+        return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
+    }
+
 }
