@@ -29,7 +29,9 @@ test:
       alias: db
   script:
     - sleep 30
-    - docker-compose logs db
+    - ping -c 3 db
+    - apt-get update && apt-get install -y mysql-client
+    - mysqladmin -h db -u myusername --password=mypassword status
     - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: mydatabase
