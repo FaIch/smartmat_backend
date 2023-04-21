@@ -1,10 +1,18 @@
 image: maven:latest
 
+variables:
+  CACHE_KEY: "cache_key_1"
+
 stages:
   - test
   - build
   - owasp_dependency_check
   - code_coverage
+
+cache:
+  key: ${CACHE_KEY}
+  paths:
+    - .m2/repository/
 
 build:
   stage: build
@@ -27,7 +35,7 @@ test:
     MYSQL_USER: testuser
     MYSQL_PASSWORD: testpassword
     MYSQL_ROOT_PASSWORD: rootpassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
+    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3308/test_db?useSSL=false&allowPublicKeyRetrieval=true
 
 owasp_dependency_check:
   stage: owasp_dependency_check
