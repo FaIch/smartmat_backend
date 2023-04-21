@@ -28,17 +28,14 @@ test:
     - name: mysql:latest
       alias: db
   script:
-    - sleep 30
-    - ping -c 3 db
-    - apt-get update && apt-get install -y mysql-client
-    - mysqladmin -h db -u myusername --password=mypassword status
+    - sleep 5
     - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: mydatabase
     MYSQL_USER: myusername
     MYSQL_PASSWORD: mypassword
     MYSQL_ROOT_PASSWORD: mypassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false
 
 owasp_dependency_check:
   stage: owasp_dependency_check
