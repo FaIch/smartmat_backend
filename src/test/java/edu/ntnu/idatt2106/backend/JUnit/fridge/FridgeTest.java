@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +29,14 @@ class FridgeTest {
         Item item = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
         fridgeItem = new FridgeItem(1, LocalDate.now().plusDays(7), item);
         fridge.addFridgeItem(fridgeItem);
+    }
+
+    @Test
+    void allArgsConstructor() {
+        Fridge fridge = new Fridge(5L, user, new ArrayList<FridgeItem>());
+        assertEquals(5L, fridge.getId());
+        assertEquals(user, fridge.getUser());
+        assertTrue(fridge.getFridgeItems().isEmpty());
     }
 
     @Test
@@ -51,14 +61,26 @@ class FridgeTest {
     }
 
     @Test
-    void testEquals() {
+    void testEqualsAndHashCode() {
         Fridge fridge2 = new Fridge();
         fridge2.setUser(user);
         fridge2.addFridgeItem(fridgeItem);
-        assertEquals(fridge, fridge2);
 
+        // Both fridges have the same user and fridgeItems, but different IDs (null)
+        assertEquals(fridge, fridge2);
+        assertEquals(fridge.hashCode(), fridge2.hashCode());
+
+        // Setting the same ID for both fridges
+        fridge.setId(1L);
+        fridge2.setId(1L);
+
+        assertEquals(fridge, fridge2);
+        assertEquals(fridge.hashCode(), fridge2.hashCode());
+
+        // Changing the user for one of the fridges
         fridge2.setUser(new User("different@example.com", 9876543210L, "Different Address"));
 
         assertNotEquals(fridge, fridge2);
+        assertNotEquals(fridge.hashCode(), fridge2.hashCode());
     }
 }

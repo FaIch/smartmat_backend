@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FridgeItemTest {
 
@@ -32,13 +31,6 @@ class FridgeItemTest {
     }
 
     @Test
-    void testAllArgsConstructor() {
-        assertEquals(1, fridgeItem.getQuantity());
-        assertEquals(LocalDate.now().plusDays(7), fridgeItem.getExpirationDate());
-        assertEquals(item, fridgeItem.getItem());
-    }
-
-    @Test
     void testSettersAndGetters() {
         fridgeItem.setId(1L);
         fridgeItem.setQuantity(2);
@@ -47,5 +39,32 @@ class FridgeItemTest {
         assertEquals(1L, fridgeItem.getId());
         assertEquals(2, fridgeItem.getQuantity());
         assertEquals(LocalDate.now().plusDays(14), fridgeItem.getExpirationDate());
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        Item item1 = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
+        FridgeItem fridgeItem1 = new FridgeItem(1, LocalDate.now().plusDays(7), item1);
+
+        Item item2 = new Item(2L, "TestItem2", "Short description2", Category.MEAT, 150.0, 6.0, "TestImage2");
+        FridgeItem fridgeItem2 = new FridgeItem(2, LocalDate.now().plusDays(14), item2);
+
+        FridgeItem fridgeItem3 = new FridgeItem(1, LocalDate.now().plusDays(7), item1);
+
+        assertNotEquals(fridgeItem1, fridgeItem2);
+        assertNotEquals(fridgeItem1.hashCode(), fridgeItem2.hashCode());
+
+        assertEquals(fridgeItem1, fridgeItem3);
+        assertEquals(fridgeItem1.hashCode(), fridgeItem3.hashCode());
+    }
+
+    @Test
+    void testAllArgsConstructor() {
+        Item item = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
+        FridgeItem fridgeItem = new FridgeItem(1, LocalDate.now().plusDays(7), item);
+
+        assertEquals(1, fridgeItem.getQuantity());
+        assertEquals(LocalDate.now().plusDays(7), fridgeItem.getExpirationDate());
+        assertEquals(item, fridgeItem.getItem());
     }
 }

@@ -47,6 +47,6 @@ public class Fridge {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, fridgeItems);
+        return Objects.hash(id, user);
     }
 }
