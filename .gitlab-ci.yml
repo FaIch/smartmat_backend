@@ -3,6 +3,8 @@ image: maven:latest
 stages:
   - build
   - test
+  - owasp_dependency_check
+  - code_coverage
 
 build:
   stage: build
