@@ -20,6 +20,7 @@ test:
     - name: mysql:latest
       alias: test-db
   script:
+    - sleep 10
     - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: test_db
