@@ -28,7 +28,8 @@ test:
     - name: mysql:latest
       alias: db
   script:
-    - sleep 10
+    - sleep 30
+    - docker-compose logs db
     - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: mydatabase
