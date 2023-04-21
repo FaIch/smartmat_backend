@@ -26,7 +26,7 @@ test:
   stage: test
   services:
     - name: mysql:latest
-      alias: test-db
+      alias: db
   script:
     - sleep 10
     - mvn test -Dspring.profiles.active=test
