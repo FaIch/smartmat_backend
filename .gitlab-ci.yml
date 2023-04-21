@@ -16,17 +16,18 @@ build:
 
 test:
   stage: test
-  services:
-    - name: mysql:latest
-      alias: test-db
   script:
-    - mvn test -Dspring.profiles.active=test
-  variables:
-    MYSQL_DATABASE: test_db
-    MYSQL_USER: testuser
-    MYSQL_PASSWORD: testpassword
-    MYSQL_ROOT_PASSWORD: rootpassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
+    - mvn clean test
+  artifacts:
+    when: always
+    paths:
+      - target/site/jacoco # We need to save the HTML-reports that Jacoco produces, so we can serve it on Gitlab Pages in the next stage
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
+  when: always
+
 
 
 owasp_dependency_check:
