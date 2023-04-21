@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.user;
+package edu.ntnu.idatt2106.backend.JUnit.user;
 
 import edu.ntnu.idatt2106.backend.model.user.Role;
 import edu.ntnu.idatt2106.backend.model.user.SubUser;

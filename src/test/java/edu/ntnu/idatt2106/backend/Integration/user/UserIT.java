@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.user;
+package edu.ntnu.idatt2106.backend.Integration.user;
 
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;

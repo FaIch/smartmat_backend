@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.user;
+package edu.ntnu.idatt2106.backend.JUnit.user;
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.user.*;
