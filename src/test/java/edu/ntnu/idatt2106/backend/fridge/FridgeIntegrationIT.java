@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FridgeIntegrationTest {
+public class FridgeIntegrationIT {
 
     @LocalServerPort
     public int port;

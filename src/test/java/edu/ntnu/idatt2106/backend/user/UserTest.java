@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserJUnitTest {
+class UserTest {
     private User user;
 
     @BeforeEach

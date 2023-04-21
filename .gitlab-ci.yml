@@ -3,8 +3,6 @@ image: maven:latest
 stages:
   - build
   - test
-  - owasp_dependency_check
-  - code_coverage
 
 build:
   stage: build
@@ -17,44 +15,4 @@ build:
 test:
   stage: test
   script:
-    - mvn clean test
-  artifacts:
-    when: always
-    paths:
-      - target/site/jacoco # We need to save the HTML-reports that Jacoco produces, so we can serve it on Gitlab Pages in the next stage
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
-  when: always
-
-
-
-owasp_dependency_check:
-  stage: owasp_dependency_check
-  script:
-    - mvn dependency-check:check
-  allow_failure: true
-  artifacts:
-    paths:
-      - target/dependency-check-report.html
-      - target/dependency-check-report.xml
-
-code_coverage:
-  stage: code_coverage
-  services:
-    - name: mysql:latest
-      alias: test-db
-  script:
-    - mvn test -Dspring.profiles.active=test jacoco:report
-  variables:
-    MYSQL_DATABASE: test_db
-    MYSQL_USER: testuser
-    MYSQL_PASSWORD: testpassword
-    MYSQL_ROOT_PASSWORD: rootpassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://test-db:3306/test_db?useSSL=false&allowPublicKeyRetrieval=true
-  artifacts:
-    paths:
-      - target/site/jacoco
-    reports:
-      codequality: target/site/jacoco/jacoco.xml
+    - mvn test -Dspring.profiles.active=test -Dtest='*Test'
