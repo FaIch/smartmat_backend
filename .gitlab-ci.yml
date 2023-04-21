@@ -28,14 +28,13 @@ test:
     - name: mysql:latest
       alias: db
   script:
-    - sleep 5
+    - sleep 30
     - mvn test -Dspring.profiles.active=test
   variables:
     MYSQL_DATABASE: mydatabase
     MYSQL_USER: myusername
     MYSQL_PASSWORD: mypassword
     MYSQL_ROOT_PASSWORD: mypassword
-    SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false
 
 owasp_dependency_check:
   stage: owasp_dependency_check
