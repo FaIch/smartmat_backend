@@ -15,4 +15,4 @@ build:
 test:
   stage: test
   script:
-    - mvn test -Dspring.profiles.active=test -Dtest='*Test'
+    - mvn test -Pci-tests -Dspring.profiles.active=test -Dtest='*Test'
