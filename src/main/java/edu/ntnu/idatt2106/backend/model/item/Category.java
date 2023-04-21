@@ -9,4 +9,6 @@ public enum Category {
     CHICKEN,
     VEGETABLES,
 
+    DRYGOODS,
+
 }

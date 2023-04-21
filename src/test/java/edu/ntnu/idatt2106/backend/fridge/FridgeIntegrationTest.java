@@ -18,6 +18,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -106,14 +108,14 @@ public class FridgeIntegrationTest {
         item.setImage(null);
         item = itemRepository.save(item);
 
-        FridgeItem fridgeItem = new FridgeItem();
-        fridgeItem.setQuantity(1);
-        fridgeItem.setExpirationDate(LocalDate.now().plusDays(10));
-        fridgeItem.setItem(item);
+        MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
+        paramMap.add("quantity", String.valueOf(2));
+        paramMap.add("expirationDate", String.valueOf(LocalDate.now().plusDays(10)));
+        paramMap.add("itemId", String.valueOf(item.getId()));
 
-        HttpEntity<FridgeItem> fridgeItemRequest = new HttpEntity<>(fridgeItem, authHeaders);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(paramMap, authHeaders);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/fridge/add", fridgeItemRequest
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/fridge/add", request
                 , String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

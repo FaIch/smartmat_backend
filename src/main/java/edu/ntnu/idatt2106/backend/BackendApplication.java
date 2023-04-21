@@ -24,7 +24,59 @@ public class BackendApplication {
 
         BackendApplication backendApplication = new BackendApplication();
         backendApplication.addCategoryAndDatDB();
+        backendApplication.addToItemDB();
 
+    }
+
+    private void addToItemDB() {
+        try {
+            System.setProperty("jdbc.drivers", "com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+
+            String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
+            Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
+
+            String sql = " insert into item (category, name, price, short_desc, weight )"
+                    + " values (?, ?, ?, ?, ?)";
+
+            PreparedStatement preparedStmtMeat = conn.prepareStatement(sql);
+            preparedStmtMeat.setString(1, Category.MEAT.toString());
+            preparedStmtMeat.setString(2, "Steak");
+            preparedStmtMeat.setDouble(3, 129);
+            preparedStmtMeat.setString(4, "Finest steak from nmdkd");
+            preparedStmtMeat.setDouble(5,250);
+
+            preparedStmtMeat.execute();
+
+            PreparedStatement preparedStmtPotatoes = conn.prepareStatement(sql);
+            preparedStmtPotatoes.setString(1, Category.VEGETABLES.toString());
+            preparedStmtPotatoes.setString(2, "Mashed potatoes");
+            preparedStmtPotatoes.setDouble(3, 70);
+            preparedStmtPotatoes.setString(4, "Mashed potatoes from Stryn");
+            preparedStmtPotatoes.setDouble(5,450);
+
+            preparedStmtPotatoes.execute();
+
+            PreparedStatement preparedStmtPasta = conn.prepareStatement(sql);
+            preparedStmtPasta.setString(1, Category.DRYGOODS.toString());
+            preparedStmtPasta.setString(2, "Pasta");
+            preparedStmtPasta.setDouble(3, 70);
+            preparedStmtPasta.setString(4, "Full grain pasta");
+            preparedStmtPasta.setDouble(5,450);
+
+            preparedStmtPasta.execute();
+
+            PreparedStatement preparedStmtSalmon = conn.prepareStatement(sql);
+            preparedStmtSalmon.setString(1, Category.FISH.toString());
+            preparedStmtSalmon.setString(2, "Salmon");
+            preparedStmtSalmon.setDouble(3, 200);
+            preparedStmtSalmon.setString(4, "Wild Salmon from nort of norway");
+            preparedStmtSalmon.setDouble(5,450);
+
+            preparedStmtSalmon.execute();
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void addCategoryAndDatDB() {

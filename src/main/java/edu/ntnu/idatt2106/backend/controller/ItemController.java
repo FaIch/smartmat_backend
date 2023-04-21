@@ -7,9 +7,11 @@ import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 
 import java.time.LocalDate;
@@ -32,26 +34,30 @@ public class ItemController {
 
 
     @GetMapping("/list")
-    public List<Item> list(){
+    public ResponseEntity<List<Item>> list(){
         return itemService.getAllItems();
     }
 
+   @GetMapping("/category")
+    public ResponseEntity<List<Category>> getCategories(){
+      return ResponseEntity.status(HttpStatus.OK).body(Arrays.stream(Category.values()).toList());
+    }
+
     @GetMapping("/list/category")
-    public List<Item> getItemsByCategory(@RequestParam("category") String category){
-        return itemService.getItemByCategory(category);
+    public ResponseEntity<List<Item>>  getItemsByCategory(@RequestParam("category") String category){
+        System.out.println(category);
+        return itemService.getItemByCategory(Category.valueOf(category));
     }
 
-   @GetMapping("categories")
-    public List<Category> getCategories(){
-        return Arrays.stream(Category.values()).toList();
-    }
-
+    //Date must be on form yyyy-mm-dd
   @PostMapping("/addCustom")
   public ResponseEntity<?> uploadCustomItem(@RequestParam("name")String name, @RequestParam("weight") double weight,
                                            @RequestParam("category") String category, @RequestParam("date") String date,
                                             @AuthenticationPrincipal User user) {
-      //Date must be on form yyyy-mm-dd
 
+if (Arrays.stream(Category.values()).noneMatch((t) -> t.name().equals(category)) || weight <= 0 || name.isBlank()) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Illegal arguments");
+}
       if (date.isEmpty()) {
             return itemService.saveOrUpdateCustomItemWithoutDate(new CustomItem(name,weight, Category.valueOf(category),user));
         } else {

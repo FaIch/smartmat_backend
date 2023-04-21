@@ -3,12 +3,14 @@ package edu.ntnu.idatt2106.backend.controller;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.FridgeService;
+import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -16,10 +18,12 @@ import java.util.List;
 public class FridgeController {
 
     private final FridgeService fridgeService;
+    private final ItemService itemService;
 
     @Autowired
-    public FridgeController(FridgeService fridgeService) {
+    public FridgeController(FridgeService fridgeService, ItemService itemService) {
         this.fridgeService = fridgeService;
+        this.itemService = itemService;
     }
 
     @GetMapping("/user/fridge-items")
@@ -28,8 +32,9 @@ public class FridgeController {
     }
 
     @PostMapping("/fridge/add")
-    public ResponseEntity<String> addFridgeItem(@RequestBody FridgeItem fridgeItem, @AuthenticationPrincipal User user) {
-        return fridgeService.addFridgeItem(user.getId(), fridgeItem);
+    public ResponseEntity<String> addFridgeItem(@RequestParam("quantity") int quantity, @RequestParam("expirationDate")String expirationDate,
+                                                @RequestParam long itemId, @AuthenticationPrincipal User user) {
+        return fridgeService.addFridgeItem(user.getId(), new FridgeItem(quantity,LocalDate.parse(expirationDate),itemService.getItemById(itemId)));
     }
 
     @DeleteMapping("/fridge-items/{fridgeItemId}")
@@ -47,5 +52,11 @@ public class FridgeController {
     public ResponseEntity<String> updateFridgeItemExpirationDate(@PathVariable Long fridgeItemId
             , @RequestBody FridgeItem updatedFridgeItem) {
         return fridgeService.updateFridgeItemExpirationDate(fridgeItemId, updatedFridgeItem);
+    }
+
+    //Not tested!!!
+    @GetMapping("fridge-items/list/date")
+    public ResponseEntity<List<FridgeItem>>  getItemsByDate(){
+        return fridgeService.expirationDate();
     }
 }

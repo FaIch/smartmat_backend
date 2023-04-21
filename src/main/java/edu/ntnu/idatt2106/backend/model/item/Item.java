@@ -20,19 +20,17 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Column(name = "short_desc")
     private String shortDesc;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private Category category;
-    @Column
     private double price;
 
-    @Column
     private double weight;
 
-    @Lob
+   @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
+
+
 }
