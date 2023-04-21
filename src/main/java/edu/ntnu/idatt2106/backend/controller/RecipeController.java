@@ -8,4 +8,6 @@ public class RecipeController {
     //todo: hente alle oppskrift med spesifikk vare
 
     //todo: legge til i liste med varer som går ut på dato snart
+
+    //todo: sortere oppskrifter etter pris
 }

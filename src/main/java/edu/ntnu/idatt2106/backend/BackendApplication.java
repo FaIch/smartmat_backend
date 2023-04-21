@@ -56,6 +56,24 @@ public class BackendApplication {
             preparedStmtPotatoes.setDouble(5,450);
 
             preparedStmtPotatoes.execute();
+
+            PreparedStatement preparedStmtPasta = conn.prepareStatement(sql);
+            preparedStmtPasta.setString(1, Category.DRYGOODS.toString());
+            preparedStmtPasta.setString(2, "Pasta");
+            preparedStmtPasta.setDouble(3, 70);
+            preparedStmtPasta.setString(4, "Full grain pasta");
+            preparedStmtPasta.setDouble(5,450);
+
+            preparedStmtPasta.execute();
+
+            PreparedStatement preparedStmtSalmon = conn.prepareStatement(sql);
+            preparedStmtSalmon.setString(1, Category.FISH.toString());
+            preparedStmtSalmon.setString(2, "Salmon");
+            preparedStmtSalmon.setDouble(3, 200);
+            preparedStmtSalmon.setString(4, "Wild Salmon from nort of norway");
+            preparedStmtSalmon.setDouble(5,450);
+
+            preparedStmtSalmon.execute();
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }
