@@ -25,8 +25,10 @@ public class BackendApplication {
         BackendApplication backendApplication = new BackendApplication();
         backendApplication.addCategoryAndDatDB();
         backendApplication.addToItemDB();
+        backendApplication.addRecipeToDB();
 
     }
+
 
     private void addToItemDB() {
         try {
@@ -74,6 +76,8 @@ public class BackendApplication {
             preparedStmtSalmon.setDouble(5,450);
 
             preparedStmtSalmon.execute();
+
+            System.out.println("fridge item added successfully to database...");
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -109,12 +113,80 @@ public class BackendApplication {
 
             System.out.println("Item date category added successfully to database....");
 
-        }catch (Exception e)
-        {
+        }catch (Exception e) {
             System.err.println("Got an exception!");
             e.printStackTrace();
             System.out.println(e);
         }
+    }
+
+    private void addRecipeToDB() {
+
+        try {
+            System.setProperty("jdbc.drivers","com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+
+            String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
+            Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
+
+            String sql = " insert into recipe (name, description )"
+                    + " values (?, ?)";
+
+            PreparedStatement preparedStmtRecipeSteakPotatoes = conn.prepareStatement(sql);
+            preparedStmtRecipeSteakPotatoes.setString(1, "Steak and Potatoes");
+            preparedStmtRecipeSteakPotatoes.setString(2, "What to do");
+
+            preparedStmtRecipeSteakPotatoes.execute();
+
+
+            PreparedStatement preparedStmtRecipePastaSalmon = conn.prepareStatement(sql);
+            preparedStmtRecipePastaSalmon.setString(1, "Pasta and Salmon");
+            preparedStmtRecipePastaSalmon.setString(2, "What to do");
+
+            preparedStmtRecipePastaSalmon.execute();
+
+
+            String sqlRecipe_Item = " insert into recipe_item (item_id, recipe_id, quantity )"
+                    + " values (?, ?, ?)";
+
+            PreparedStatement preparedStmtRecipe1Steak = conn.prepareStatement(sqlRecipe_Item);
+            preparedStmtRecipe1Steak.setLong(1, 1);
+            preparedStmtRecipe1Steak.setLong(2, 1);
+            preparedStmtRecipe1Steak.setDouble(3,4);
+
+            preparedStmtRecipe1Steak.execute();
+
+            PreparedStatement preparedStmtRecipe1Potatoes = conn.prepareStatement(sqlRecipe_Item);
+            preparedStmtRecipe1Potatoes.setLong(1, 2);
+            preparedStmtRecipe1Potatoes.setLong(2, 1);
+            preparedStmtRecipe1Potatoes.setDouble(3,6);
+
+            preparedStmtRecipe1Potatoes.execute();
+
+            PreparedStatement preparedStmtRecipe1Pasta = conn.prepareStatement(sqlRecipe_Item);
+            preparedStmtRecipe1Pasta.setLong(1, 3);
+            preparedStmtRecipe1Pasta.setLong(2, 2);
+            preparedStmtRecipe1Pasta.setDouble(3,10);
+
+            preparedStmtRecipe1Pasta.execute();
+
+            PreparedStatement preparedStmtRecipe2Salmon = conn.prepareStatement(sqlRecipe_Item);
+            preparedStmtRecipe2Salmon.setLong(1, 4);
+            preparedStmtRecipe2Salmon.setLong(2, 2);
+            preparedStmtRecipe2Salmon.setDouble(3,4);
+
+            preparedStmtRecipe2Salmon.execute();
+
+            conn.close();
+
+            System.out.println("Recipe added successfully to database....");
+
+        }catch (Exception e) {
+            System.err.println("Got an exception!");
+            e.printStackTrace();
+            System.out.println(e);
+        }
+
     }
 
 }
