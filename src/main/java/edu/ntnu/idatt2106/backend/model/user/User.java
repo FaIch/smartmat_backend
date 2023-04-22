@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.model.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.*;
@@ -32,6 +33,9 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Fridge fridge;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ShoppingList shoppingList;
 
     private byte[] password;
     private byte[] salt;

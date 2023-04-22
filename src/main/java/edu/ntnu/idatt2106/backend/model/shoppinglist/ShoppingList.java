@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "shopping_list")
 public class ShoppingList {
 
     @Id
@@ -24,16 +25,15 @@ public class ShoppingList {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ShoppingListItem> shoppingListItems = new ArrayList<>();
+//    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ShoppingListItem> shoppingListItems = new ArrayList<>();
 
     public void addShoppingListItem(ShoppingListItem shoppingListItem) {
-        shoppingListItems.add(shoppingListItem);
         shoppingListItem.setShoppingList(this);
     }
 
     public void removeShoppingListItem(ShoppingListItem shoppingListItem) {
-        shoppingListItems.remove(shoppingListItem);
         shoppingListItem.setShoppingList(null);
     }
+
 }

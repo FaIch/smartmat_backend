@@ -35,10 +35,16 @@ public class ShoppingListService {
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+
         User user = userOptional.get();
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
-        return shoppingListOptional.map(shoppingList -> ResponseEntity.status(HttpStatus.OK).body(shoppingList.getShoppingListItems()))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        ShoppingList shoppingList = shoppingListOptional.get();
+        List<ShoppingListItem> shoppingListItems = shoppingListRepository.findShoppingListItemsByShoppingListId(shoppingList.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(shoppingListItems);
     }
 
     public ResponseEntity<String> addShoppingListItem(Long userId, ShoppingListItem shoppingListItem) {

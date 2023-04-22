@@ -21,10 +21,10 @@ public class ShoppingListController {
     public ShoppingListController(ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
     }
-
     @GetMapping("/user/shopping-list-items")
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(@AuthenticationPrincipal User user) {
-        return shoppingListService.getShoppingListItemsByUserId(user.getId());
+        ResponseEntity<List<ShoppingListItem>> responseEntity = shoppingListService.getShoppingListItemsByUserId(user.getId());
+        return responseEntity;
     }
 
     @PostMapping("/shopping-list/add")
