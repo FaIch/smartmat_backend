@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.fridge;
+package edu.ntnu.idatt2106.backend.Integration.fridge;
 
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.item.Category;
