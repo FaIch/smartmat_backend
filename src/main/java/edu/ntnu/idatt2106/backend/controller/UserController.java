@@ -5,6 +5,8 @@ import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,15 +21,15 @@ public class UserController {
     /**
      * The service class for users
      */
-    private final UserService service;
+    private final UserService userService;
 
     /**
      * Autowired controller for instantiate the service class
-     * @param service the service class for users
+     * @param userService the service class for users
      */
     @Autowired
-    public UserController(UserService service) {
-        this.service = service;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -37,7 +39,7 @@ public class UserController {
      */
     @PostMapping("/user")
     public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
-        return service.createUser(userRequest);
+        return userService.createUser(userRequest);
     }
 
     /**
@@ -52,9 +54,15 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(
-            @RequestBody UserRequest user
-    ) {
-        return service.loginAndGetToken(user.getEmail(), user.getPassword());
+            @RequestBody UserRequest user,
+            HttpServletResponse response) {
+        return userService.loginAndGetToken(user.getEmail(), user.getPassword(), response);
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request,
+                                                            HttpServletResponse response) {
+        return userService.refreshToken(request, response);
     }
 
     /**
@@ -64,7 +72,7 @@ public class UserController {
      */
     @PutMapping("/user/editPhoneNumber")
     public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
-        return service.editPhoneNumber(user.getEmail(), phoneNumber);
+        return userService.editPhoneNumber(user.getEmail(), phoneNumber);
     }
 
     /**
@@ -74,7 +82,7 @@ public class UserController {
      */
     @PutMapping("/user/editAddress")
     public ResponseEntity<String> editAddress(@RequestParam String address, @AuthenticationPrincipal User user){
-        return service.editAddress(user.getEmail(), address);
+        return userService.editAddress(user.getEmail(), address);
     }
 
     /**
@@ -86,7 +94,7 @@ public class UserController {
     @PutMapping("/user/editPassword")
     public ResponseEntity<String> editPassword(@RequestParam String oldPassword,
                                                @RequestParam String newPassword, @AuthenticationPrincipal User user){
-        return service.editPassword(user.getEmail(), oldPassword, newPassword);
+        return userService.editPassword(user.getEmail(), oldPassword, newPassword);
     }
 
     /**
@@ -99,7 +107,7 @@ public class UserController {
     @PostMapping("/user/subUser")
     public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return service.createSubUser(user.getEmail(), subUserRequest);
+        return userService.createSubUser(user.getEmail(), subUserRequest);
     }
 
     /**
@@ -110,7 +118,7 @@ public class UserController {
     @PutMapping("/user/subUser/edit")
     public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return service.editSubUserName(user.getEmail(), subUserRequest);
+        return userService.editSubUserName(user.getEmail(), subUserRequest);
     }
 
     /**
@@ -121,7 +129,7 @@ public class UserController {
     @DeleteMapping("/user/subUser/delete")
     public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return service.deleteSubUser(user.getEmail(), subUserRequest);
+        return userService.deleteSubUser(user.getEmail(), subUserRequest);
     }
 
     /**
@@ -131,6 +139,6 @@ public class UserController {
      */
     @GetMapping("/user/getSubUsers")
     public ResponseEntity<List<SubUser>> getSubUsers(@AuthenticationPrincipal User user) {
-        return service.getSubUsers(user.getEmail());
+        return userService.getSubUsers(user.getEmail());
     }
 }

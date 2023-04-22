@@ -6,6 +6,7 @@ import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,8 +26,8 @@ import java.util.Optional;
 @Component
 public class JWTRequestFilter extends OncePerRequestFilter {
 
-  private JWTService jwtService;
-  private UserRepository userRepository;
+  private final JWTService jwtService;
+  private final UserRepository userRepository;
 
   /**
    * Constructor JWTRequestFilter
@@ -48,13 +49,23 @@ public class JWTRequestFilter extends OncePerRequestFilter {
    * @throws IOException gets thrown if the user is not found
    */
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
 
-    String tokenHeader = request.getHeader("Authorization");
-    if(tokenHeader != null && tokenHeader.startsWith("Bearer ")){
-      String token = tokenHeader.substring(7);
+    // Extract JWT token from HttpOnly cookie
+    String jwtToken = null;
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals("JWT")) {
+          jwtToken = cookie.getValue();
+          break;
+        }
+      }
+    }
+    if (jwtToken != null) {
       try{
-        String username = jwtService.getEmail(token);
+        String username = jwtService.getEmail(jwtToken);
         Optional<User> optionalUserEntity = userRepository.findByEmailIgnoreCase(username);
 
         if(optionalUserEntity.isPresent()){
