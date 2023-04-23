@@ -35,7 +35,7 @@ public class JWTService {
 
   /**
    * Method generateJWT
-   * @param user entity of user which will get session tolkin jwt
+   * @param user entity of user which will get session token jwt
    * @return jwt string
    */
   public String generateAccessToken(User user){
@@ -66,7 +66,6 @@ public class JWTService {
     jwtAccessCookie.setHttpOnly(true);
     jwtAccessCookie.setPath("/");
     jwtAccessCookie.setMaxAge(accessTokenExpiryInSeconds);
-
     return jwtAccessCookie;
   }
 
@@ -79,13 +78,13 @@ public class JWTService {
     return jwtRefreshCookie;
   }
 
-  public boolean isRefreshTokenValid(String refreshToken) {
+  public boolean isTokenValid(String token) {
     try {
-      // Verify the refresh token's signature and check if it has expired
+      // Verify the token's signature and check if it has expired
       JWT.require(algorithm)
               .withIssuer(issuer)
               .build()
-              .verify(refreshToken);
+              .verify(token);
       return true;
     } catch (JWTVerificationException e) {
       return false;
@@ -93,8 +92,8 @@ public class JWTService {
   }
   /**
    * Method getUserName
-   * @param token string tolkin of user
-   * @return username of user which has tolkin
+   * @param token string token of user
+   * @return username of user which has token
    */
   public String getEmail(String token){
     return JWT.decode(token).getClaim(USERNAME_KEY).asString();

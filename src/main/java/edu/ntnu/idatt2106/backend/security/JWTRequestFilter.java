@@ -53,33 +53,33 @@ public class JWTRequestFilter extends OncePerRequestFilter {
           throws ServletException, IOException {
 
     // Extract JWT token from HttpOnly cookie
-    String jwtToken = null;
+    String jwtAccessToken = null;
     Cookie[] cookies = request.getCookies();
     if (cookies != null) {
       for (Cookie cookie : cookies) {
-        if (cookie.getName().equals("JWT")) {
-          jwtToken = cookie.getValue();
+        if (cookie.getName().equals("JWTAccessToken")) {
+          jwtAccessToken = cookie.getValue();
+        }
+        if (jwtAccessToken != null) {
           break;
         }
       }
     }
-    if (jwtToken != null) {
+    if (jwtAccessToken != null && jwtService.isTokenValid(jwtAccessToken)) {
       try{
-        String username = jwtService.getEmail(jwtToken);
+        String username = jwtService.getEmail(jwtAccessToken);
         Optional<User> optionalUserEntity = userRepository.findByEmailIgnoreCase(username);
 
-        if(optionalUserEntity.isPresent()){
+        if (optionalUserEntity.isPresent()) {
           User user = optionalUserEntity.get();
-          UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList());
+          UsernamePasswordAuthenticationToken authenticationToken =
+                  new UsernamePasswordAuthenticationToken(user, null, new ArrayList());
           authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
 
-      }catch (JWTDecodeException ignored){
-      }
-
+      } catch (JWTDecodeException ignored){}
     }
-
     filterChain.doFilter(request, response);
   }
 }

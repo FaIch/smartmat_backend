@@ -157,7 +157,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
         }
         if (tryLogin(email, password)) {
-            CreateTokens(optionalUser.get(), httpServletResponse);
+            createTokens(optionalUser.get(), httpServletResponse);
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Login successful");
             responseBody.put("userEmail", optionalUser.get().getEmail());
@@ -191,7 +191,7 @@ public class UserService {
         }
 
         // Verify the refresh token's validity
-        if (!jwtService.isRefreshTokenValid(refreshToken)) {
+        if (!jwtService.isTokenValid(refreshToken)) {
             // Return an error response if the refresh token is invalid or expired
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Invalid or expired refresh token");
@@ -203,7 +203,7 @@ public class UserService {
         Optional<User> optionalUserEntity = userRepository.findByEmailIgnoreCase(email);
 
         if (optionalUserEntity.isPresent()) {
-            CreateTokens(optionalUserEntity.get(), response);
+            createAccessToken(optionalUserEntity.get(), response);
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Access token refreshed");
             return ResponseEntity.ok(responseBody);
@@ -214,14 +214,27 @@ public class UserService {
         }
     }
 
-    private void CreateTokens(User user, HttpServletResponse httpServletResponse) {
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-        Cookie jwtAccessCookie = jwtService.generateJWTAccessCookie(accessToken);
-        Cookie jwtRefreshCookie = jwtService.generateJWTRefreshCookie(refreshToken);
+    private void createTokens(User user, HttpServletResponse httpServletResponse) {
+        createAccessToken(user, httpServletResponse);
 
-        httpServletResponse.addCookie(jwtAccessCookie);
-        httpServletResponse.addCookie(jwtRefreshCookie);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        Cookie jwtRefreshCookie = jwtService.generateJWTRefreshCookie(refreshToken);
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtRefreshCookie, "None", false);
+    }
+
+    private void createAccessToken(User user, HttpServletResponse httpServletResponse) {
+        String accessToken = jwtService.generateAccessToken(user);
+        Cookie jwtAccessToken = jwtService.generateJWTAccessCookie(accessToken);
+
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtAccessToken, "Lax", false);
+    }
+
+    public static void addCookieWithSameSiteAttribute(HttpServletResponse response, Cookie cookie, String sameSite,
+                                                      boolean secure) {
+        String cookieHeader = String.format("%s=%s; SameSite=%s; HttpOnly; Path=/; Max-Age=%d; %s",
+                cookie.getName(), cookie.getValue(), sameSite, cookie.getMaxAge(), secure ? "Secure" : "");
+
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     /**

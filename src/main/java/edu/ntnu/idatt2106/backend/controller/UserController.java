@@ -59,9 +59,9 @@ public class UserController {
         return userService.loginAndGetToken(user.getEmail(), user.getPassword(), response);
     }
 
-    @PostMapping("/refreshToken")
-    public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request,
-                                                            HttpServletResponse response) {
+    @PostMapping("/auth/refreshToken")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request,
+                                          HttpServletResponse response) {
         return userService.refreshToken(request, response);
     }
 
