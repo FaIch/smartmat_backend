@@ -36,4 +36,9 @@ public class FridgeItem {
         this.expirationDate = expirationDate;
         this.item = itemById;
     }
+
+    @Override
+    public String toString(){
+        return "";
+    }
 }

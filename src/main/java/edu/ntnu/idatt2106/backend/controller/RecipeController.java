@@ -33,19 +33,18 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
-    @GetMapping("/findByItemName")
-    public List<String> getRecipesByItemName2(@RequestParam("itemName") String itemName) {
-        System.out.println(itemName);
-        return recipeService.findRecipeNamesByItemName(itemName);
-    }
-
-
-    @GetMapping("/by-item-name/{itemName}")
+   @GetMapping("/by-item-name/{itemName}")
     public List<Recipe> getRecipesByItemName(@PathVariable String itemName) {
         itemName = "\"" + itemName + "\"";
         System.out.println(itemName);
         return recipeService.getRecipesByItemName(itemName);
     }
+
+/*    @GetMapping("/recipes/sorted-by-fridge-items")
+    public List<Recipe> getRecipesSortedByFridgeItems() {
+        return recipeService.getAllRecipesSortedByFridgeItems();
+    }*/
+
 
 
 

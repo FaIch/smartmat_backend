@@ -1,7 +1,5 @@
 package edu.ntnu.idatt2106.backend.service;
 
-import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
-import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
@@ -10,9 +8,9 @@ import edu.ntnu.idatt2106.backend.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RecipeService {
@@ -35,12 +33,8 @@ public class RecipeService {
         return (List<Recipe>) recipeRepository.findAll();
     }
 
-    public List<String> findRecipeNamesByItemName(String itemName) {
-        return recipeItemRepository.findRecipeNamesByItemName(itemName);
-    }
 
-
-   public List<Recipe> getRecipesByItemName(String itemName) {
+    public List<Recipe> getRecipesByItemName(String itemName) {
         List<RecipeItem> recipeItems = recipeItemRepository.findByItemName(itemName);
         List<Recipe> recipes = new ArrayList<>();
         for (RecipeItem recipeItem : recipeItems) {
@@ -49,4 +43,7 @@ public class RecipeService {
         return recipes;
     }
 
+    /*public List<Recipe> getAllRecipesSortedByFridgeItems() {
+        return recipeRepository.findAllByFridgeItems();
+    }*/
 }

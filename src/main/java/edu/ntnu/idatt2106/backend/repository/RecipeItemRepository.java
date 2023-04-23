@@ -11,13 +11,8 @@ import java.util.List;
 @Repository
 public interface RecipeItemRepository extends JpaRepository<RecipeItem, Long> {
 
-    @Query("SELECT ri FROM RecipeItem ri WHERE ri.item.name = CONCAT('\'', :itemName, '\'')")
+
+    @Query("SELECT ri FROM RecipeItem ri WHERE ri.item.name = :itemName")
     List<RecipeItem> findByItemName(@Param("itemName") String itemName);
 
-    @Query("SELECT r.name AS recipe_name "
-            + "FROM Recipe r "
-            + "INNER JOIN RecipeItem ri ON r.id = ri.recipe.id "
-            + "INNER JOIN Item i ON ri.item.id = i.id "
-            + "WHERE i.name = " + "'Steak'" )
-    List<String> findRecipeNamesByItemName(@Param("itemName") String itemName);
 }

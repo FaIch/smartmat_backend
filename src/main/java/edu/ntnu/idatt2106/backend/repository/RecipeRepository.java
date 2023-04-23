@@ -11,10 +11,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-
-    /*@Query("SELECT r.name AS recipeName FROM Recipe r JOIN r.recipeItems ri JOIN ri.item i WHERE i.name = :itemName")
-    List<String> findRecipeNamesByItemName(@Param("itemName") String itemName);
-
-    @Query("SELECT r FROM Recipe r JOIN r.recipeItems ri WHERE ri.item IN :fridgeItems GROUP BY r.id ORDER BY COUNT(ri.item) DESC, SUM(ri.quantity) ASC")
-    List<Recipe> findRecipesByFridgeItems(@Param("fridgeItems") List<Item> fridgeItems);*/
+/*    @Query("SELECT r FROM Recipe r " +
+            "JOIN r.recipeItems ri " +
+            "JOIN ri.item i " +
+            "JOIN i.fridgeItems fi " +
+            "GROUP BY r.id " +
+            "ORDER BY COUNT(fi) DESC")
+    List<Recipe> findAllByFridgeItems();*/
 }
