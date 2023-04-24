@@ -65,13 +65,18 @@ public class WasteIT {
         restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
-        Map<String, Object> responseMap = new ObjectMapper()
-                .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
-        Map<String, Object> userRequestMap = (Map<String, Object>) responseMap.get("userRequest");
+        String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTAccessToken="))
+                .findFirst().get().substring("JWTAccessToken=".length());
+
+        String jwtRefreshToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTRefreshToken="))
+                .findFirst().get().substring("JWTRefreshToken=".length());
 
         authHeaders = new HttpHeaders();
-        authHeaders.setBearerAuth((String) userRequestMap.get("password"));
+        authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
         authRequest = new HttpEntity<>(authHeaders);
     }

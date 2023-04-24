@@ -137,19 +137,20 @@ public class UserIT {
         restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
-        Map<String, Object> responseMap = new ObjectMapper()
-                .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
-        Map<String, Object> userRequestMap = (Map<String, Object>) responseMap.get("userRequest");
+        String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTAccessToken="))
+                .findFirst().get().substring("JWTAccessToken=".length());
 
-        token = (String) userRequestMap.get("password");
-        System.out.println(token);
+        String jwtRefreshToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTRefreshToken="))
+                .findFirst().get().substring("JWTRefreshToken=".length());
 
         HttpHeaders authHeaders = new HttpHeaders();
-        authHeaders.setBearerAuth(token);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
         HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
-
 
         ResponseEntity<String> subUsersResponse = restTemplate.exchange(baseURL + "/user/getSubUsers",
                 HttpMethod.GET, authRequest, String.class);

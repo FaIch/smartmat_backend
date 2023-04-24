@@ -5,6 +5,9 @@ import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +72,7 @@ public class UserService {
      */
     public ResponseEntity<String> createUserWithoutChild(UserRequest userRequest) {
         // Checks if the user already exists in the repository
+
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
             String response = "User with given email already exists";
@@ -175,29 +179,95 @@ public class UserService {
      * @param password the password of the user to log in.
      * @return a ResponseEntity with the status code and response body indicating whether the login was successful and the JWT token if applicable.
      */
-    public ResponseEntity<Map<String, Object>> loginAndGetToken(String email, String password) {
+    public ResponseEntity<Map<String, Object>> loginAndGetToken(String email, String password,
+                                                                HttpServletResponse httpServletResponse) {
         // Attempts to log in the user and generates a JWT token if successful
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "User with given email does not exist");
-            response.put("userRequest", null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "User with given email does not exist");
+            responseBody.put("userRequest", null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
         }
         if (tryLogin(email, password)) {
-            User user = optionalUser.get();
-            String token = jwtService.generateJWT(user);
-            UserRequest userRequest = new UserRequest(optionalUser.get().getEmail(), token);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("userRequest", userRequest);
-            return ResponseEntity.ok(response);
+            createTokens(optionalUser.get(), httpServletResponse);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Login successful");
+            responseBody.put("userEmail", optionalUser.get().getEmail());
+            return ResponseEntity.ok(responseBody);
         }
         // Returns a response indicating that the login was unsuccessful
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Password is incorrect");
         response.put("userRequest", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        // Extract the refresh token from the HttpOnly cookie
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("JWTRefreshToken")) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            // Return an error response if the refresh token is not provided
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Refresh token is missing");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+        }
+
+        // Verify the refresh token's validity
+        if (!jwtService.isTokenValid(refreshToken)) {
+            // Return an error response if the refresh token is invalid or expired
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Invalid or expired refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
+        }
+
+        // Get the email from the refresh token
+        String email = jwtService.getEmail(refreshToken);
+        Optional<User> optionalUserEntity = userRepository.findByEmailIgnoreCase(email);
+
+        if (optionalUserEntity.isPresent()) {
+            createAccessToken(optionalUserEntity.get(), response);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Access token refreshed");
+            return ResponseEntity.ok(responseBody);
+        } else {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+        }
+    }
+
+    private void createTokens(User user, HttpServletResponse httpServletResponse) {
+        createAccessToken(user, httpServletResponse);
+
+        String refreshToken = jwtService.generateRefreshToken(user);
+        Cookie jwtRefreshCookie = jwtService.generateJWTRefreshCookie(refreshToken);
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtRefreshCookie, "Strict", false);
+    }
+
+    private void createAccessToken(User user, HttpServletResponse httpServletResponse) {
+        String accessToken = jwtService.generateAccessToken(user);
+        Cookie jwtAccessToken = jwtService.generateJWTAccessCookie(accessToken);
+
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtAccessToken, "Strict", false);
+    }
+
+    public static void addCookieWithSameSiteAttribute(HttpServletResponse response, Cookie cookie, String sameSite,
+                                                      boolean secure) {
+        String cookieHeader = String.format("%s=%s; SameSite=%s; HttpOnly; Path=/; Max-Age=%d; %s",
+                cookie.getName(), cookie.getValue(), sameSite, cookie.getMaxAge(), secure ? "Secure" : "");
+
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     /**
@@ -279,12 +349,12 @@ public class UserService {
     }
 
     /**
-     * Adds a new subuser to the specified user account with the given nickname and role.
+     * Adds a new sub user to the specified user account with the given nickname and role.
      *
      * @param subUserRequest The request object containing the email of the main user, the nickname,
-     *                       and the role of the subuser.
-     * @return A ResponseEntity containing a success message if the subuser was added successfully,
-     * or an error message if the user does not exist or a subuser with the same nickname already exists.
+     *                       and the role of the sub user.
+     * @return A ResponseEntity containing a success message if the sub user was added successfully,
+     * or an error message if the user does not exist or a sub user with the same nickname already exists.
      */
     public ResponseEntity<String> createSubUser(String userEmail, SubUserRequest subUserRequest) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
@@ -304,12 +374,12 @@ public class UserService {
     }
 
     /**
-     * Changes the nickname of the specified subuser to the given name.
+     * Changes the nickname of the specified sub user to the given name.
      *
      * @param subUserRequest The request object containing the email of the main user,
-     *                       the current nickname of the subuser, and the new nickname of the subuser.
+     *                       the current nickname of the sub user, and the new nickname of the sub user.
      * @return A ResponseEntity containing a success message if the nickname was changed successfully,
-     * or an error message if the user does not exist or the subuser does not exist.
+     * or an error message if the user does not exist or the sub user does not exist.
      */
     public ResponseEntity<String> editSubUserName(String userEmail, SubUserRequest subUserRequest) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
@@ -329,12 +399,12 @@ public class UserService {
     }
 
     /**
-     * Deletes the specified subuser from the database.
+     * Deletes the specified sub user from the database.
      *
      * @param subUserRequest The request object containing the email of the main user and the nickname of
-     *                       the subuser to be deleted.
-     * @return A ResponseEntity containing a success message if the subuser was deleted successfully,
-     * or an error message if the user or subuser does not exist.
+     *                       the sub user to be deleted.
+     * @return A ResponseEntity containing a success message if the sub user was deleted successfully,
+     * or an error message if the user or sub user does not exist.
      */
     public ResponseEntity<String> deleteSubUser(String userEmail, SubUserRequest subUserRequest) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
@@ -352,9 +422,9 @@ public class UserService {
     }
 
     /**
-     * Gets the list of subusers for the specified user.
-     * @param email The email of the user to get the subusers for.
-     * @return A ResponseEntity containing the list of subusers if the user exists, or null if the user does not exist.
+     * Gets the list of sub users for the specified user.
+     * @param email The email of the user to get the sub users for.
+     * @return A ResponseEntity containing the list of sub users if the user exists, or null if the user does not exist.
      */
     public ResponseEntity<List<SubUser>> getSubUsers(String email) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
