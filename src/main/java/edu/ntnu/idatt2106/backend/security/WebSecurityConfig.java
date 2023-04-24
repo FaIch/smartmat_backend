@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/user").permitAll()
                 .requestMatchers("/items/**").permitAll()
+                .requestMatchers("/recipe/**").permitAll()
                 .anyRequest().authenticated();
 
 

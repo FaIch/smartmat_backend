@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.model.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
@@ -40,4 +41,16 @@ public class Item {
     @OneToMany(mappedBy = "item")
     private List<RecipeItem> recipeItems;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
+    private FridgeItem fridgeItem;
+
+
+    public FridgeItem getFridgeItem() {
+        return fridgeItem;
+    }
+
+    public void setFridgeItem(FridgeItem fridgeItem) {
+        this.fridgeItem = fridgeItem;
+    }
 }

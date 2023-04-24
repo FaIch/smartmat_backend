@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.repository.RecipeRepository;
 import edu.ntnu.idatt2106.backend.service.ItemService;
@@ -29,20 +30,23 @@ public class RecipeController {
     }
 
     @GetMapping("/list")
-    public List<Recipe> list(){
+    public ResponseEntity<List<Recipe>> list(){
         return recipeService.getAllRecipes();
     }
 
-   @GetMapping("/by-item-name/{itemName}")
-    public List<Recipe> getRecipesByItemName(@PathVariable String itemName) {
-        itemName = "\"" + itemName + "\"";
-        System.out.println(itemName);
+   @GetMapping("/by-item-name")
+    public List<Recipe> getRecipesByItemName(@RequestParam String itemName) {
         return recipeService.getRecipesByItemName(itemName);
     }
 
-/*    @GetMapping("/recipes/sorted-by-fridge-items")
+/*   @GetMapping("/sorted-by-fridge-items")
     public List<Recipe> getRecipesSortedByFridgeItems() {
         return recipeService.getAllRecipesSortedByFridgeItems();
+    }*/
+
+ /*   @GetMapping("/sortedByFridgeItemsDate")
+    public List<Recipe> getRecipesSortedByFridgeItemsDate() {
+        return recipeService.getRecipesSortedByFridgeItems();
     }*/
 
 
@@ -57,5 +61,4 @@ public class RecipeController {
 
     //todo: legge til i liste med varer som går ut på dato snart
 
-    //todo: sortere oppskrifter etter pris
 }
