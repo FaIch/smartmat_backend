@@ -44,13 +44,4 @@ public class Item {
     @JsonIgnore
     @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
     private FridgeItem fridgeItem;
-
-
-    public FridgeItem getFridgeItem() {
-        return fridgeItem;
-    }
-
-    public void setFridgeItem(FridgeItem fridgeItem) {
-        this.fridgeItem = fridgeItem;
-    }
 }
