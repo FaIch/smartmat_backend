@@ -26,10 +26,6 @@ public class User {
     private Long phoneNumber;
     private String address;
 
-    @OneToMany(mappedBy = "mainUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<SubUser> subUsers = new ArrayList<>();
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Fridge fridge;
 
@@ -44,15 +40,6 @@ public class User {
 
     public User(String email) {
         this.email = email;
-    }
-
-    public void addSubUser(SubUser subUser) {
-        subUsers.add(subUser);
-        subUser.setMainUser(this);
-    }
-
-    public void removeSubUser(SubUser subUser) {
-        subUsers.remove(subUser);
     }
 
     /**

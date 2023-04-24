@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.Integration.user;
 
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
+import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import java.util.Map;
@@ -29,6 +30,9 @@ public class UserIT {
     @Autowired
     public UserRepository userRepository;
 
+    @Autowired
+    public SubUserRepository subUserRepository;
+
     private String token;
     private HttpHeaders headers;
     private String baseURL;
@@ -44,6 +48,7 @@ public class UserIT {
 
     @AfterEach
     public void clearDatabase() {
+        subUserRepository.deleteAll();
         userRepository.deleteAll();
     }
 

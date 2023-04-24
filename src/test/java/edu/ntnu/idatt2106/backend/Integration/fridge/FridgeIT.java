@@ -4,10 +4,7 @@ import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
-import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
-import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
-import edu.ntnu.idatt2106.backend.repository.ItemRepository;
-import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FridgeIntegrationIT {
+public class FridgeIT {
 
     @LocalServerPort
     public int port;
@@ -42,6 +39,9 @@ public class FridgeIntegrationIT {
 
     @Autowired
     public UserRepository userRepository;
+
+    @Autowired
+    public SubUserRepository subUserRepository;
 
     @Autowired
     public ItemRepository itemRepository;
@@ -88,9 +88,10 @@ public class FridgeIntegrationIT {
 
     @AfterEach
     public void clearDatabase() {
-        userRepository.deleteAll();
-        fridgeRepository.deleteAll();
         fridgeItemRepository.deleteAll();
+        fridgeRepository.deleteAll();
+        subUserRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

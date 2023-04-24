@@ -92,9 +92,8 @@ public class UserService {
         Fridge fridge = new Fridge();
         fridge.setUser(user);
         user.setFridge(fridge);
-        user.addSubUser(subUser);
-        userRepository.save(user);
-
+        subUser.setMainUser(userRepository.save(user));
+        subUserRepository.save(subUser);
         return ResponseEntity.ok("User created");
     }
 
@@ -330,13 +329,13 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
         User user = optionalUser.get();
-        for (SubUser subUser : user.getSubUsers()) {
+        for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given nickname already exists");
             }
         }
         SubUser subUser = new SubUser(subUserRequest.getNickname(), subUserRequest.getRole());
-        user.addSubUser(subUser);
+        subUserRepository.save(subUser);
         userRepository.save(user);
         return ResponseEntity.ok("Sub User added");
     }
@@ -355,7 +354,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
         User user = optionalUser.get();
-        for (SubUser subUser : user.getSubUsers()) {
+        for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 subUser.setNickname(subUserRequest.getNickname());
                 userRepository.save(user);
@@ -380,10 +379,8 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
         }
         User user = optionalUser.get();
-        for (SubUser subUser : user.getSubUsers()) {
+        for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
-                user.removeSubUser(subUser);
-                userRepository.save(user);
                 subUserRepository.deleteById(subUser.getId());
                 return ResponseEntity.ok("Sub User deleted");
             }
