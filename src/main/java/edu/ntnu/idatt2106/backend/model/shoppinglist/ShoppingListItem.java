@@ -31,4 +31,9 @@ public class ShoppingListItem {
     @OneToOne
     @JoinColumn(name = "item_id")
     private Item item;
+
+    public ShoppingListItem(int quantity, Item item) {
+        this.quantity = quantity;
+        this.item = item;
+    }
 }

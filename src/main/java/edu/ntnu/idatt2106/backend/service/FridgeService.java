@@ -53,8 +53,12 @@ public class FridgeService {
         }
         User user = userOptional.get();
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
-        return fridgeOptional.map(fridge -> ResponseEntity.status(HttpStatus.OK).body(fridge.getFridgeItems()))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
+        if (fridgeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        Fridge fridge = fridgeOptional.get();
+        List<FridgeItem> fridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
     /**

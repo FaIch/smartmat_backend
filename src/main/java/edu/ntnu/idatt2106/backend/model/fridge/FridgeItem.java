@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.model.fridge;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class FridgeItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fridge_id")
     private Fridge fridge;

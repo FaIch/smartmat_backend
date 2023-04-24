@@ -38,6 +38,11 @@ public class ItemController {
         return itemService.getAllItems();
     }
 
+    @GetMapping("/list/{id}")
+    public ResponseEntity<Item> getItemById(@PathVariable("id") Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.getItemById(id));
+    }
+
    @GetMapping("/category")
     public ResponseEntity<List<Category>> getCategories(){
       return ResponseEntity.status(HttpStatus.OK).body(Arrays.stream(Category.values()).toList());

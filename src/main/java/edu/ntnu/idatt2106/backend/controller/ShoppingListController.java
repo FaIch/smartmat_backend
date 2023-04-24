@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.service.ItemService;
 import edu.ntnu.idatt2106.backend.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ import java.util.List;
 public class ShoppingListController {
 
     private final ShoppingListService shoppingListService;
+    private final ItemService itemService;
 
     @Autowired
-    public ShoppingListController(ShoppingListService shoppingListService) {
+    public ShoppingListController(ShoppingListService shoppingListService, ItemService itemService) {
         this.shoppingListService = shoppingListService;
+        this.itemService = itemService;
     }
     @GetMapping("/user/shopping-list-items")
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(@AuthenticationPrincipal User user) {
@@ -28,8 +31,8 @@ public class ShoppingListController {
     }
 
     @PostMapping("/shopping-list/add")
-    public ResponseEntity<String> addShoppingListItem(@RequestBody ShoppingListItem shoppingListItem, @AuthenticationPrincipal User user) {
-        return shoppingListService.addShoppingListItem(user.getId(), shoppingListItem);
+    public ResponseEntity<String> addShoppingListItem(@RequestParam int id, @RequestParam("quantity") int quantity,  @AuthenticationPrincipal User user) {
+        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(quantity, itemService.getItemById((long) id)));
     }
 
     @DeleteMapping("/shopping-list-items/{shoppingListItemId}")
