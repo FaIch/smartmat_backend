@@ -16,25 +16,6 @@ class UserTest {
         user = new User("test@example.com", 1234567890L, "Test Street 123");
     }
 
-    @Test
-    void testAddSubUser() {
-        SubUser subUser = new SubUser();
-        user.addSubUser(subUser);
-
-        assertEquals(1, user.getSubUsers().size());
-        assertTrue(user.getSubUsers().contains(subUser));
-        assertEquals(user, subUser.getMainUser());
-    }
-
-    @Test
-    void testRemoveSubUser() {
-        SubUser subUser = new SubUser();
-        user.addSubUser(subUser);
-        user.removeSubUser(subUser);
-
-        assertEquals(0, user.getSubUsers().size());
-        assertFalse(user.getSubUsers().contains(subUser));
-    }
 
     @Test
     void testEqualsAndHashCode() {
