@@ -1,6 +1,7 @@
-package edu.ntnu.idatt2106.backend.user;
+package edu.ntnu.idatt2106.backend.Integration.user;
 
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
+import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import java.util.Map;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserIntegrationTest {
+public class UserIT {
 
     @LocalServerPort
     public int port;
@@ -28,6 +29,9 @@ public class UserIntegrationTest {
 
     @Autowired
     public UserRepository userRepository;
+
+    @Autowired
+    public SubUserRepository subUserRepository;
 
     private String token;
     private HttpHeaders headers;
@@ -44,6 +48,7 @@ public class UserIntegrationTest {
 
     @AfterEach
     public void clearDatabase() {
+        subUserRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -52,7 +57,7 @@ public class UserIntegrationTest {
     public void testCreateUser() {
         userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user",
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user-without-child",
                 request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -64,14 +69,14 @@ public class UserIntegrationTest {
     public void testCreateDuplicateUser() {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("User created", response.getBody());
 
 
         UserRequest duplicateUserRequest = new UserRequest("testnewuser@test.com", "testPassword2");
         HttpEntity<UserRequest> duplicateRequest = new HttpEntity<>(duplicateUserRequest, headers);
-        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(baseURL + "/user", duplicateRequest, String.class);
+        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(baseURL + "/user-without-child", duplicateRequest, String.class);
         assertEquals(HttpStatus.CONFLICT, duplicateResponse.getStatusCode());
         assertEquals("User with given email already exists", duplicateResponse.getBody());
     }
@@ -81,7 +86,7 @@ public class UserIntegrationTest {
     public void testLogin() throws IOException {
         userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
         String responseBody = response.getBody();
@@ -97,7 +102,7 @@ public class UserIntegrationTest {
     @DisplayName("Test that logging in with a non-existent email returns a HTTP Unauthorized status")
     public void testLoginWithNonExistentEmail() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         UserRequest invalidUserRequest = new UserRequest("nonexistentuser@test.com", "testPassword");
         HttpEntity<UserRequest> invalidRequest = new HttpEntity<>(invalidUserRequest, headers);
@@ -113,7 +118,7 @@ public class UserIntegrationTest {
     @DisplayName("Test that logging in with a wrong password returns a HTTP Unauthorized status")
     public void testLoginWithWrongPassword() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         UserRequest invalidUserRequest = new UserRequest("testnewuser@test.com", "wrongPassword");
         HttpEntity<UserRequest> invalidRequest = new HttpEntity<>(invalidUserRequest, headers);
@@ -129,22 +134,23 @@ public class UserIntegrationTest {
     @DisplayName("Test that getting subusers returns the subusers of the logged in user")
     public void testGetSubusers() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
-        Map<String, Object> responseMap = new ObjectMapper()
-                .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
-        Map<String, Object> userRequestMap = (Map<String, Object>) responseMap.get("userRequest");
+        String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTAccessToken="))
+                .findFirst().get().substring("JWTAccessToken=".length());
 
-        token = (String) userRequestMap.get("password");
-        System.out.println(token);
+        String jwtRefreshToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTRefreshToken="))
+                .findFirst().get().substring("JWTRefreshToken=".length());
 
         HttpHeaders authHeaders = new HttpHeaders();
-        authHeaders.setBearerAuth(token);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
         HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
-
 
         ResponseEntity<String> subUsersResponse = restTemplate.exchange(baseURL + "/user/getSubUsers",
                 HttpMethod.GET, authRequest, String.class);
