@@ -1,13 +1,10 @@
-package edu.ntnu.idatt2106.backend.fridge;
+package edu.ntnu.idatt2106.backend.Integration.fridge;
 
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
-import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
-import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
-import edu.ntnu.idatt2106.backend.repository.ItemRepository;
-import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FridgeIntegrationTest {
+public class FridgeIT {
 
     @LocalServerPort
     public int port;
@@ -42,6 +39,9 @@ public class FridgeIntegrationTest {
 
     @Autowired
     public UserRepository userRepository;
+
+    @Autowired
+    public SubUserRepository subUserRepository;
 
     @Autowired
     public ItemRepository itemRepository;
@@ -67,25 +67,31 @@ public class FridgeIntegrationTest {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
-        Map<String, Object> responseMap = new ObjectMapper()
-                .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
-        Map<String, Object> userRequestMap = (Map<String, Object>) responseMap.get("userRequest");
+        String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTAccessToken="))
+                .findFirst().get().substring("JWTAccessToken=".length());
+
+        String jwtRefreshToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTRefreshToken="))
+                .findFirst().get().substring("JWTRefreshToken=".length());
 
         authHeaders = new HttpHeaders();
-        authHeaders.setBearerAuth((String) userRequestMap.get("password"));
+        authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
         authRequest = new HttpEntity<>(authHeaders);
     }
 
     @AfterEach
     public void clearDatabase() {
-        userRepository.deleteAll();
-        fridgeRepository.deleteAll();
         fridgeItemRepository.deleteAll();
+        fridgeRepository.deleteAll();
+        subUserRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

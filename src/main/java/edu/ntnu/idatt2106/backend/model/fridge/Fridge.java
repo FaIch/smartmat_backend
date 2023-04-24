@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -32,5 +33,18 @@ public class Fridge {
 
     public void removeFridgeItem(FridgeItem fridgeItem) {
         fridgeItem.setFridge(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Fridge fridge = (Fridge) o;
+        return Objects.equals(id, fridge.id) && Objects.equals(user, fridge.user) && Objects.equals(fridgeItems, fridge.fridgeItems);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, user);
     }
 }
