@@ -37,7 +37,8 @@ public class JWTRequestFilter extends OncePerRequestFilter {
   private final UserRepository userRepository;
   private static final List<RequestMatcher> PUBLIC_URLS = Arrays.asList(
           new AntPathRequestMatcher("/login"),
-          new AntPathRequestMatcher("/user"),
+          new AntPathRequestMatcher("/user-without-child"),
+          new AntPathRequestMatcher("/user-with-child"),
           new AntPathRequestMatcher("/auth/refreshToken"),
           new AntPathRequestMatcher("/swagger-ui/**"),
           new AntPathRequestMatcher("/v3/api-docs/**")

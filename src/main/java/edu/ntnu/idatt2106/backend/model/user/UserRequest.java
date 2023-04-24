@@ -16,12 +16,16 @@ public class UserRequest {
     private Long phoneNumber;
     private String address;
     private String password;
+    private int passcode;
 
-    public UserRequest(String email, Long phoneNumber, String address) {
+    public UserRequest(String email, Long phoneNumber, String address, int passcode) {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.passcode = passcode;
     }
+
+
 
     public UserRequest(String email, String token){
         this.email = email;

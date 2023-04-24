@@ -62,7 +62,7 @@ public class WasteIT {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
 

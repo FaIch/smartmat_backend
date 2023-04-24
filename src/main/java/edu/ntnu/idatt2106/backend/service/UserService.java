@@ -70,7 +70,7 @@ public class UserService {
      * @param userRequest the details of the user to be created.
      * @return a ResponseEntity with the status code and response body indicating whether the operation was successful.
      */
-    public ResponseEntity<String> createUser(UserRequest userRequest) {
+    public ResponseEntity<String> createUserWithoutChild(UserRequest userRequest) {
         // Checks if the user already exists in the repository
 
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
@@ -88,12 +88,45 @@ public class UserService {
         byte[] hashedPassword = hashPassword(userRequest.getPassword(), salt);
         user.setPassword(hashedPassword);
 
-        SubUser subUser = new SubUser("Your User", Role.PARENT);
+        SubUser subUser = new SubUser("Your User", Role.PARENT, userRequest.getPasscode());
         Fridge fridge = new Fridge();
         fridge.setUser(user);
         user.setFridge(fridge);
         subUser.setMainUser(userRepository.save(user));
         subUserRepository.save(subUser);
+        return ResponseEntity.ok("User created");
+    }
+
+    public ResponseEntity<String> createUserWithChild(UserRequest userRequest) {
+        // Checks if the user already exists in the repository
+        Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
+        if (existingUser.isPresent()) {
+            String response = "User with given email already exists";
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        // Generates a salt and hashes the user's password before saving the user to the repository
+        User user = new User(userRequest.getEmail());
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        user.setSalt(salt);
+        byte[] hashedPassword = hashPassword(userRequest.getPassword(), salt);
+        user.setPassword(hashedPassword);
+
+        SubUser parentSubUser = new SubUser("Parent", Role.PARENT, userRequest.getPasscode());
+        SubUser childSubUser = new SubUser("Child", Role.CHILD);
+        Fridge fridge = new Fridge();
+
+        fridge.setUser(user);
+        user.setFridge(fridge);
+        User createdUser = userRepository.save(user);
+        parentSubUser.setMainUser(createdUser);
+        childSubUser.setMainUser(createdUser);
+
+        subUserRepository.save(parentSubUser);
+        subUserRepository.save(childSubUser);
+
         return ResponseEntity.ok("User created");
     }
 

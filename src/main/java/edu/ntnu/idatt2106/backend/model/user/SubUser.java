@@ -27,9 +27,18 @@ public class SubUser implements Serializable {
 
     private Role role;
 
+    @Column(length = 4)
+    private int passcode;
+
     public SubUser(String nickname, Role role) {
         this.nickname = nickname;
         this.role = role;
+    }
+
+    public SubUser(String nickname, Role role, int passcode) {
+        this.nickname = nickname;
+        this.role = role;
+        this.passcode = passcode;
     }
 
 }
