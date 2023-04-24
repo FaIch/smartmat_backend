@@ -57,7 +57,7 @@ public class UserIT {
     public void testCreateUser() {
         userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user",
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user-without-child",
                 request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -69,14 +69,14 @@ public class UserIT {
     public void testCreateDuplicateUser() {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("User created", response.getBody());
 
 
         UserRequest duplicateUserRequest = new UserRequest("testnewuser@test.com", "testPassword2");
         HttpEntity<UserRequest> duplicateRequest = new HttpEntity<>(duplicateUserRequest, headers);
-        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(baseURL + "/user", duplicateRequest, String.class);
+        ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(baseURL + "/user-without-child", duplicateRequest, String.class);
         assertEquals(HttpStatus.CONFLICT, duplicateResponse.getStatusCode());
         assertEquals("User with given email already exists", duplicateResponse.getBody());
     }
@@ -86,7 +86,7 @@ public class UserIT {
     public void testLogin() throws IOException {
         userRequest = new UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
         String responseBody = response.getBody();
@@ -102,7 +102,7 @@ public class UserIT {
     @DisplayName("Test that logging in with a non-existent email returns a HTTP Unauthorized status")
     public void testLoginWithNonExistentEmail() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         UserRequest invalidUserRequest = new UserRequest("nonexistentuser@test.com", "testPassword");
         HttpEntity<UserRequest> invalidRequest = new HttpEntity<>(invalidUserRequest, headers);
@@ -118,7 +118,7 @@ public class UserIT {
     @DisplayName("Test that logging in with a wrong password returns a HTTP Unauthorized status")
     public void testLoginWithWrongPassword() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         UserRequest invalidUserRequest = new UserRequest("testnewuser@test.com", "wrongPassword");
         HttpEntity<UserRequest> invalidRequest = new HttpEntity<>(invalidUserRequest, headers);
@@ -134,7 +134,7 @@ public class UserIT {
     @DisplayName("Test that getting subusers returns the subusers of the logged in user")
     public void testGetSubusers() throws IOException {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
         Map<String, Object> responseMap = new ObjectMapper()

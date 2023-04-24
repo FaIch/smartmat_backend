@@ -35,9 +35,14 @@ public class UserController {
      * @param userRequest email, phone number, address, role and password for the user being saved
      * @return the saved user
      */
-    @PostMapping("/user")
-    public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
-        return service.createUser(userRequest);
+    @PostMapping("/user-without-child")
+    public ResponseEntity<String> createUserWithoutChild(@RequestBody UserRequest userRequest) {
+        return service.createUserWithoutChild(userRequest);
+    }
+
+    @PostMapping("/user-with-child")
+    public ResponseEntity<String> createUserWithChild(@RequestBody UserRequest userRequest) {
+        return service.createUserWithChild(userRequest);
     }
 
     /**

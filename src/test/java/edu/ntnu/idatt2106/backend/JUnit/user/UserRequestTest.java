@@ -9,9 +9,9 @@ class UserRequestTest {
 
     @Test
     void testEqualsAndHashCode() {
-        UserRequest userRequest1 = new UserRequest("test@example.com", 123456789L, "Test Address", "password123");
-        UserRequest userRequest2 = new UserRequest("test@example.com", 123456789L, "Test Address", "password123");
-        UserRequest userRequest3 = new UserRequest("test2@example.com", 987654321L, "Test Address 2", "password456");
+        UserRequest userRequest1 = new UserRequest("test@example.com", 123456789L, "Test Address", "password123", 1234);
+        UserRequest userRequest2 = new UserRequest("test@example.com", 123456789L, "Test Address", "password123", 1234);
+        UserRequest userRequest3 = new UserRequest("test2@example.com", 987654321L, "Test Address 2", "password456", 4321);
 
         assertEquals(userRequest1, userRequest2);
         assertEquals(userRequest1.hashCode(), userRequest2.hashCode());
@@ -22,11 +22,12 @@ class UserRequestTest {
 
     @Test
     void testAllArgsConstructor() {
-        UserRequest userRequest = new UserRequest("test@example.com", 123456789L, "Test Address", "password123");
+        UserRequest userRequest = new UserRequest("test@example.com", 123456789L, "Test Address", "password123", 1234);
 
         assertEquals("test@example.com", userRequest.getEmail());
         assertEquals(123456789L, userRequest.getPhoneNumber());
         assertEquals("Test Address", userRequest.getAddress());
         assertEquals("password123", userRequest.getPassword());
+        assertEquals(1234, userRequest.getPasscode());
     }
 }

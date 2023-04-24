@@ -37,7 +37,7 @@ public class WebSecurityConfig {
         http.addFilterBefore(jwtRequestFilter, AuthorizationFilter.class);
         http.authorizeHttpRequests()
                 .requestMatchers("/login").permitAll()
-                .requestMatchers("/user").permitAll()
+                .requestMatchers("/user-without-child", "/user-with-child").permitAll()
                 .requestMatchers("/items/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
