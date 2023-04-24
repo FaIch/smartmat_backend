@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.ShoppingListItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ShoppingListRepository;

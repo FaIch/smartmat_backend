@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.controller;
 
 
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
 import edu.ntnu.idatt2106.backend.service.ShoppingListService;
@@ -26,13 +27,13 @@ public class ShoppingListController {
     }
     @GetMapping("/user/shopping-list-items")
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(@AuthenticationPrincipal User user) {
-        ResponseEntity<List<ShoppingListItem>> responseEntity = shoppingListService.getShoppingListItemsByUserId(user.getId());
-        return responseEntity;
+        return shoppingListService.getShoppingListItemsByUserId(user.getId());
     }
 
     @PostMapping("/shopping-list/add")
-    public ResponseEntity<String> addShoppingListItem(@RequestParam int id, @RequestParam("quantity") int quantity,  @AuthenticationPrincipal User user) {
-        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(quantity, itemService.getItemById((long) id)));
+    public ResponseEntity<String> addShoppingListItem(@RequestBody ShoppingListItemRequest request, @AuthenticationPrincipal User user) {
+        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(request.getQuantity(),
+                itemService.getItemById(request.getItemId())));
     }
 
     @DeleteMapping("/shopping-list-items/{shoppingListItemId}")
