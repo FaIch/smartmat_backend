@@ -40,7 +40,7 @@ public class Fridge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Fridge fridge = (Fridge) o;
-        return Objects.equals(id, fridge.id) && Objects.equals(user, fridge.user) && Objects.equals(fridgeItems, fridge.fridgeItems);
+        return Objects.equals(id, fridge.id) && Objects.equals(user, fridge.user);
     }
 
     @Override
