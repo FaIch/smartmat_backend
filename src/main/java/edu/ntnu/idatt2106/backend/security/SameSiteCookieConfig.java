@@ -13,7 +13,7 @@ public class SameSiteCookieConfig {
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setSameSite("lax");
+        serializer.setSameSite("Strict");
         return serializer;
     }
     @Bean

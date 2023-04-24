@@ -72,6 +72,7 @@ public class UserService {
      */
     public ResponseEntity<String> createUser(UserRequest userRequest) {
         // Checks if the user already exists in the repository
+
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
             String response = "User with given email already exists";
@@ -219,14 +220,14 @@ public class UserService {
 
         String refreshToken = jwtService.generateRefreshToken(user);
         Cookie jwtRefreshCookie = jwtService.generateJWTRefreshCookie(refreshToken);
-        addCookieWithSameSiteAttribute(httpServletResponse, jwtRefreshCookie, "None", false);
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtRefreshCookie, "Strict", false);
     }
 
     private void createAccessToken(User user, HttpServletResponse httpServletResponse) {
         String accessToken = jwtService.generateAccessToken(user);
         Cookie jwtAccessToken = jwtService.generateJWTAccessCookie(accessToken);
 
-        addCookieWithSameSiteAttribute(httpServletResponse, jwtAccessToken, "Lax", false);
+        addCookieWithSameSiteAttribute(httpServletResponse, jwtAccessToken, "Strict", false);
     }
 
     public static void addCookieWithSameSiteAttribute(HttpServletResponse response, Cookie cookie, String sameSite,

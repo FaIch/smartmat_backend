@@ -66,6 +66,7 @@ public class JWTService {
     jwtAccessCookie.setHttpOnly(true);
     jwtAccessCookie.setPath("/");
     jwtAccessCookie.setMaxAge(accessTokenExpiryInSeconds);
+
     return jwtAccessCookie;
   }
 
