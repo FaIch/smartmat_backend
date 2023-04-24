@@ -9,6 +9,7 @@ public class SubUserRequest {
     private final String userEmail;
     private final String nickname;
     private Role role;
+    private int passcode;
 
     public SubUserRequest(String userEmail, String nickname){
         this.userEmail = userEmail;
