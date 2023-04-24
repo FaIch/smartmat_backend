@@ -22,6 +22,8 @@ public class Recipe {
 
     private String description;
 
+    private int numberOfItems;
+
     @JsonIgnore
     @OneToMany(mappedBy = "recipe")
     private List<RecipeItem> recipeItems;

@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,35 +48,6 @@ public class RecipeService {
         return recipes;
     }
 
-  /*  public List<Recipe> getAllRecipesSortedByFridgeItems() {
-        return recipeRepository.findAllByFridgeItems();
-    }*/
-/*
-    public List<Recipe> getRecipesSortedByFridgeItemsDate() {
-        List<Recipe> recipes = recipeRepository.findAll();
-        List<RecipeFridgeItem> recipeFridgeItems = new ArrayList<>();
 
-        for (Recipe recipe : recipes) {
-            RecipeFridgeItem recipeFridgeItem = new RecipeFridgeItem(recipe, 0);
-            Set<Item> items = new HashSet<>();
-            for (RecipeItem recipeItem : recipe.getRecipeItems()) {
-                Item item = recipeItem.getItem();
-                FridgeItem fridgeItem = item.getFridgeItem();
-                if (fridgeItem != null) {
-                    items.add(item);
-                }
-            }
-            for (Item item : items) {
-                FridgeItem fridgeItem = item.getFridgeItem();
-                if (fridgeItem != null && fridgeItem.getExpirationDate().isAfter(LocalDate.now())) {
-                    recipeFridgeItem.incrementItemCount();
-                }
-            }
-            recipeFridgeItems.add(recipeFridgeItem);
-        }
 
-        Collections.sort(recipeFridgeItems, Comparator.comparingInt(RecipeFridgeItem::getItemCount).reversed());
-
-        return recipeFridgeItems.stream().map(RecipeFridgeItem::getRecipe).collect(Collectors.toList());
-    }*/
 }

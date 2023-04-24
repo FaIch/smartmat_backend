@@ -129,12 +129,13 @@ public class BackendApplication {
             String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
             Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
 
-            String sql = " insert into recipe (name, description )"
-                    + " values (?, ?)";
+            String sql = " insert into recipe (name, description, number_of_items )"
+                    + " values (?, ?, ?)";
 
             PreparedStatement preparedStmtRecipeSteakPotatoes = conn.prepareStatement(sql);
             preparedStmtRecipeSteakPotatoes.setString(1, "Steak and Potatoes");
             preparedStmtRecipeSteakPotatoes.setString(2, "What to do");
+            preparedStmtRecipeSteakPotatoes.setInt(3,2);
 
             preparedStmtRecipeSteakPotatoes.execute();
 
@@ -142,6 +143,7 @@ public class BackendApplication {
             PreparedStatement preparedStmtRecipePastaSalmon = conn.prepareStatement(sql);
             preparedStmtRecipePastaSalmon.setString(1, "Pasta and Salmon");
             preparedStmtRecipePastaSalmon.setString(2, "What to do");
+            preparedStmtRecipePastaSalmon.setInt(3,2);
 
             preparedStmtRecipePastaSalmon.execute();
 
