@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
+import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.FridgeService;
 import edu.ntnu.idatt2106.backend.service.ItemService;
@@ -37,12 +38,24 @@ public class FridgeController {
         return fridgeService.addFridgeItem(user.getId(), new FridgeItem(quantity,LocalDate.parse(expirationDate),itemService.getItemById(itemId)));
     }
 
+    @PostMapping("/fridge/add-list")
+    public ResponseEntity<String> addFridgeItems(@RequestBody List<FridgeItemRequest> fridgeItemRequests,
+                                                 @AuthenticationPrincipal User user) {
+        return fridgeService.addListOfFridgeItems(user,
+                fridgeService.convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests));
+    }
+
     @DeleteMapping("/fridge-items/{fridgeItemId}")
     public ResponseEntity<String> removeFridgeItem(@PathVariable Long fridgeItemId) {
         return fridgeService.removeFridgeItem(fridgeItemId);
     }
 
-    @PutMapping("/fridge-items/editFridgeItem/{fridgeItemId}")
+    @DeleteMapping("/fridge-items/remove-list")
+    public ResponseEntity<String> removeFridgeItems(@RequestBody List<Long> fridgeItemIds) {
+        return fridgeService.removeListOfFridgeItems(fridgeItemIds);
+    }
+
+    @PutMapping("/fridge-items/edit/{fridgeItemId}")
     public ResponseEntity<String> editFridgeItem(@PathVariable Long fridgeItemId
             , @RequestBody FridgeItem updatedFridgeItem) {
         return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem);
@@ -50,7 +63,7 @@ public class FridgeController {
 
     //Not tested!!!
     @GetMapping("fridge-items/list/date")
-    public ResponseEntity<List<FridgeItem>>  getItemsByDate(){
+    public ResponseEntity<List<FridgeItem>> getItemsByDate(){
         return fridgeService.expirationDate();
     }
 }

@@ -1,6 +1,7 @@
-package edu.ntnu.idatt2106.backend.model.fridge;
+package edu.ntnu.idatt2106.backend.model.shoppinglist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FridgeItem {
+@Table(name = "shopping_list_item")
+public class ShoppingListItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,26 +23,17 @@ public class FridgeItem {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fridge_id")
-    private Fridge fridge;
+    @JoinColumn(name = "shopping_list_id")
+    private ShoppingList shoppingList;
 
     private int quantity;
-
-    @Column(name = "expiration_date")
-    private LocalDate expirationDate;
 
     @OneToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
-    public FridgeItem(int quantity, LocalDate expirationDate, Item itemById) {
+    public ShoppingListItem(int quantity, Item item) {
         this.quantity = quantity;
-        this.expirationDate = expirationDate;
-        this.item = itemById;
-    }
-
-    @Override
-    public String toString(){
-        return "";
+        this.item = item;
     }
 }
