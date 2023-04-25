@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.Integration.fridge;
 
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
+import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
@@ -114,12 +115,13 @@ public class FridgeIT {
         item.setImage(null);
         item = itemRepository.save(item);
 
-        MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("quantity", String.valueOf(2));
-        paramMap.add("expirationDate", String.valueOf(LocalDate.now().plusDays(10)));
-        paramMap.add("itemId", String.valueOf(item.getId()));
+        FridgeItemRequest fridgeItemRequest = new FridgeItemRequest(
+                item.getId(),
+                2,
+                LocalDate.now().plusDays(10)
+        );
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(paramMap, authHeaders);
+        HttpEntity<FridgeItemRequest> request = new HttpEntity<>(fridgeItemRequest, authHeaders);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/fridge/add", request
                 , String.class);

@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.waste.Waste;
 import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.service.WasteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,8 @@ public class WasteController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Waste> addWasteEntry(@AuthenticationPrincipal User user, @RequestParam String weight,
-                                              @RequestParam String entryDate) {
-        LocalDate date = LocalDate.parse(entryDate);
-        return wasteService.addWasteEntry(user, Integer.parseInt(weight), date);
+    public ResponseEntity<Waste> addWasteEntry(@AuthenticationPrincipal User user, @RequestBody WasteRequest wasteRequest) {
+        return wasteService.addWasteEntry(user, wasteRequest);
     }
 
     @GetMapping("/total")

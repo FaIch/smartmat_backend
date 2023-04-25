@@ -33,7 +33,7 @@ public class FridgeService {
      * @param userRepository       the UserRepository
      * @param fridgeRepository     the FridgeRepository
      * @param fridgeItemRepository the FridgeItemRepository
-     * @param itemService
+     * @param itemService          the ItemService
      */
     @Autowired
     public FridgeService(UserRepository userRepository, FridgeRepository fridgeRepository
@@ -47,16 +47,11 @@ public class FridgeService {
     /**
      * Gets a list of fridge items belonging to a specific user.
      *
-     * @param userId the ID of the user
+     * @param user the user whose fridge items are to be retrieved
      * @return a ResponseEntity containing the list of fridge items if the user is found, or a NOT_FOUND status
      * code if the user is not found
      */
-    public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        User user = userOptional.get();
+    public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(User user) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -66,22 +61,12 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
-    /**
-     * Adds a new fridge item to a specific fridge.
-     *
-     * @param fridgeItem the new fridge item to be added
-     * @return a ResponseEntity containing a "Fridge item added" message if the fridge is found and the item is
-     * added successfully, or a NOT_FOUND status code if the fridge is not found
-     */
-    public ResponseEntity<String> addFridgeItem(Long userId, FridgeItem fridgeItem) {
-        //tar inn parameter på item id, finner it by id, legge til i fridgeitem, sette fridgeitem id til item vi finner 
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(userOptional.get());
+
+    public ResponseEntity<String> addFridgeItem(User user, FridgeItemRequest fridgeItemRequest) {
+        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isPresent()) {
             Fridge fridge = fridgeOptional.get();
+            FridgeItem fridgeItem = convertFridgeItemRequestToFridgeItem(fridgeItemRequest);
             fridgeItem.setFridge(fridge);
             fridgeItemRepository.save(fridgeItem);
             return ResponseEntity.status(HttpStatus.OK).body("Fridge item added");
@@ -89,8 +74,9 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge not found");
     }
 
-    public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItem> fridgeItems) {
+    public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItemRequest> fridgeItemRequests) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
+        List<FridgeItem> fridgeItems = convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests);
         if (fridgeOptional.isPresent()) {
             Fridge fridge = fridgeOptional.get();
             for (FridgeItem fridgeItem : fridgeItems) {
@@ -137,7 +123,7 @@ public class FridgeService {
      * @return a ResponseEntity containing a "Fridge item quantity updated" message if the item is found and updated
      * successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<String> updateFridgeItemQuantity(Long fridgeItemId, FridgeItem updatedFridgeItem) {
+    public ResponseEntity<String> updateFridgeItemQuantity(Long fridgeItemId, FridgeItemRequest updatedFridgeItem) {
         Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
         if (fridgeItemOptional.isPresent()) {
             FridgeItem existingFridgeItem = fridgeItemOptional.get();
@@ -156,7 +142,7 @@ public class FridgeService {
      * @return a ResponseEntity containing a "Fridge item expiration date updated" message if the item is found and
      * updated successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<String> updateFridgeItemExpirationDate(Long fridgeItemId, FridgeItem updatedFridgeItem) {
+    public ResponseEntity<String> updateFridgeItemExpirationDate(Long fridgeItemId, FridgeItemRequest updatedFridgeItem) {
         Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
         if (fridgeItemOptional.isPresent()) {
             FridgeItem existingFridgeItem = fridgeItemOptional.get();
@@ -173,7 +159,7 @@ public class FridgeService {
     }
 
 
-    public FridgeItem convertFridgeItemRequestToFridgeItem(FridgeItemRequest fridgeItemRequest) {
+    private FridgeItem convertFridgeItemRequestToFridgeItem(FridgeItemRequest fridgeItemRequest) {
         FridgeItem fridgeItem = new FridgeItem();
         fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
         fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
@@ -181,7 +167,7 @@ public class FridgeService {
         return fridgeItem;
     }
 
-    public List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
+    private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
         List<FridgeItem> fridgeItems = new ArrayList<>();
         for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
             fridgeItems.add(convertFridgeItemRequestToFridgeItem(fridgeItemRequest));

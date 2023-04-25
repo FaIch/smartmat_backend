@@ -34,7 +34,6 @@ public class UserIT {
     @Autowired
     public SubUserRepository subUserRepository;
 
-    private String token;
     private HttpHeaders headers;
     private String baseURL;
     private UserRequest userRequest;
@@ -108,7 +107,6 @@ public class UserIT {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Login successful", responseMap.get("message"));
-        token = (String) responseMap.get("token");
     }
 
     @Test
