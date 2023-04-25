@@ -19,30 +19,26 @@ import java.util.List;
 public class FridgeController {
 
     private final FridgeService fridgeService;
-    private final ItemService itemService;
 
     @Autowired
-    public FridgeController(FridgeService fridgeService, ItemService itemService) {
+    public FridgeController(FridgeService fridgeService) {
         this.fridgeService = fridgeService;
-        this.itemService = itemService;
     }
 
     @GetMapping("/user/fridge-items")
     public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(@AuthenticationPrincipal User user) {
-        return fridgeService.getFridgeItemsByUserId(user.getId());
+        return fridgeService.getFridgeItemsByUserId(user);
     }
 
     @PostMapping("/fridge/add")
-    public ResponseEntity<String> addFridgeItem(@RequestParam("quantity") int quantity, @RequestParam("expirationDate")String expirationDate,
-                                                @RequestParam long itemId, @AuthenticationPrincipal User user) {
-        return fridgeService.addFridgeItem(user.getId(), new FridgeItem(quantity,LocalDate.parse(expirationDate),itemService.getItemById(itemId)));
+    public ResponseEntity<String> addFridgeItem(@RequestBody FridgeItemRequest fridgeItemRequest, @AuthenticationPrincipal User user) {
+        return fridgeService.addFridgeItem(user, fridgeItemRequest);
     }
 
     @PostMapping("/fridge/add-list")
     public ResponseEntity<String> addFridgeItems(@RequestBody List<FridgeItemRequest> fridgeItemRequests,
                                                  @AuthenticationPrincipal User user) {
-        return fridgeService.addListOfFridgeItems(user,
-                fridgeService.convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests));
+        return fridgeService.addListOfFridgeItems(user, fridgeItemRequests);
     }
 
     @DeleteMapping("/fridge-items/{fridgeItemId}")
@@ -57,13 +53,13 @@ public class FridgeController {
 
     @PutMapping("/fridge-items/editQuantity/{fridgeItemId}")
     public ResponseEntity<String> updateFridgeItemQuantity(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItem updatedFridgeItem) {
+            , @RequestBody FridgeItemRequest updatedFridgeItem) {
         return fridgeService.updateFridgeItemQuantity(fridgeItemId, updatedFridgeItem);
     }
 
     @PutMapping("/fridge-items/editExpirationDate/{fridgeItemId}")
     public ResponseEntity<String> updateFridgeItemExpirationDate(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItem updatedFridgeItem) {
+            , @RequestBody FridgeItemRequest updatedFridgeItem) {
         return fridgeService.updateFridgeItemExpirationDate(fridgeItemId, updatedFridgeItem);
     }
 

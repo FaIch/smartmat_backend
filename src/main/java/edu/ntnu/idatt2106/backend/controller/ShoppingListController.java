@@ -18,21 +18,19 @@ import java.util.List;
 public class ShoppingListController {
 
     private final ShoppingListService shoppingListService;
-    private final ItemService itemService;
 
     @Autowired
-    public ShoppingListController(ShoppingListService shoppingListService, ItemService itemService) {
+    public ShoppingListController(ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
-        this.itemService = itemService;
     }
     @GetMapping("/user/shopping-list-items")
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(@AuthenticationPrincipal User user) {
-        return shoppingListService.getShoppingListItemsByUserId(user.getId());
+        return shoppingListService.getShoppingListItemsByUserId(user);
     }
 
     @PostMapping("/shopping-list/add")
     public ResponseEntity<String> addShoppingListItem(@RequestBody ShoppingListItemRequest request, @AuthenticationPrincipal User user) {
-        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(request.getQuantity(), itemService.getItemById(request.getItemId())));
+        return shoppingListService.addShoppingListItem(user, request);
     }
 
     @PostMapping("/shopping-list/add-list")
@@ -42,9 +40,9 @@ public class ShoppingListController {
         return shoppingListService.addListOfShoppingListItems(user, shoppingListItems);
     }
 
-    @DeleteMapping("/shopping-list-items/{shoppingListItemId}")
-    public ResponseEntity<String> removeShoppingListItem(@PathVariable Long shoppingListItemId, @AuthenticationPrincipal User user) {
-        return shoppingListService.removeShoppingListItem(user.getId(), shoppingListItemId);
+    @DeleteMapping("/shopping-list-items/")
+    public ResponseEntity<String> removeShoppingListItem(@RequestParam Long shoppingListItemId, @AuthenticationPrincipal User user) {
+        return shoppingListService.removeShoppingListItem(user, shoppingListItemId);
     }
 
     @DeleteMapping("/shopping-list-items/delete-list")
@@ -53,9 +51,9 @@ public class ShoppingListController {
         return shoppingListService.removeListOfShoppingListItems(user, shoppingListItemIds);
     }
 
-    @PutMapping("/shopping-list-items/editQuantity/{shoppingListItemId}")
-    public ResponseEntity<String> updateShoppingListItemQuantity(@PathVariable Long shoppingListItemId
-            , @RequestBody int updatedShoppingListItemQuantity) {
+    @PutMapping("/shopping-list-items/editQuantity/")
+    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestParam Long shoppingListItemId
+            , @RequestParam int updatedShoppingListItemQuantity) {
         return shoppingListService.updateShoppingListItemQuantity(shoppingListItemId, updatedShoppingListItemQuantity);
     }
 }

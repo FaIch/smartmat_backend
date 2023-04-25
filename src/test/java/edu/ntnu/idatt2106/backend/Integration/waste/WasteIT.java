@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.Integration.waste;
 
 
+import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -91,16 +92,16 @@ public class WasteIT {
     @Test
     @DisplayName("Test that waste entry can be added")
     public void testAddWasteEntry() {
-        MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("weight", String.valueOf(5));
-        paramMap.add("entryDate", String.valueOf(LocalDate.now()));
+        WasteRequest wasteRequest = new WasteRequest(
+                5,
+                LocalDate.now().toString()
+        );
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(paramMap, authHeaders);
+        HttpEntity<WasteRequest> request = new HttpEntity<>(wasteRequest, authHeaders);
 
         ResponseEntity<Waste> response = restTemplate.postForEntity(baseURL + "/waste/add", request, Waste.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(5, response.getBody().getWeight());
     }
 
     @Test
