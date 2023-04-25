@@ -24,12 +24,14 @@ public class ShoppingListService {
     private final ShoppingListRepository shoppingListRepository;
 
     private final ShoppingListItemRepository shoppingListItemRepository;
+    private final ItemService itemService;
 
     @Autowired
-    public ShoppingListService(UserRepository userRepository, ShoppingListRepository shoppingListRepository, ShoppingListItemRepository shoppingListItemRepository) {
+    public ShoppingListService(UserRepository userRepository, ShoppingListRepository shoppingListRepository, ShoppingListItemRepository shoppingListItemRepository, ItemService itemService) {
         this.userRepository = userRepository;
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListItemRepository = shoppingListItemRepository;
+        this.itemService = itemService;
     }
 
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(Long userId) {
@@ -65,13 +67,14 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list item added");
     }
 
-    public ResponseEntity<String> addListOfShoppingListItems(User user, List<ShoppingListItem> shoppingListItems) {
+    public ResponseEntity<String> addListOfShoppingListItems(User user, List<ShoppingListItemRequest> shoppingListItems) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
         if (shoppingListOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
         }
         ShoppingList shoppingList = shoppingListOptional.get();
-        for (ShoppingListItem shoppingListItem : shoppingListItems) {
+        for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItems) {
+            ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(), itemService.getItemById(shoppingListItemRequest.getItemId()));
             shoppingListItem.setShoppingList(shoppingList);
             shoppingListItemRepository.save(shoppingListItem);
         }
