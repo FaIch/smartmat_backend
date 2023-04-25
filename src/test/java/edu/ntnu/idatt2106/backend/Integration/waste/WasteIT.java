@@ -63,9 +63,9 @@ public class WasteIT {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/login", request, String.class);
 
         String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
                 .filter(header -> header.startsWith("JWTAccessToken="))
@@ -96,12 +96,10 @@ public class WasteIT {
                 5,
                 LocalDate.now().toString()
         );
-
         HttpEntity<WasteRequest> request = new HttpEntity<>(wasteRequest, authHeaders);
-
-        ResponseEntity<Waste> response = restTemplate.postForEntity(baseURL + "/waste/add", request, Waste.class);
-
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/waste/add", request, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Waste was added successfully", response.getBody());
     }
 
     @Test

@@ -1,12 +1,10 @@
 package edu.ntnu.idatt2106.backend.model.shoppinglist;
 
-
 import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.backend.model.recipe;
 
-  public class RecipeWithFridgeCount implements Comparable<RecipeWithFridgeCount> {
+public class RecipeWithFridgeCount implements Comparable<RecipeWithFridgeCount> {
     private Recipe recipe;
     private int fridgeCount;
 

@@ -3,7 +3,6 @@ package edu.ntnu.idatt2106.backend.model.shoppinglist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Objects;
 
 @AllArgsConstructor

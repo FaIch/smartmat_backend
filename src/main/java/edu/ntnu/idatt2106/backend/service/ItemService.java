@@ -8,16 +8,10 @@ import edu.ntnu.idatt2106.backend.repository.CustomItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import java.sql.*;
-
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.time.LocalDate;
@@ -25,12 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-
-
 @Service
 public class ItemService {
-
-
 
     private final ItemRepository itemRepository;
     private final CustomItemRepository customItemRepository;

@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.service;
 
-
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
@@ -13,10 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +19,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -282,26 +276,6 @@ public class UserService {
 
         response.addHeader("Set-Cookie", cookieHeader);
     }
-
-    /**
-     * Generates a JWT token for the given user ID.
-     *
-     * @param userId the ID of the user for whom to generate the token.
-     * @return a String representing the JWT token.
-     */
-    public String generateToken(final String userId) {
-        final Instant now = Instant.now();
-        final Algorithm hmac512 = Algorithm.HMAC512(keyStr);
-        final JWTVerifier verifier = JWT.require(hmac512).build();
-        return JWT
-                .create()
-                .withSubject(userId)
-                .withIssuer("idatt2106_SmartFood_app")
-                .withIssuedAt(now)
-                .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
-                .sign(hmac512);
-    }
-
 
     public ResponseEntity<String> editPassword(User user, String oldPassword, String newPassword) {
         if (tryLogin(user.getEmail(), oldPassword)) {

@@ -8,7 +8,5 @@ public enum Category {
     CHEESE,
     CHICKEN,
     VEGETABLES,
-
-    DRYGOODS,
-
+    DRYGOODS
 }

@@ -1,14 +1,11 @@
 package edu.ntnu.idatt2106.backend.model.shoppinglist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity

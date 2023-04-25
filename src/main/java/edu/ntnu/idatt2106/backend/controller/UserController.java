@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
+@RequestMapping("/user")
 public class UserController {
     /**
      * The service class for users
@@ -37,12 +37,12 @@ public class UserController {
      * @param userRequest email, phone number, address, role and password for the user being saved
      * @return the saved user
      */
-    @PostMapping("/user-without-child")
+    @PostMapping("/create")
     public ResponseEntity<String> createUserWithoutChild(@RequestBody UserRequest userRequest) {
         return userService.createUserWithoutChild(userRequest);
     }
 
-    @PostMapping("/user-with-child")
+    @PostMapping("/create/child")
     public ResponseEntity<String> createUserWithChild(@RequestBody UserRequest userRequest) {
         return userService.createUserWithChild(userRequest);
     }
@@ -75,7 +75,7 @@ public class UserController {
      * @param phoneNumber The new phone number for the user.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PutMapping("/user/editPhoneNumber")
+    @PutMapping("/edit/phone")
     public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
         return userService.editPhoneNumber(user, phoneNumber);
     }
@@ -85,7 +85,7 @@ public class UserController {
      * @param address The new address for the user.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PutMapping("/user/editAddress")
+    @PutMapping("/edit/address")
     public ResponseEntity<String> editAddress(@RequestParam String address, @AuthenticationPrincipal User user){
         return userService.editAddress(user, address);
     }
@@ -96,7 +96,7 @@ public class UserController {
      * @param newPassword The user's new password.
      * @return A ResponseEntity containing a success or error message.
      */
-    @PutMapping("/user/editPassword")
+    @PutMapping("/edit/password")
     public ResponseEntity<String> editPassword(@RequestParam String oldPassword,
                                                @RequestParam String newPassword, @AuthenticationPrincipal User user){
         return userService.editPassword(user, oldPassword, newPassword);
@@ -109,7 +109,7 @@ public class UserController {
      * @return the newly created sub user
      * @throws IllegalArgumentException if the provided user details are incomplete or null
      */
-    @PostMapping("/user/subUser")
+    @PostMapping("/sub-user/create")
     public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
         return userService.createSubUser(user, subUserRequest);
@@ -120,7 +120,7 @@ public class UserController {
      * @param subUserRequest the user request containing the user's details
      * @return ResponseEntity containing a success or error message
      */
-    @PutMapping("/user/subUser/edit")
+    @PutMapping("/sub-user/edit")
     public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
         return userService.editSubUserName(user, subUserRequest);
@@ -131,7 +131,7 @@ public class UserController {
      * @param subUserRequest the user request containing the user's details
      * @return the deleted sub user
      */
-    @DeleteMapping("/user/subUser/delete")
+    @DeleteMapping("/sub-user/delete")
     public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
         return userService.deleteSubUser(user, subUserRequest);
@@ -142,7 +142,7 @@ public class UserController {
      * @param user the user to get sub users for
      * @return a list of sub users
      */
-    @GetMapping("/user/getSubUsers")
+    @GetMapping("/sub-user/get")
     public ResponseEntity<List<SubUser>> getSubUsers(@AuthenticationPrincipal User user) {
         return userService.getSubUsers(user);
     }

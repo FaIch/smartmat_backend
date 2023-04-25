@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.controller;
 
-import edu.ntnu.idatt2106.backend.model.waste.Waste;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.service.WasteService;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 
 @RestController

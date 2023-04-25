@@ -1,9 +1,11 @@
 package edu.ntnu.idatt2106.backend.Integration.fridge;
 
+import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
@@ -16,17 +18,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,9 +51,7 @@ public class FridgeIT {
     public FridgeItemRepository fridgeItemRepository;
 
     private String baseURL;
-
     private HttpHeaders authHeaders;
-
     private HttpEntity<?> authRequest;
 
     @BeforeEach
@@ -68,9 +63,9 @@ public class FridgeIT {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/login", request, String.class);
 
         String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
                 .filter(header -> header.startsWith("JWTAccessToken="))
@@ -98,14 +93,14 @@ public class FridgeIT {
     @Test
     @DisplayName("Test that created user has fridge")
     public void testCreatedUserHasFridge(){
-        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/user/fridge-items",
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/fridge/get",
                 HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    @DisplayName("Test that fridge item can be added")
-    public void testAddFridgeItem() {
+    @DisplayName("Test that fridge items can be added")
+    public void testAddFridgeItems() {
         Item item = new Item();
         item.setName("Milk");
         item.setShortDesc("Whole milk");
@@ -121,18 +116,30 @@ public class FridgeIT {
                 LocalDate.now().plusDays(10)
         );
 
-        HttpEntity<FridgeItemRequest> request = new HttpEntity<>(fridgeItemRequest, authHeaders);
+        HttpEntity<List<FridgeItemRequest>> request = new HttpEntity<>(List.of(fridgeItemRequest), authHeaders);
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/fridge/add", request
                 , String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Fridge item added", response.getBody());
+        assertEquals("Fridge items added", response.getBody());
     }
 
     @Test
-    @DisplayName("Test that fridge item can be removed")
-    public void testRemoveFridgeItem() {
+    @DisplayName("Test that fridge items can be removed")
+    public void testRemoveFridgeItems() {
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase("testnewuser@test.com");
+        if (optionalUser.isEmpty()) {
+            fail("User not found");
+        }
+        User user = optionalUser.get();
+
+        Fridge fridge = new Fridge();
+        fridge.setUser(user);
+        fridge = fridgeRepository.save(fridge);
+        user.setFridge(fridge);
+        userRepository.save(user);
+
         Item item = new Item();
         item.setName("Milk");
         item.setShortDesc("Whole milk");
@@ -146,26 +153,38 @@ public class FridgeIT {
         fridgeItem.setQuantity(1);
         fridgeItem.setExpirationDate(LocalDate.now().plusDays(10));
         fridgeItem.setItem(item);
-
+        fridgeItem.setFridge(fridge);
         fridgeItem = fridgeItemRepository.save(fridgeItem);
+        List<Long> fridgeItemIds = List.of(fridgeItem.getId());
 
-        HttpEntity<?> removeRequest = new HttpEntity<>(authHeaders);
+        HttpEntity<?> removeRequest = new HttpEntity<>(fridgeItemIds, authHeaders);
         ResponseEntity<String> response = restTemplate.exchange(
-                baseURL + "/fridge-items/" + fridgeItem.getId(),
+                baseURL + "/fridge/remove",
                 HttpMethod.DELETE,
                 removeRequest,
                 String.class
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Fridge item removed", response.getBody());
-
+        assertEquals("Fridge items removed", response.getBody());
         assertFalse(fridgeItemRepository.findById(fridgeItem.getId()).isPresent());
     }
 
     @Test
-    @DisplayName("Test that fridge item quantity can be updated")
-    public void testUpdateFridgeItemQuantity() {
+    @DisplayName("Test that fridge item can be updated")
+    public void testEditFridgeItem() {
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase("testnewuser@test.com");
+        if (optionalUser.isEmpty()) {
+            fail("User not found");
+        }
+        User user = optionalUser.get();
+
+        Fridge fridge = new Fridge();
+        fridge.setUser(user);
+        fridge = fridgeRepository.save(fridge);
+        user.setFridge(fridge);
+        userRepository.save(user);
+
         Item item = new Item();
         item.setName("Milk");
         item.setShortDesc("Whole milk");
@@ -179,61 +198,24 @@ public class FridgeIT {
         fridgeItem.setQuantity(1);
         fridgeItem.setExpirationDate(LocalDate.now().plusDays(10));
         fridgeItem.setItem(item);
-
+        fridgeItem.setFridge(fridge);
         fridgeItem = fridgeItemRepository.save(fridgeItem);
 
-        FridgeItem updatedFridgeItem = new FridgeItem();
-        updatedFridgeItem.setQuantity(2);
+        FridgeItemRequest updatedFridgeItem = new FridgeItemRequest(item.getId(), 5, LocalDate.now().plusDays(20));
 
-        HttpEntity<FridgeItem> updateQuantityRequest = new HttpEntity<>(updatedFridgeItem, authHeaders);
+        HttpEntity<FridgeItemRequest> updateQuantityRequest = new HttpEntity<>(updatedFridgeItem, authHeaders);
         ResponseEntity<String> response = restTemplate.exchange(
-                baseURL + "/fridge-items/editQuantity/" + fridgeItem.getId(),
+                baseURL + "/fridge/edit/" + fridgeItem.getId(),
                 HttpMethod.PUT,
                 updateQuantityRequest,
                 String.class
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Fridge item quantity updated", response.getBody());
 
         FridgeItem updatedFridgeItemInRepo = fridgeItemRepository.findById(fridgeItem.getId()).get();
-        assertEquals(2, updatedFridgeItemInRepo.getQuantity());
-    }
-
-    @Test
-    @DisplayName("Test that fridge item expiration date can be updated")
-    public void testUpdateFridgeItemExpirationDate() {
-        Item item = new Item();
-        item.setName("Milk");
-        item.setShortDesc("Whole milk");
-        item.setCategory(Category.DAIRY);
-        item.setPrice(1.99);
-        item.setWeight(1.0);
-        item.setImage(null);
-        item = itemRepository.save(item);
-
-        FridgeItem fridgeItem = new FridgeItem();
-        fridgeItem.setQuantity(1);
-        fridgeItem.setExpirationDate(LocalDate.now().plusDays(10));
-        fridgeItem.setItem(item);
-
-        fridgeItem = fridgeItemRepository.save(fridgeItem);
-
-        FridgeItem updatedFridgeItem = new FridgeItem();
-        updatedFridgeItem.setExpirationDate(LocalDate.now().plusDays(20));
-
-        HttpEntity<FridgeItem> updateExpirationDateRequest = new HttpEntity<>(updatedFridgeItem, authHeaders);
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseURL + "/fridge-items/editExpirationDate/" + fridgeItem.getId(),
-                HttpMethod.PUT,
-                updateExpirationDateRequest,
-                String.class
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Fridge item expiration date updated", response.getBody());
-
-        FridgeItem updatedFridgeItemInRepo = fridgeItemRepository.findById(fridgeItem.getId()).get();
+        assertEquals(5, updatedFridgeItemInRepo.getQuantity());
         assertEquals(LocalDate.now().plusDays(20), updatedFridgeItemInRepo.getExpirationDate());
     }
+
 }

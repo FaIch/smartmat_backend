@@ -12,7 +12,6 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,11 +53,12 @@ public class WebSecurityConfig {
         http.addFilterBefore(corsFilter(), AuthorizationFilter.class);
         http.addFilterBefore(jwtRequestFilter, AuthorizationFilter.class);
         http.authorizeHttpRequests()
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/user-without-child", "/user-with-child").permitAll()
+                .requestMatchers("/user/login").permitAll()
+                .requestMatchers("/user/create").permitAll()
+                .requestMatchers("/user/create/child").permitAll()
                 .requestMatchers("/items/**").permitAll()
                 .requestMatchers("/recipe/**").permitAll()
-                .requestMatchers("/auth/refreshToken").permitAll()
+                .requestMatchers("/user/auth/refreshToken").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
 

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.util.Objects;
-
 
 @Entity
 @NoArgsConstructor
