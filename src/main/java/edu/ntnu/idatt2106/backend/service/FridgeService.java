@@ -24,6 +24,7 @@ public class FridgeService {
     private final UserRepository userRepository;
     private final FridgeRepository fridgeRepository;
     private final FridgeItemRepository fridgeItemRepository;
+    private final ItemService itemService;
 
     /**
      * Constructor for FridgeService that injects dependencies for the UserRepository, FridgeRepository,
@@ -32,13 +33,15 @@ public class FridgeService {
      * @param userRepository       the UserRepository
      * @param fridgeRepository     the FridgeRepository
      * @param fridgeItemRepository the FridgeItemRepository
+     * @param itemService
      */
     @Autowired
     public FridgeService(UserRepository userRepository, FridgeRepository fridgeRepository
-            , FridgeItemRepository fridgeItemRepository) {
+            , FridgeItemRepository fridgeItemRepository, ItemService itemService) {
         this.userRepository = userRepository;
         this.fridgeRepository = fridgeRepository;
         this.fridgeItemRepository = fridgeItemRepository;
+        this.itemService = itemService;
     }
 
     /**
@@ -172,6 +175,7 @@ public class FridgeService {
 
     public FridgeItem convertFridgeItemRequestToFridgeItem(FridgeItemRequest fridgeItemRequest) {
         FridgeItem fridgeItem = new FridgeItem();
+        fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
         fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
         fridgeItem.setExpirationDate(fridgeItemRequest.getExpirationDate());
         return fridgeItem;
