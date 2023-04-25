@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.waste.Waste;
 import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.repository.WasteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,14 @@ import java.util.Optional;
 public class WasteService {
 
     private final WasteRepository wasteRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public WasteService(WasteRepository wasteRepository, UserRepository userRepository) {
+    public WasteService(WasteRepository wasteRepository) {
         this.wasteRepository = wasteRepository;
-        this.userRepository = userRepository;
     }
 
-    public ResponseEntity<String> addWasteEntry(User user, int weight) {
-        LocalDate entryDate = LocalDate.now();
-        Waste wasteEntry = new Waste(user, weight, entryDate);
+    public ResponseEntity<String> addWasteEntry(User user, WasteRequest wasteRequest) {
+        Waste wasteEntry = new Waste(user, wasteRequest.getWeight(), LocalDate.parse(wasteRequest.getEntryDate()));
         wasteRepository.save(wasteEntry);
         return ResponseEntity.status(HttpStatus.OK).body("Waste was added successfully");
     }

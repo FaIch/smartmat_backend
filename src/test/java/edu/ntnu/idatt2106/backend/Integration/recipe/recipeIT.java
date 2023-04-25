@@ -1,40 +1,27 @@
-package edu.ntnu.idatt2106.backend.Integration.waste;
+package edu.ntnu.idatt2106.backend.Integration.recipe;
 
-
-import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
-import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
-import edu.ntnu.idatt2106.backend.model.waste.Waste;
-import edu.ntnu.idatt2106.backend.repository.UserRepository;
-import edu.ntnu.idatt2106.backend.repository.WasteRepository;
+import edu.ntnu.idatt2106.backend.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class WasteIT {
+public class recipeIT {
 
     @LocalServerPort
     public int port;
-
     @Autowired
     public TestRestTemplate restTemplate;
 
@@ -45,14 +32,19 @@ public class WasteIT {
     public SubUserRepository subUserRepository;
 
     @Autowired
-    public WasteRepository wasteRepository;
+    public ItemRepository itemRepository;
+
+    @Autowired
+    public FridgeRepository fridgeRepository;
+
+    @Autowired
+    public FridgeItemRepository fridgeItemRepository;
 
     private String baseURL;
 
     private HttpHeaders authHeaders;
 
     private HttpEntity<?> authRequest;
-
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -85,55 +77,34 @@ public class WasteIT {
     @AfterEach
     public void clearDatabase() {
         subUserRepository.deleteAll();
-        wasteRepository.deleteAll();
         userRepository.deleteAll();
     }
 
+
     @Test
-    @DisplayName("Test that waste entry can be added")
-    public void testAddWasteEntry() {
-        WasteRequest wasteRequest = new WasteRequest(
-                5,
-                LocalDate.now().toString()
-        );
+    @DisplayName("Test that all recipes can be retrieved when user logged in")
+    public void testListAllRecipes(){
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/recipe/list",
+                HttpMethod.GET, authRequest, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
-        HttpEntity<WasteRequest> request = new HttpEntity<>(wasteRequest, authHeaders);
 
-        ResponseEntity<Waste> response = restTemplate.postForEntity(baseURL + "/waste/add", request, Waste.class);
-
+    @Test
+    @DisplayName("Test that recipes can be displayed based on item in the recipe")
+    public void testGetRecipesByItemName(){
+        String itemName = "Steak";
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/recipe/by-item-name?itemName=" + itemName,
+                HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    @DisplayName("Test that total waste by user between dates can be retrieved")
-    public void testGetTotalWasteByUserBetweenDates() {
-        Waste waste1 = new Waste();
-        waste1.setUser(userRepository.findAll().get(0));
-        waste1.setWeight(5);
-        waste1.setEntryDate(LocalDate.now().minusDays(1));
-        wasteRepository.save(waste1);
-
-        Waste waste2 = new Waste();
-        waste2.setUser(userRepository.findAll().get(0));
-        waste2.setWeight(7);
-        waste2.setEntryDate(LocalDate.now().minusDays(3));
-        wasteRepository.save(waste2);
-
-        Waste waste3 = new Waste();
-        waste3.setUser(userRepository.findAll().get(0));
-        waste3.setWeight(3);
-        waste3.setEntryDate(LocalDate.now().minusDays(5));
-        wasteRepository.save(waste3);
-
-        String startDate = LocalDate.now().minusDays(4).toString();
-        String endDate = LocalDate.now().minusDays(1).toString();
-
-        String url = baseURL + "/waste/total/date-range?startDate=" + startDate + "&endDate=" + endDate;
-
-        ResponseEntity<Integer> response = restTemplate.exchange(url, HttpMethod.GET, authRequest, Integer.class);
-
+    @DisplayName("Test that recipes gets sorted in order of the most items in recipe and in fridge")
+    public void testSortRecipesByFridge(){
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/recipe/sorted-by-fridge",
+                HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(12, response.getBody());
     }
 
 }

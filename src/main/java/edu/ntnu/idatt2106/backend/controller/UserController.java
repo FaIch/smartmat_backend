@@ -77,7 +77,7 @@ public class UserController {
      */
     @PutMapping("/user/editPhoneNumber")
     public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
-        return userService.editPhoneNumber(user.getEmail(), phoneNumber);
+        return userService.editPhoneNumber(user, phoneNumber);
     }
 
     /**
@@ -87,7 +87,7 @@ public class UserController {
      */
     @PutMapping("/user/editAddress")
     public ResponseEntity<String> editAddress(@RequestParam String address, @AuthenticationPrincipal User user){
-        return userService.editAddress(user.getEmail(), address);
+        return userService.editAddress(user, address);
     }
 
     /**
@@ -99,7 +99,7 @@ public class UserController {
     @PutMapping("/user/editPassword")
     public ResponseEntity<String> editPassword(@RequestParam String oldPassword,
                                                @RequestParam String newPassword, @AuthenticationPrincipal User user){
-        return userService.editPassword(user.getEmail(), oldPassword, newPassword);
+        return userService.editPassword(user, oldPassword, newPassword);
     }
 
     /**
@@ -112,7 +112,7 @@ public class UserController {
     @PostMapping("/user/subUser")
     public ResponseEntity<String> createSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return userService.createSubUser(user.getEmail(), subUserRequest);
+        return userService.createSubUser(user, subUserRequest);
     }
 
     /**
@@ -123,7 +123,7 @@ public class UserController {
     @PutMapping("/user/subUser/edit")
     public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return userService.editSubUserName(user.getEmail(), subUserRequest);
+        return userService.editSubUserName(user, subUserRequest);
     }
 
     /**
@@ -134,7 +134,7 @@ public class UserController {
     @DeleteMapping("/user/subUser/delete")
     public ResponseEntity<String> deleteSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return userService.deleteSubUser(user.getEmail(), subUserRequest);
+        return userService.deleteSubUser(user, subUserRequest);
     }
 
     /**
@@ -144,6 +144,6 @@ public class UserController {
      */
     @GetMapping("/user/getSubUsers")
     public ResponseEntity<List<SubUser>> getSubUsers(@AuthenticationPrincipal User user) {
-        return userService.getSubUsers(user.getEmail());
+        return userService.getSubUsers(user);
     }
 }
