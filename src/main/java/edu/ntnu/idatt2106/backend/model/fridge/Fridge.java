@@ -24,16 +24,14 @@ public class Fridge {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "fridge", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FridgeItem> fridgeItems = new ArrayList<>();
+//    @OneToMany(mappedBy = "fridge", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<FridgeItem> fridgeItems = new ArrayList<>();
 
     public void addFridgeItem(FridgeItem fridgeItem) {
-        fridgeItems.add(fridgeItem);
         fridgeItem.setFridge(this);
     }
 
     public void removeFridgeItem(FridgeItem fridgeItem) {
-        fridgeItems.remove(fridgeItem);
         fridgeItem.setFridge(null);
     }
 
@@ -42,7 +40,7 @@ public class Fridge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Fridge fridge = (Fridge) o;
-        return Objects.equals(id, fridge.id) && Objects.equals(user, fridge.user) && Objects.equals(fridgeItems, fridge.fridgeItems);
+        return Objects.equals(id, fridge.id) && Objects.equals(user, fridge.user);
     }
 
     @Override

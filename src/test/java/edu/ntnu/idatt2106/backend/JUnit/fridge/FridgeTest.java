@@ -33,30 +33,25 @@ class FridgeTest {
 
     @Test
     void allArgsConstructor() {
-        Fridge fridge = new Fridge(5L, user, new ArrayList<FridgeItem>());
+        Fridge fridge = new Fridge(5L, user);
         assertEquals(5L, fridge.getId());
         assertEquals(user, fridge.getUser());
-        assertTrue(fridge.getFridgeItems().isEmpty());
     }
 
     @Test
     void testNoArgsConstructor() {
         Fridge emptyFridge = new Fridge();
         assertNull(emptyFridge.getUser());
-        assertTrue(emptyFridge.getFridgeItems().isEmpty());
     }
 
     @Test
     void testAddFridgeItem() {
-        assertEquals(1, fridge.getFridgeItems().size());
-        assertEquals(fridgeItem, fridge.getFridgeItems().get(0));
         assertEquals(fridge, fridgeItem.getFridge());
     }
 
     @Test
     void testRemoveFridgeItem() {
         fridge.removeFridgeItem(fridgeItem);
-        assertTrue(fridge.getFridgeItems().isEmpty());
         assertNull(fridgeItem.getFridge());
     }
 
