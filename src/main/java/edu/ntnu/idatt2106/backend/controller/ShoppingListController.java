@@ -31,9 +31,8 @@ public class ShoppingListController {
     }
 
     @PostMapping("/shopping-list/add")
-    public ResponseEntity<String> addShoppingListItem(@RequestBody ShoppingListItemRequest request, @AuthenticationPrincipal User user) {
-        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(request.getQuantity(),
-                itemService.getItemById(request.getItemId())));
+    public ResponseEntity<String> addShoppingListItem(@RequestParam int id, @RequestParam("quantity") int quantity,  @AuthenticationPrincipal User user) {
+        return shoppingListService.addShoppingListItem(user.getId(), new ShoppingListItem(quantity, itemService.getItemById((long) id)));
     }
 
     @DeleteMapping("/shopping-list-items/{shoppingListItemId}")
