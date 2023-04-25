@@ -42,16 +42,10 @@ public class FridgeController {
         return fridgeService.removeFridgeItem(fridgeItemId);
     }
 
-    @PutMapping("/fridge-items/editQuantity/{fridgeItemId}")
-    public ResponseEntity<String> updateFridgeItemQuantity(@PathVariable Long fridgeItemId
+    @PutMapping("/fridge-items/editFridgeItem/{fridgeItemId}")
+    public ResponseEntity<String> editFridgeItem(@PathVariable Long fridgeItemId
             , @RequestBody FridgeItem updatedFridgeItem) {
-        return fridgeService.updateFridgeItemQuantity(fridgeItemId, updatedFridgeItem);
-    }
-
-    @PutMapping("/fridge-items/editExpirationDate/{fridgeItemId}")
-    public ResponseEntity<String> updateFridgeItemExpirationDate(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItem updatedFridgeItem) {
-        return fridgeService.updateFridgeItemExpirationDate(fridgeItemId, updatedFridgeItem);
+        return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem);
     }
 
     //Not tested!!!

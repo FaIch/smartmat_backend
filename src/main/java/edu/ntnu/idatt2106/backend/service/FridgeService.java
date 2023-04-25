@@ -96,40 +96,23 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
     }
 
-    /**
-     * Updates the quantity of a specific fridge item.
-     *
-     * @param fridgeItemId      the ID of the fridge item to be updated
-     * @param updatedFridgeItem the updated fridge item object
-     * @return a ResponseEntity containing a "Fridge item quantity updated" message if the item is found and updated
-     * successfully, or a NOT_FOUND status code if the item is not found
-     */
-    public ResponseEntity<String> updateFridgeItemQuantity(Long fridgeItemId, FridgeItem updatedFridgeItem) {
-        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
-        if (fridgeItemOptional.isPresent()) {
-            FridgeItem existingFridgeItem = fridgeItemOptional.get();
-            existingFridgeItem.setQuantity(updatedFridgeItem.getQuantity());
-            fridgeItemRepository.save(existingFridgeItem);
-            return ResponseEntity.status(HttpStatus.OK).body("Fridge item quantity updated");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
-    }
 
     /**
-     * Updates the expiration date of a specific fridge item.
+     * Updates the expiration date and quantity of a specific fridge item.
      *
      * @param fridgeItemId      the ID of the fridge item to be updated
      * @param updatedFridgeItem the updated fridge item object
-     * @return a ResponseEntity containing a "Fridge item expiration date updated" message if the item is found and
+     * @return a ResponseEntity containing a "Fridge item updated" message if the item is found and
      * updated successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<String> updateFridgeItemExpirationDate(Long fridgeItemId, FridgeItem updatedFridgeItem) {
+    public ResponseEntity<String> editFridgeItem(Long fridgeItemId, FridgeItem updatedFridgeItem) {
         Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
         if (fridgeItemOptional.isPresent()) {
             FridgeItem existingFridgeItem = fridgeItemOptional.get();
             existingFridgeItem.setExpirationDate(updatedFridgeItem.getExpirationDate());
+            existingFridgeItem.setQuantity(updatedFridgeItem.getQuantity());
             fridgeItemRepository.save(existingFridgeItem);
-            return ResponseEntity.status(HttpStatus.OK).body("Fridge item expiration date updated");
+            return ResponseEntity.status(HttpStatus.OK).body("Fridge item updated");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
     }
