@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface FridgeItemRepository extends JpaRepository<FridgeItem, Long> {
     List<FridgeItem> findAll(Sort sort);
+
+    FridgeItem findByItemId(Long itemId);
 }

@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/user-without-child", "/user-with-child").permitAll()
                 .requestMatchers("/items/**").permitAll()
+                .requestMatchers("/recipe/**").permitAll()
                 .requestMatchers("/auth/refreshToken").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
