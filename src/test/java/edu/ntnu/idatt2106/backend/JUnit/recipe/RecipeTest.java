@@ -7,15 +7,18 @@ import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class RecipeTest {
 
     private Recipe recipeMacNCheese;
+
+    RecipeItem recipeItemMac,recipeItemCheese;
     Item itemMac, itemCheese;
 
     List<RecipeItem> recipeItemList;
@@ -24,8 +27,8 @@ public class RecipeTest {
     void setUp() {
         itemMac = new Item(1L,"Macaroni","Full grain pasta", Category.DRYGOODS, 39, 400, "");
         itemCheese = new Item(1L,"Cheddar","Real cheddar from idunno", Category.CHEESE, 55, 200, "");
-        RecipeItem recipeItemMac = new RecipeItem(1L, recipeMacNCheese, itemMac, 200);
-        RecipeItem recipeItemCheese = new RecipeItem(2L, recipeMacNCheese, itemCheese, 150);
+         recipeItemMac = new RecipeItem(1L, recipeMacNCheese, itemMac, 200);
+         recipeItemCheese = new RecipeItem(2L, recipeMacNCheese, itemCheese, 150);
 
       recipeItemList = new ArrayList<>();
       recipeItemList.add(recipeItemCheese);
@@ -36,11 +39,11 @@ public class RecipeTest {
 
     @Test
     void testNoArgsConstructor() {
-        Recipe recipeItemEmpty = new Recipe();
-        assertNull(recipeItemEmpty.getId());
-        assertNull(recipeItemEmpty.getName());
-        assertNull(recipeItemEmpty.getDescription());
-        assertEquals(0.0, recipeItemEmpty.getNumberOfItems());
+        Recipe recipeEmpty = new Recipe();
+        assertNull(recipeEmpty.getId());
+        assertNull(recipeEmpty.getName());
+        assertNull(recipeEmpty.getDescription());
+        assertEquals(0.0, recipeEmpty.getNumberOfItems());
     }
 
     @Test
@@ -53,22 +56,33 @@ public class RecipeTest {
 
     }
 
-/*    @Test
+    @Test
     void testSettersAndGetters() {
-        item.setId(2L);
-        item.setName("UpdatedItem");
-        item.setShortDesc("Updated description");
-        item.setCategory(Category.EGG);
-        item.setPrice(50.0);
-        item.setWeight(2.0);
-        item.setImage("UpdatedImage");
+        recipeMacNCheese.setId(2L);
+        recipeMacNCheese.setName("updated Name");
+        recipeMacNCheese.setDescription("updated description");
+        recipeMacNCheese.setNumberOfItems(0);
+        recipeMacNCheese.setRecipeItems(new ArrayList<>());
 
-        assertEquals(2L, item.getId());
-        assertEquals("UpdatedItem", item.getName());
-        assertEquals("Updated description", item.getShortDesc());
-        assertEquals(Category.EGG, item.getCategory());
-        assertEquals(50.0, item.getPrice());
-        assertEquals(2.0, item.getWeight());
-        assertEquals("UpdatedImage", item.getImage());
-    }*/
+
+        assertEquals(2L, recipeMacNCheese.getId());
+        assertEquals("updated Name", recipeMacNCheese.getName());
+        assertEquals("updated description", recipeMacNCheese.getDescription());
+        assertEquals(0, recipeMacNCheese.getNumberOfItems());
+        assertEquals(new ArrayList<>(), recipeMacNCheese.getRecipeItems());
+
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+       Recipe recipeTestEmpty = new Recipe(2L,"TestItem2", "", 0,new ArrayList<>());
+
+       Recipe sameRecipeMacNCheese = new Recipe(recipeMacNCheese.getId(),recipeMacNCheese.getName(),recipeMacNCheese.getDescription(),recipeMacNCheese.getNumberOfItems(), recipeMacNCheese.getRecipeItems());
+
+        assertNotEquals(recipeMacNCheese, recipeTestEmpty);
+        assertNotEquals(recipeMacNCheese.hashCode(), recipeTestEmpty.hashCode());
+
+        assertEquals(recipeMacNCheese, sameRecipeMacNCheese);
+        assertEquals(recipeMacNCheese.hashCode(), sameRecipeMacNCheese.hashCode());
+    }
 }
