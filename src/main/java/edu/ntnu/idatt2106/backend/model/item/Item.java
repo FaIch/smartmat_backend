@@ -44,4 +44,14 @@ public class Item {
     @JsonIgnore
     @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
     private FridgeItem fridgeItem;
+
+    public Item (long id,String name,String shortDesc,Category category,double price,double weight,String itemImg) {
+        this.id = id;
+        this.name = name;
+        this.shortDesc = shortDesc;
+        this.category = category;
+        this.price = price;
+        this.weight = weight;
+        this.image = itemImg;
+    }
 }
