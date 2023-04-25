@@ -45,18 +45,14 @@ public class FridgeController {
                 fridgeService.convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests));
     }
 
-    @DeleteMapping("/fridge-items/{fridgeItemId}")
-    public ResponseEntity<String> removeFridgeItem(@PathVariable Long fridgeItemId) {
-        return fridgeService.removeFridgeItem(fridgeItemId);
-    }
-
     @DeleteMapping("/fridge-items/remove-list")
-    public ResponseEntity<String> removeFridgeItems(@RequestBody List<Long> fridgeItemIds) {
-        return fridgeService.removeListOfFridgeItems(fridgeItemIds);
+    public ResponseEntity<String> removeFridgeItems(@RequestBody List<Long> fridgeItemIds,
+                                                    @AuthenticationPrincipal User user) {
+        return fridgeService.removeListOfFridgeItems(fridgeItemIds, user);
     }
 
     @PutMapping("/fridge-items/edit/{fridgeItemId}")
-    public ResponseEntity<String> editFridgeItem(@PathVariable Long fridgeItemId
+    public ResponseEntity<FridgeItem> editFridgeItem(@PathVariable Long fridgeItemId
             , @RequestBody FridgeItem updatedFridgeItem) {
         return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem);
     }

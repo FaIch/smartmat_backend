@@ -24,9 +24,11 @@ public class WasteService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<Waste> addWasteEntry(User user, int weight, LocalDate entryDate) {
+    public ResponseEntity<String> addWasteEntry(User user, int weight) {
+        LocalDate entryDate = LocalDate.now();
         Waste wasteEntry = new Waste(user, weight, entryDate);
-        return ResponseEntity.status(HttpStatus.OK).body(wasteRepository.save(wasteEntry));
+        wasteRepository.save(wasteEntry);
+        return ResponseEntity.status(HttpStatus.OK).body("Waste was added successfully");
     }
 
     public ResponseEntity<Integer> getTotalWasteByUser(User user) {

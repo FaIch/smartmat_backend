@@ -22,10 +22,8 @@ public class WasteController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Waste> addWasteEntry(@AuthenticationPrincipal User user, @RequestParam String weight,
-                                              @RequestParam String entryDate) {
-        LocalDate date = LocalDate.parse(entryDate);
-        return wasteService.addWasteEntry(user, Integer.parseInt(weight), date);
+    public ResponseEntity<String> addWasteEntry(@AuthenticationPrincipal User user, @RequestParam String weight) {
+        return wasteService.addWasteEntry(user, Integer.parseInt(weight));
     }
 
     @GetMapping("/total")

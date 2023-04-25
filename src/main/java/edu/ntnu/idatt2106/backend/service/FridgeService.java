@@ -103,28 +103,24 @@ public class FridgeService {
     }
 
     /**
-     * Removes a fridge item from the database.
+     * Removes a list of fridge items from the database.
      *
-     * @param fridgeItemId the ID of the fridge item to be removed
+     * @param fridgeItemIds the list of IDs of the fridge items to be removed
+     * @param user the User of which fridge the fridge items are in
      * @return a ResponseEntity containing a "Fridge item removed" message if the item is found and removed
      * successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<String> removeFridgeItem(Long fridgeItemId) {
-        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
-        if (fridgeItemOptional.isPresent()) {
-            fridgeItemRepository.deleteById(fridgeItemId);
-            return ResponseEntity.status(HttpStatus.OK).body("Fridge item removed");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
-    }
-
-    public ResponseEntity<String> removeListOfFridgeItems(List<Long> fridgeItemIds) {
+    public ResponseEntity<String> removeListOfFridgeItems(List<Long> fridgeItemIds, User user) {
         for (Long fridgeItemId : fridgeItemIds) {
             Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
             if (fridgeItemOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
             }
-            fridgeItemRepository.deleteById(fridgeItemId);
+            FridgeItem fridgeItem = fridgeItemOptional.get();
+            if (!fridgeItem.getFridge().getUser().equals(user)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User does not own this fridge item");
+            }
+            fridgeItemRepository.delete(fridgeItem);
         }
         return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
     }
@@ -156,16 +152,16 @@ public class FridgeService {
      * @return a ResponseEntity containing a "Fridge item updated" message if the item is found and
      * updated successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<String> editFridgeItem(Long fridgeItemId, FridgeItem updatedFridgeItem) {
+    public ResponseEntity<FridgeItem> editFridgeItem(Long fridgeItemId, FridgeItem updatedFridgeItem) {
         Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
         if (fridgeItemOptional.isPresent()) {
             FridgeItem existingFridgeItem = fridgeItemOptional.get();
             existingFridgeItem.setExpirationDate(updatedFridgeItem.getExpirationDate());
             existingFridgeItem.setQuantity(updatedFridgeItem.getQuantity());
             fridgeItemRepository.save(existingFridgeItem);
-            return ResponseEntity.status(HttpStatus.OK).body("Fridge item updated");
+            return ResponseEntity.status(HttpStatus.OK).body(updatedFridgeItem);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
     public ResponseEntity<List<FridgeItem>> expirationDate() {

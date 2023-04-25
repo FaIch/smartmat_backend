@@ -29,7 +29,7 @@ public class FridgeItem {
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 

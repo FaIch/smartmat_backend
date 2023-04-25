@@ -33,7 +33,7 @@ public class Item {
 
     private double weight;
 
-   @Lob
+    @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
 
@@ -42,8 +42,8 @@ public class Item {
     private List<RecipeItem> recipeItems;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
-    private FridgeItem fridgeItem;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<FridgeItem> fridgeItem;
 
     public Item (long id,String name,String shortDesc,Category category,double price,double weight,String itemImg) {
         this.id = id;
