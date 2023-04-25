@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,12 +24,14 @@ public class ShoppingListService {
     private final ShoppingListRepository shoppingListRepository;
 
     private final ShoppingListItemRepository shoppingListItemRepository;
+    private final ItemService itemService;
 
     @Autowired
-    public ShoppingListService(UserRepository userRepository, ShoppingListRepository shoppingListRepository, ShoppingListItemRepository shoppingListItemRepository) {
+    public ShoppingListService(UserRepository userRepository, ShoppingListRepository shoppingListRepository, ShoppingListItemRepository shoppingListItemRepository, ItemService itemService) {
         this.userRepository = userRepository;
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListItemRepository = shoppingListItemRepository;
+        this.itemService = itemService;
     }
 
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(Long userId) {
@@ -64,6 +67,20 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list item added");
     }
 
+    public ResponseEntity<String> addListOfShoppingListItems(User user, List<ShoppingListItemRequest> shoppingListItems) {
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
+        }
+        ShoppingList shoppingList = shoppingListOptional.get();
+        for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItems) {
+            ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(), itemService.getItemById(shoppingListItemRequest.getItemId()));
+            shoppingListItem.setShoppingList(shoppingList);
+            shoppingListItemRepository.save(shoppingListItem);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Shopping list items added");
+    }
+
     public ResponseEntity<String> removeShoppingListItem(Long userId, Long shoppingListItemId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -85,6 +102,26 @@ public class ShoppingListService {
         }
         shoppingListItemRepository.delete(shoppingListItem);
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list item deleted");
+    }
+
+    public ResponseEntity<String> removeListOfShoppingListItems(User user, List<Long> itemIds) {
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
+        }
+        ShoppingList shoppingList = shoppingListOptional.get();
+        for (Long itemId : itemIds) {
+            Optional<ShoppingListItem> shoppingListItemOptional = shoppingListItemRepository.findById(itemId);
+            if (shoppingListItemOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list item not found");
+            }
+            ShoppingListItem shoppingListItem = shoppingListItemOptional.get();
+            if (!Objects.equals(shoppingListItem.getShoppingList().getId(), shoppingList.getId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list item not found in shopping list");
+            }
+            shoppingListItemRepository.delete(shoppingListItem);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Shopping list items deleted");
     }
 
     public ResponseEntity<String> updateShoppingListItemQuantity(Long shoppingListItemId, int quantity) {

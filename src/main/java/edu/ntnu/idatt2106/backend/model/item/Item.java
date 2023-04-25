@@ -42,9 +42,13 @@ public class Item {
     private List<RecipeItem> recipeItems;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FridgeItem> fridgeItems;
 
+
+    public Item(String name) {
+        this.name = name;
+    }
     public Item (long id,String name,String shortDesc,Category category,double price,double weight,String itemImg) {
         this.id = id;
         this.name = name;
