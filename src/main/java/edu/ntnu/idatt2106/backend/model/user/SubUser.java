@@ -19,7 +19,7 @@ public class SubUser implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "mainUser_email")
+    @JoinColumn(name = "mainUser_id")
     @JsonBackReference
     private User mainUser;
 
