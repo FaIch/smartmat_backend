@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.service;
 
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
@@ -90,9 +91,16 @@ public class UserService {
 
         SubUser subUser = new SubUser("Your User", Role.PARENT, userRequest.getPasscode());
         Fridge fridge = new Fridge();
-        fridge.setUser(user);
+        ShoppingList shoppingList = new ShoppingList();
+
+        user.setShoppingList(shoppingList);
         user.setFridge(fridge);
-        subUser.setMainUser(userRepository.save(user));
+
+        User createdUser = userRepository.save(user);
+
+        subUser.setMainUser(createdUser);
+        fridge.setUser(createdUser);
+
         subUserRepository.save(subUser);
         return ResponseEntity.ok("User created");
     }
@@ -117,10 +125,15 @@ public class UserService {
         SubUser parentSubUser = new SubUser("Parent", Role.PARENT, userRequest.getPasscode());
         SubUser childSubUser = new SubUser("Child", Role.CHILD);
         Fridge fridge = new Fridge();
+        ShoppingList shoppingList = new ShoppingList();
 
-        fridge.setUser(user);
+        user.setShoppingList(shoppingList);
         user.setFridge(fridge);
+
         User createdUser = userRepository.save(user);
+
+        fridge.setUser(createdUser);
+        shoppingList.setUser(createdUser);
         parentSubUser.setMainUser(createdUser);
         childSubUser.setMainUser(createdUser);
 

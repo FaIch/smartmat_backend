@@ -72,7 +72,7 @@ public class ItemService {
      * Method saveOrUpdate
      *
      * @param customItem entity of the item which we want to save or update
-     * @return
+     * @return response entity with status code and message
      */
 
     public ResponseEntity<String> saveOrUpdateCustomItemWithDate(CustomItem customItem, LocalDate date) {
