@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
+import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +86,19 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge not found");
     }
 
+    public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItem> fridgeItems) {
+        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
+        if (fridgeOptional.isPresent()) {
+            Fridge fridge = fridgeOptional.get();
+            for (FridgeItem fridgeItem : fridgeItems) {
+                fridgeItem.setFridge(fridge);
+                fridgeItemRepository.save(fridgeItem);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("Fridge items added");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge not found");
+    }
+
     /**
      * Removes a fridge item from the database.
      *
@@ -98,6 +113,17 @@ public class FridgeService {
             return ResponseEntity.status(HttpStatus.OK).body("Fridge item removed");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
+    }
+
+    public ResponseEntity<String> removeListOfFridgeItems(List<Long> fridgeItemIds) {
+        for (Long fridgeItemId : fridgeItemIds) {
+            Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
+            if (fridgeItemOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fridge item not found");
+            }
+            fridgeItemRepository.deleteById(fridgeItemId);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
     }
 
     /**
@@ -143,4 +169,19 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
     }
 
+
+    public FridgeItem convertFridgeItemRequestToFridgeItem(FridgeItemRequest fridgeItemRequest) {
+        FridgeItem fridgeItem = new FridgeItem();
+        fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
+        fridgeItem.setExpirationDate(fridgeItemRequest.getExpirationDate());
+        return fridgeItem;
+    }
+
+    public List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+        for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
+            fridgeItems.add(convertFridgeItemRequestToFridgeItem(fridgeItemRequest));
+        }
+        return fridgeItems;
+    }
 }
