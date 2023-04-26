@@ -63,6 +63,8 @@ public class RecipeService {
             recipeSorted.setName(recipeCount.getRecipe().getName());
             recipeSorted.setId(recipeCount.getRecipe().getId());
             recipeSorted.setDescription(recipeCount.getRecipe().getDescription());
+            recipeSorted.setEstimated_time(recipeCount.getRecipe().getEstimatedTime());
+            recipeSorted.setImage(recipeCount.getRecipe().getImage());
             recipeSorted.setNumberOfItemsRecipe(recipeCount.getRecipe().getNumberOfItems());
             recipeSorted.setNumberOfItemsFridge(recipeCount.getFridgeCount());
 

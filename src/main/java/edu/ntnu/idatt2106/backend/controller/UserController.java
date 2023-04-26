@@ -146,4 +146,9 @@ public class UserController {
     public ResponseEntity<List<SubUser>> getSubUsers(@AuthenticationPrincipal User user) {
         return userService.getSubUsers(user);
     }
+
+    @GetMapping("/details")
+    public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
+        return userService.getUserDetails(user);
+    }
 }

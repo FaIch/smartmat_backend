@@ -391,4 +391,15 @@ public class UserService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(optionalSubUserList);
     }
+
+    public ResponseEntity<User> getUserDetails(User user) {
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        // Remove sensitive information like password before sending it to the client
+        user.setPassword(null);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }
