@@ -10,7 +10,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -19,7 +18,6 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +34,10 @@ public class JWTRequestFilter extends OncePerRequestFilter {
   private final JWTService jwtService;
   private final UserRepository userRepository;
   private static final List<RequestMatcher> PUBLIC_URLS = Arrays.asList(
-          new AntPathRequestMatcher("/login"),
-          new AntPathRequestMatcher("/user-without-child"),
-          new AntPathRequestMatcher("/user-with-child"),
-          new AntPathRequestMatcher("/auth/refreshToken"),
+          new AntPathRequestMatcher("/user/login"),
+          new AntPathRequestMatcher("/user/create"),
+          new AntPathRequestMatcher("/user/create/child"),
+          new AntPathRequestMatcher("/user/auth/refreshToken"),
           new AntPathRequestMatcher("/swagger-ui/**"),
           new AntPathRequestMatcher("/v3/api-docs/**")
   );

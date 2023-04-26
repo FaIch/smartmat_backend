@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.Integration.waste;
 
 
+import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -62,9 +63,9 @@ public class WasteIT {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/login", request, String.class);
 
         String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
                 .filter(header -> header.startsWith("JWTAccessToken="))
@@ -91,16 +92,14 @@ public class WasteIT {
     @Test
     @DisplayName("Test that waste entry can be added")
     public void testAddWasteEntry() {
-        MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("weight", String.valueOf(5));
-        paramMap.add("entryDate", String.valueOf(LocalDate.now()));
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(paramMap, authHeaders);
-
-        ResponseEntity<Waste> response = restTemplate.postForEntity(baseURL + "/waste/add", request, Waste.class);
-
+        WasteRequest wasteRequest = new WasteRequest(
+                5,
+                LocalDate.now().toString()
+        );
+        HttpEntity<WasteRequest> request = new HttpEntity<>(wasteRequest, authHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/waste/add", request, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(5, response.getBody().getWeight());
+        assertEquals("Waste was added successfully", response.getBody());
     }
 
     @Test

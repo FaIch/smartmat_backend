@@ -3,18 +3,9 @@ package edu.ntnu.idatt2106.backend;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.Base64;
 
 @SpringBootApplication
 public class BackendApplication {

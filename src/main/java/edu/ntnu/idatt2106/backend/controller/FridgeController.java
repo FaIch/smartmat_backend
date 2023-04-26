@@ -4,67 +4,47 @@ import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.FridgeService;
-import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@RequestMapping("/fridge")
 public class FridgeController {
 
     private final FridgeService fridgeService;
-    private final ItemService itemService;
 
     @Autowired
-    public FridgeController(FridgeService fridgeService, ItemService itemService) {
+    public FridgeController(FridgeService fridgeService) {
         this.fridgeService = fridgeService;
-        this.itemService = itemService;
     }
 
-    @GetMapping("/user/fridge-items")
+    @GetMapping("/get")
     public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(@AuthenticationPrincipal User user) {
-        return fridgeService.getFridgeItemsByUserId(user.getId());
+        return fridgeService.getFridgeItemsByUserId(user);
     }
 
-    @PostMapping("/fridge/add")
-    public ResponseEntity<String> addFridgeItem(@RequestParam("quantity") int quantity, @RequestParam("expirationDate")String expirationDate,
-                                                @RequestParam long itemId, @AuthenticationPrincipal User user) {
-        return fridgeService.addFridgeItem(user.getId(), new FridgeItem(quantity,LocalDate.parse(expirationDate),itemService.getItemById(itemId)));
-    }
-
-    @PostMapping("/fridge/add-list")
+    @PostMapping("/add")
     public ResponseEntity<String> addFridgeItems(@RequestBody List<FridgeItemRequest> fridgeItemRequests,
                                                  @AuthenticationPrincipal User user) {
-        return fridgeService.addListOfFridgeItems(user,
-                fridgeService.convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests));
+        return fridgeService.addListOfFridgeItems(user, fridgeItemRequests);
     }
 
-    @DeleteMapping("/fridge-items/{fridgeItemId}")
-    public ResponseEntity<String> removeFridgeItem(@PathVariable Long fridgeItemId) {
-        return fridgeService.removeFridgeItem(fridgeItemId);
+    @DeleteMapping("/remove")
+    public ResponseEntity<String> removeFridgeItems(@RequestBody List<Long> fridgeItemIds,
+                                                    @AuthenticationPrincipal User user) {
+        return fridgeService.removeListOfFridgeItems(fridgeItemIds, user);
     }
 
-    @DeleteMapping("/fridge-items/remove-list")
-    public ResponseEntity<String> removeFridgeItems(@RequestBody List<Long> fridgeItemIds) {
-        return fridgeService.removeListOfFridgeItems(fridgeItemIds);
-    }
-
-    @PutMapping("/fridge-items/editQuantity/{fridgeItemId}")
-    public ResponseEntity<String> updateFridgeItemQuantity(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItem updatedFridgeItem) {
-        return fridgeService.updateFridgeItemQuantity(fridgeItemId, updatedFridgeItem);
-    }
-
-    @PutMapping("/fridge-items/editExpirationDate/{fridgeItemId}")
-    public ResponseEntity<String> updateFridgeItemExpirationDate(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItem updatedFridgeItem) {
-        return fridgeService.updateFridgeItemExpirationDate(fridgeItemId, updatedFridgeItem);
+    @PutMapping("/edit/{fridgeItemId}")
+    public ResponseEntity<FridgeItem> editFridgeItem(@PathVariable Long fridgeItemId
+            , @RequestBody FridgeItemRequest updatedFridgeItem
+            , @AuthenticationPrincipal User user) {
+        return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem, user);
     }
 
     //Not tested!!!

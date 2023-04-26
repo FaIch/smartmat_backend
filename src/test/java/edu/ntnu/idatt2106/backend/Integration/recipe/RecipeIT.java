@@ -18,7 +18,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class recipeIT {
+public class RecipeIT {
 
     @LocalServerPort
     public int port;
@@ -55,9 +55,9 @@ public class recipeIT {
         UserRequest userRequest = new UserRequest("testnewuser@test.com", "testPassword");
 
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
-        restTemplate.postForEntity(baseURL + "/user-without-child", request, String.class);
+        restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/login", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/login", request, String.class);
 
         String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
                 .filter(header -> header.startsWith("JWTAccessToken="))

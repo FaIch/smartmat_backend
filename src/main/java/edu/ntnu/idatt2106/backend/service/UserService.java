@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.service;
 
-
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
@@ -13,10 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +19,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -283,42 +277,15 @@ public class UserService {
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
-    /**
-     * Generates a JWT token for the given user ID.
-     *
-     * @param userId the ID of the user for whom to generate the token.
-     * @return a String representing the JWT token.
-     */
-    public String generateToken(final String userId) {
-        final Instant now = Instant.now();
-        final Algorithm hmac512 = Algorithm.HMAC512(keyStr);
-        final JWTVerifier verifier = JWT.require(hmac512).build();
-        return JWT
-                .create()
-                .withSubject(userId)
-                .withIssuer("idatt2106_SmartFood_app")
-                .withIssuedAt(now)
-                .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
-                .sign(hmac512);
-    }
-
-    /**
-     * Edits the password for the specified user.
-     *
-     * @param email       The email of the user to be edited.
-     * @param oldPassword The user's current password.
-     * @param newPassword The user's new password.
-     * @return A ResponseEntity containing a success or error message.
-     */
-    public ResponseEntity<String> editPassword(String email, String oldPassword, String newPassword) {
-        if (tryLogin(email, oldPassword)) {
-            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
+    public ResponseEntity<String> editPassword(User user, String oldPassword, String newPassword) {
+        if (tryLogin(user.getEmail(), oldPassword)) {
+            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(user.getEmail());
             if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                byte[] salt = user.getSalt();
+                User foundUser = optionalUser.get();
+                byte[] salt = foundUser.getSalt();
                 byte[] hashedPassword = hashPassword(newPassword, salt);
-                user.setPassword(hashedPassword);
-                userRepository.save(user);
+                foundUser.setPassword(hashedPassword);
+                userRepository.save(foundUser);
                 return ResponseEntity.ok("Password changed");
             }
         }
@@ -328,37 +295,27 @@ public class UserService {
     /**
      * Edits the phone number for the specified user.
      *
-     * @param email       The email of the user to be edited.
-     * @param phoneNumber The new phone number for the user.
-     * @return A ResponseEntity containing a success or error message.
+     * @param user       The user to be edited.
+     * @param phoneNumber The new phone number.
+     * @return A ResponseEntity containing a success message.
      */
-    public ResponseEntity<String> editPhoneNumber(String email, String phoneNumber) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setPhoneNumber(Long.parseLong(phoneNumber));
-            userRepository.save(user);
-            return ResponseEntity.ok("Phone number changed");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
+    public ResponseEntity<String> editPhoneNumber(User user, String phoneNumber) {
+        user.setPhoneNumber(Long.parseLong(phoneNumber));
+        userRepository.save(user);
+        return ResponseEntity.ok("Phone number changed");
     }
 
     /**
      * Edits the address for the specified user.
      *
-     * @param email   The email of the user to be edited.
-     * @param address The new address for the user.
-     * @return A ResponseEntity containing a success or error message.
+     * @param user     The user to be edited.
+     * @param address  The new address.
+     * @return A ResponseEntity containing a success message.
      */
-    public ResponseEntity<String> editAddress(String email, String address) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setAddress(address);
-            userRepository.save(user);
-            return ResponseEntity.ok("Address changed");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
+    public ResponseEntity<String> editAddress(User user, String address) {
+        user.setAddress(address);
+        userRepository.save(user);
+        return ResponseEntity.ok("Address changed");
     }
 
     /**
@@ -367,14 +324,9 @@ public class UserService {
      * @param subUserRequest The request object containing the email of the main user, the nickname,
      *                       and the role of the sub user.
      * @return A ResponseEntity containing a success message if the sub user was added successfully,
-     * or an error message if the user does not exist or a sub user with the same nickname already exists.
+     * or an error message if a sub user with the same nickname already exists.
      */
-    public ResponseEntity<String> createSubUser(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
-        }
-        User user = optionalUser.get();
+    public ResponseEntity<String> createSubUser(User user, SubUserRequest subUserRequest) {
         for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given nickname already exists");
@@ -387,19 +339,14 @@ public class UserService {
     }
 
     /**
-     * Changes the nickname of the specified sub user to the given name.
+     * Edits the nickname of the specified sub user.
      *
-     * @param subUserRequest The request object containing the email of the main user,
-     *                       the current nickname of the sub user, and the new nickname of the sub user.
-     * @return A ResponseEntity containing a success message if the nickname was changed successfully,
-     * or an error message if the user does not exist or the sub user does not exist.
+     * @param subUserRequest The request object containing the email of the main user, the nickname,
+     *                       and the role of the sub user.
+     * @return A ResponseEntity containing a success message if the sub user was edited successfully,
+     * or an error message if the user or sub user does not exist.
      */
-    public ResponseEntity<String> editSubUserName(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
-        }
-        User user = optionalUser.get();
+    public ResponseEntity<String> editSubUserName(User user, SubUserRequest subUserRequest) {
         for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 subUser.setNickname(subUserRequest.getNickname());
@@ -412,19 +359,14 @@ public class UserService {
     }
 
     /**
-     * Deletes the specified sub user from the database.
+     * Edits the role of the specified sub user.
      *
-     * @param subUserRequest The request object containing the email of the main user and the nickname of
-     *                       the sub user to be deleted.
-     * @return A ResponseEntity containing a success message if the sub user was deleted successfully,
+     * @param subUserRequest The request object containing the email of the main user, the nickname,
+     *                       and the role of the sub user.
+     * @return A ResponseEntity containing a success message if the sub user was edited successfully,
      * or an error message if the user or sub user does not exist.
      */
-    public ResponseEntity<String> deleteSubUser(String userEmail, SubUserRequest subUserRequest) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(userEmail);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with given email does not exist");
-        }
-        User user = optionalUser.get();
+    public ResponseEntity<String> deleteSubUser(User user, SubUserRequest subUserRequest) {
         for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 subUserRepository.deleteById(subUser.getId());
@@ -435,19 +377,17 @@ public class UserService {
     }
 
     /**
-     * Gets the list of sub users for the specified user.
-     * @param email The email of the user to get the sub users for.
-     * @return A ResponseEntity containing the list of sub users if the user exists, or null if the user does not exist.
+     * Gets a list of all sub users for the specified user.
+     *
+     * @param user The user to get the sub users for.
+     * @return A ResponseEntity containing a list of sub users if the user has any, or an empty list
+     * if the user does not have any sub users.
      */
-    public ResponseEntity<List<SubUser>> getSubUsers(String email) {
-        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        List<SubUser> optionalSubUserList = subUserRepository.findSubUserByMainUser(optionalUser.get());
+    public ResponseEntity<List<SubUser>> getSubUsers(User user) {
+        List<SubUser> optionalSubUserList = subUserRepository.findSubUserByMainUser(user);
         if (optionalSubUserList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
         }
-        return ResponseEntity.ok(optionalSubUserList);
+        return ResponseEntity.status(HttpStatus.OK).body(optionalSubUserList);
     }
 }

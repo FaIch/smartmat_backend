@@ -3,14 +3,11 @@ package edu.ntnu.idatt2106.backend.model.item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
-import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
-
 
 /**
  * Entity for when saving in database(?)
@@ -33,7 +30,7 @@ public class Item {
 
     private double weight;
 
-   @Lob
+    @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
 
@@ -42,9 +39,13 @@ public class Item {
     private List<RecipeItem> recipeItems;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FridgeItem> fridgeItems;
 
+
+    public Item(String name) {
+        this.name = name;
+    }
     public Item (long id,String name,String shortDesc,Category category,double price,double weight,String itemImg) {
         this.id = id;
         this.name = name;

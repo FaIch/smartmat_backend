@@ -2,7 +2,6 @@ package edu.ntnu.idatt2106.backend.model.fridge;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.time.LocalDate;
 
 @AllArgsConstructor

@@ -1,21 +1,12 @@
 package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.Response.RecipeSortedByFridgeResponse;
-import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
-import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
-import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
-import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
-import edu.ntnu.idatt2106.backend.repository.RecipeRepository;
-import edu.ntnu.idatt2106.backend.service.ItemService;
 import edu.ntnu.idatt2106.backend.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RestController

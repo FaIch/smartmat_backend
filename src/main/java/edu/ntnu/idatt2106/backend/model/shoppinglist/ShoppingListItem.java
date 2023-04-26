@@ -1,14 +1,12 @@
 package edu.ntnu.idatt2106.backend.model.shoppinglist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -35,5 +33,19 @@ public class ShoppingListItem {
     public ShoppingListItem(int quantity, Item item) {
         this.quantity = quantity;
         this.item = item;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShoppingListItem that = (ShoppingListItem) o;
+        return quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(shoppingList,
+                that.shoppingList) && Objects.equals(item, that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, shoppingList, quantity, item);
     }
 }

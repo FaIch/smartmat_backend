@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.model.user;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import jakarta.persistence.*;
