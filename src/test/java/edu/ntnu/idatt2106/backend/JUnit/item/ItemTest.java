@@ -5,6 +5,7 @@ import edu.ntnu.idatt2106.backend.model.item.Item;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -55,5 +56,12 @@ class ItemTest {
         assertEquals(50.0, item.getPrice());
         assertEquals(2.0, item.getWeight());
         assertEquals("UpdatedImage", item.getImage());
+    }
+
+    @Test
+    public void testIdGeneration() {
+        Item item1 = new Item(1L, "Ost", "Gulost", Category.CHEESE, 80.0, 1.0, "itemImg");
+        Item item2 = new Item(2L, "Ost", "Gulost", Category.CHEESE, 50.0, 0.5, "itemImg");
+        assertNotEquals(item1.getId(), item2.getId());
     }
 }

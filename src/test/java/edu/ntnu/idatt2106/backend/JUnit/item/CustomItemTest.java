@@ -6,6 +6,9 @@ import edu.ntnu.idatt2106.backend.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -54,5 +57,18 @@ class CustomItemTest {
         User newUser = new User("newtest@example.com", 9876543210L, "New Test Address");
         customItem.setUser(newUser);
         assertEquals(newUser, customItem.getUser());
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        CustomItem item1 = new CustomItem(1L, "Item Name", 2.5, Category.CHICKEN, new User());
+        CustomItem item2 = new CustomItem(1L, "Item Name", 2.5, Category.CHICKEN, new User());
+        CustomItem item3 = new CustomItem(2L, "Other Item", 3.0, Category.CHICKEN, new User());
+        
+        assertTrue(item1.equals(item2));
+        assertFalse(item1.equals(item3));
+        
+        assertEquals(item1.hashCode(), item2.hashCode());
+        assertNotEquals(item1.hashCode(), item3.hashCode());
     }
 }
