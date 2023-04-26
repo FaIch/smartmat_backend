@@ -119,4 +119,9 @@ public class ItemService {
 
         return ResponseEntity.status(HttpStatus.OK).body(customItemRepository.findAllByUser(user));
     }
+
+    public ResponseEntity<String> saveOrUpdateItem(Item item) {
+        itemRepository.save(item);
+        return ResponseEntity.ok("Item added");
+    }
 }

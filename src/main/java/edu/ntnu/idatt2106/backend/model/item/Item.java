@@ -26,9 +26,15 @@ public class Item {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private Unit unit;
+
     private double price;
 
-    private double weight;
+    private double weightPerUnit;
+
+    private Integer baseAmount;
 
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
@@ -46,13 +52,14 @@ public class Item {
     public Item(String name) {
         this.name = name;
     }
-    public Item (long id,String name,String shortDesc,Category category,double price,double weight,String itemImg) {
-        this.id = id;
+    public Item (String name,String shortDesc,Category category,double price,double weightPerUnit,String itemImg, Unit unit, Integer baseAmount){
         this.name = name;
         this.shortDesc = shortDesc;
         this.category = category;
         this.price = price;
-        this.weight = weight;
+        this.weightPerUnit = weightPerUnit;
         this.image = itemImg;
+        this.unit = unit;
+        this.baseAmount = baseAmount;
     }
 }

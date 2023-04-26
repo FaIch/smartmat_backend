@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.controller;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +41,25 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.getItemById(id));
     }
 
-   @GetMapping("/category")
+   @GetMapping("/categories")
     public ResponseEntity<List<Category>> getCategories(){
       return ResponseEntity.status(HttpStatus.OK).body(Arrays.stream(Category.values()).toList());
+    }
+
+    @GetMapping("/units")
+    public ResponseEntity<List<Unit>> getUnits(){
+        return ResponseEntity.status(HttpStatus.OK).body(Arrays.stream(Unit.values()).toList());
     }
 
     @GetMapping("/list/category")
     public ResponseEntity<List<Item>>  getItemsByCategory(@RequestParam("category") String category){
         System.out.println(category);
         return itemService.getItemByCategory(Category.valueOf(category));
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addItem(@RequestBody Item item){
+        return itemService.saveOrUpdateItem(item);
     }
 
     //Date must be on form yyyy-mm-dd
