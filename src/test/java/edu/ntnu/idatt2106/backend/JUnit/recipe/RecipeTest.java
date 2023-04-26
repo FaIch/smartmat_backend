@@ -34,7 +34,7 @@ public class RecipeTest {
       recipeItemList.add(recipeItemCheese);
       recipeItemList.add(recipeItemMac);
 
-        recipeMacNCheese = new Recipe(1L, "Mac and Cheese", "Macaroni and cheese", 4, recipeItemList);
+        recipeMacNCheese = new Recipe(1L, "Mac and Cheese", "30","Macaroni and cheese",2,"", recipeItemList);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class RecipeTest {
         assertEquals(1L, recipeMacNCheese.getId());
         assertEquals("Mac and Cheese", recipeMacNCheese.getName());
         assertEquals("Macaroni and cheese", recipeMacNCheese.getDescription());
-        assertEquals(4, recipeMacNCheese.getNumberOfItems());
+        assertEquals(2, recipeMacNCheese.getNumberOfItems());
         assertEquals(recipeItemList, recipeMacNCheese.getRecipeItems());
 
     }
@@ -75,9 +75,9 @@ public class RecipeTest {
 
     @Test
     void testEqualsAndHashCode() {
-       Recipe recipeTestEmpty = new Recipe(2L,"TestItem2", "", 0,new ArrayList<>());
+       Recipe recipeTestEmpty = new Recipe(2L,"TestItem2","","", 0,"",new ArrayList<>());
 
-       Recipe sameRecipeMacNCheese = new Recipe(recipeMacNCheese.getId(),recipeMacNCheese.getName(),recipeMacNCheese.getDescription(),recipeMacNCheese.getNumberOfItems(), recipeMacNCheese.getRecipeItems());
+       Recipe sameRecipeMacNCheese = new Recipe(recipeMacNCheese.getId(),recipeMacNCheese.getName(),recipeMacNCheese.getEstimatedTime(),recipeMacNCheese.getDescription(),recipeMacNCheese.getNumberOfItems(), recipeMacNCheese.getImage(),recipeMacNCheese.getRecipeItems());
 
         assertNotEquals(recipeMacNCheese, recipeTestEmpty);
         assertNotEquals(recipeMacNCheese.hashCode(), recipeTestEmpty.hashCode());
