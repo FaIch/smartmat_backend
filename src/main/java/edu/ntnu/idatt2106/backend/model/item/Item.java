@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.model.item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,13 +35,17 @@ public class Item {
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
 
-   @JsonIgnore
-    @OneToMany(mappedBy = "item")
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeItem> recipeItems;
 
     @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FridgeItem> fridgeItems;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShoppingListItem> shoppingItems;
 
 
     public Item(String name) {
