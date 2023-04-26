@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -26,6 +27,16 @@ public class FridgeController {
     @GetMapping("/get")
     public ResponseEntity<List<FridgeItem>> getFridgeItemsByUserId(@AuthenticationPrincipal User user) {
         return fridgeService.getFridgeItemsByUserId(user);
+    }
+
+    @GetMapping("/get/number")
+    public ResponseEntity<Map<String, Integer>> getNumberOfFridgeItemsByUserID(@AuthenticationPrincipal User user) {
+        return fridgeService.getNumberOfFridgeItemsByUserID(user);
+    }
+
+    @GetMapping("/get/expired")
+    public ResponseEntity<List<FridgeItem>> getExpiredFridgeItemsByUserId(@AuthenticationPrincipal User user) {
+        return fridgeService.getExpiredFridgeItemsByUserId(user);
     }
 
     @PostMapping("/add")
