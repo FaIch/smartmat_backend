@@ -35,7 +35,7 @@ public class BackendApplication {
             String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
             Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
 
-            String sql = " insert into item (category, name, price, short_desc, weight )"
+            String sql = " insert into item (category, name, price, short_desc, weight_per_unit)"
                     + " values (?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStmtMeat = conn.prepareStatement(sql);
