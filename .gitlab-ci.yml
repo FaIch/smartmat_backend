@@ -8,9 +8,6 @@ build:
   stage: build
   script:
     - mvn package -B -DskipTests=true
-  artifacts:
-    paths:
-      - target/*.jar
 
 test:
   stage: test

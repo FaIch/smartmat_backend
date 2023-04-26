@@ -94,6 +94,7 @@ public class UserService {
 
         subUser.setMainUser(createdUser);
         fridge.setUser(createdUser);
+        shoppingList.setUser(createdUser);
 
         subUserRepository.save(subUser);
         return ResponseEntity.ok("User created");

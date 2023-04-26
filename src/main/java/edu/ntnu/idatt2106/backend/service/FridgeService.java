@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,10 +53,32 @@ public class FridgeService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         Fridge fridge = fridgeOptional.get();
-        List<FridgeItem> fridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
+        List<FridgeItem> allFridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+        for (FridgeItem fridgeItem : allFridgeItems) {
+            if (fridgeItem.getExpirationDate().isAfter(LocalDate.now())) {
+                fridgeItems.add(fridgeItem);
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
+
+    public ResponseEntity<List<FridgeItem>> getExpiredFridgeItemsByUserId(User user) {
+        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
+        if (fridgeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        Fridge fridge = fridgeOptional.get();
+        List<FridgeItem> allFridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+        for (FridgeItem fridgeItem : allFridgeItems) {
+            if (fridgeItem.getExpirationDate().isBefore(LocalDate.now())) {
+                fridgeItems.add(fridgeItem);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
+    }
 
     public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItemRequest> fridgeItemRequests) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
