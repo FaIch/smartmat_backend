@@ -67,4 +67,16 @@ public class Item {
         this.unit = unit;
         this.baseAmount = baseAmount;
     }
+
+    public Item (Long id, String name,String shortDesc,Category category,double price,double weightPerUnit,String itemImg, Unit unit, Integer baseAmount){
+        this.id = id;
+        this.name = name;
+        this.shortDesc = shortDesc;
+        this.category = category;
+        this.price = price;
+        this.weightPerUnit = weightPerUnit;
+        this.image = itemImg;
+        this.unit = unit;
+        this.baseAmount = baseAmount;
+    }
 }

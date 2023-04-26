@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.JUnit.recipe;
 
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +26,8 @@ public class RecipeTest {
 
     @BeforeEach
     void setUp() {
-        itemMac = new Item(1L,"Macaroni","Full grain pasta", Category.DRYGOODS, 39, 400, "");
-        itemCheese = new Item(1L,"Cheddar","Real cheddar from idunno", Category.CHEESE, 55, 200, "");
+        itemMac = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
+        itemCheese = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
          recipeItemMac = new RecipeItem(1L, recipeMacNCheese, itemMac, 200);
          recipeItemCheese = new RecipeItem(2L, recipeMacNCheese, itemCheese, 150);
 

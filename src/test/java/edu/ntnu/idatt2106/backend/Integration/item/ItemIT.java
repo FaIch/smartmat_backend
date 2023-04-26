@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.Integration.item;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -88,12 +89,15 @@ public class ItemIT {
     @DisplayName("Test that you can get an item by its id")
     public void testGetItemById() {
         Item item = new Item();
+        item.setId(1L);
         item.setName("Test Item");
         item.setShortDesc("Test Description");
         item.setCategory(Category.DAIRY);
         item.setPrice(1.99);
-        item.setWeight(1.0);
-        item.setImage(null);
+        item.setWeightPerUnit(1.0);
+        item.setImage("");
+        item.setUnit(Unit.ITEM);
+        item.setBaseAmount(10);
         item = itemRepository.save(item);
 
         HttpEntity<String> getRequest = new HttpEntity<>(authHeaders);
@@ -108,7 +112,7 @@ public class ItemIT {
     @DisplayName("Test that you can get all categories")
     public void testGetCategories() {
         HttpEntity<String> getRequest = new HttpEntity<>(authHeaders);
-        ResponseEntity<List> getResponse = restTemplate.exchange(baseURL + "/items/category",
+        ResponseEntity<List> getResponse = restTemplate.exchange(baseURL + "/items/categories",
                 HttpMethod.GET, getRequest, List.class);
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());

@@ -106,7 +106,7 @@ public class FridgeIT {
         item.setShortDesc("Whole milk");
         item.setCategory(Category.DAIRY);
         item.setPrice(1.99);
-        item.setWeight(1.0);
+        item.setWeightPerUnit(1.0);
         item.setImage(null);
         item = itemRepository.save(item);
 
@@ -145,7 +145,7 @@ public class FridgeIT {
         item.setShortDesc("Whole milk");
         item.setCategory(Category.DAIRY);
         item.setPrice(1.99);
-        item.setWeight(1.0);
+        item.setWeightPerUnit(1.0);
         item.setImage(null);
         item = itemRepository.save(item);
 
@@ -190,7 +190,7 @@ public class FridgeIT {
         item.setShortDesc("Whole milk");
         item.setCategory(Category.DAIRY);
         item.setPrice(1.99);
-        item.setWeight(1.0);
+        item.setWeightPerUnit(1.0);
         item.setImage(null);
         item = itemRepository.save(item);
 
