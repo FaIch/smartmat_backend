@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.JUnit.recipe;
 
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +26,8 @@ public class RecipeTest {
 
     @BeforeEach
     void setUp() {
-        itemMac = new Item(1L,"Macaroni","Full grain pasta", Category.DRYGOODS, 39, 400, "");
-        itemCheese = new Item(1L,"Cheddar","Real cheddar from idunno", Category.CHEESE, 55, 200, "");
+        itemMac = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
+        itemCheese = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
          recipeItemMac = new RecipeItem(1L, recipeMacNCheese, itemMac, 200);
          recipeItemCheese = new RecipeItem(2L, recipeMacNCheese, itemCheese, 150);
 
@@ -34,7 +35,7 @@ public class RecipeTest {
       recipeItemList.add(recipeItemCheese);
       recipeItemList.add(recipeItemMac);
 
-        recipeMacNCheese = new Recipe(1L, "Mac and Cheese", "Macaroni and cheese", 4, recipeItemList);
+        recipeMacNCheese = new Recipe(1L, "Mac and Cheese", "30","Macaroni and cheese",2,"", recipeItemList);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class RecipeTest {
         assertEquals(1L, recipeMacNCheese.getId());
         assertEquals("Mac and Cheese", recipeMacNCheese.getName());
         assertEquals("Macaroni and cheese", recipeMacNCheese.getDescription());
-        assertEquals(4, recipeMacNCheese.getNumberOfItems());
+        assertEquals(2, recipeMacNCheese.getNumberOfItems());
         assertEquals(recipeItemList, recipeMacNCheese.getRecipeItems());
 
     }
@@ -75,9 +76,9 @@ public class RecipeTest {
 
     @Test
     void testEqualsAndHashCode() {
-       Recipe recipeTestEmpty = new Recipe(2L,"TestItem2", "", 0,new ArrayList<>());
+       Recipe recipeTestEmpty = new Recipe(2L,"TestItem2","","", 0,"",new ArrayList<>());
 
-       Recipe sameRecipeMacNCheese = new Recipe(recipeMacNCheese.getId(),recipeMacNCheese.getName(),recipeMacNCheese.getDescription(),recipeMacNCheese.getNumberOfItems(), recipeMacNCheese.getRecipeItems());
+       Recipe sameRecipeMacNCheese = new Recipe(recipeMacNCheese.getId(),recipeMacNCheese.getName(),recipeMacNCheese.getEstimatedTime(),recipeMacNCheese.getDescription(),recipeMacNCheese.getNumberOfItems(), recipeMacNCheese.getImage(),recipeMacNCheese.getRecipeItems());
 
         assertNotEquals(recipeMacNCheese, recipeTestEmpty);
         assertNotEquals(recipeMacNCheese.hashCode(), recipeTestEmpty.hashCode());

@@ -5,16 +5,22 @@ public class RecipeSortedByFridgeResponse {
 
     private String name;
 
+    private String estimated_time;
+
     private String description;
+
+    private String image;
 
     private int numberOfItemsRecipe;
 
     private int numberOfItemsFridge;
 
-    public RecipeSortedByFridgeResponse(Long id, String name, String description, int numberOfItemsRecipe, int numberOfItemsFridge) {
+    public RecipeSortedByFridgeResponse(Long id, String name, String estimatedTime, String description, String image, int numberOfItemsRecipe, int numberOfItemsFridge) {
         this.id = id;
         this.name = name;
+        estimated_time = estimatedTime;
         this.description = description;
+        this.image = image;
         this.numberOfItemsRecipe = numberOfItemsRecipe;
         this.numberOfItemsFridge = numberOfItemsFridge;
     }
@@ -38,6 +44,14 @@ public class RecipeSortedByFridgeResponse {
         this.name = name;
     }
 
+    public String getEstimated_time() {
+        return estimated_time;
+    }
+
+    public void setEstimated_time(String estimated_time) {
+        this.estimated_time = estimated_time;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -48,6 +62,15 @@ public class RecipeSortedByFridgeResponse {
 
     public int getNumberOfItemsRecipe() {
         return numberOfItemsRecipe;
+    }
+
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setNumberOfItemsRecipe(int numberOfItemsRecipe) {

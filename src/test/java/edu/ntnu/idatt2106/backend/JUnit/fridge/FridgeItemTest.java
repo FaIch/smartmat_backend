@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.JUnit.fridge;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ class FridgeItemTest {
 
     @BeforeEach
     void setUp() {
-        item = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
+        item = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
         fridgeItem = new FridgeItem(1, LocalDate.now().plusDays(7), item);
     }
 
@@ -43,10 +44,11 @@ class FridgeItemTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Item item1 = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
+        Item item1 = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
+
         FridgeItem fridgeItem1 = new FridgeItem(1, LocalDate.now().plusDays(7), item1);
 
-        Item item2 = new Item(2L, "TestItem2", "Short description2", Category.MEAT, 150.0, 6.0, "TestImage2");
+        Item item2 = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
         FridgeItem fridgeItem2 = new FridgeItem(2, LocalDate.now().plusDays(14), item2);
 
         FridgeItem fridgeItem3 = new FridgeItem(1, LocalDate.now().plusDays(7), item1);
@@ -60,7 +62,7 @@ class FridgeItemTest {
 
     @Test
     void testAllArgsConstructor() {
-        Item item = new Item(1L, "TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage");
+        Item item = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
         FridgeItem fridgeItem = new FridgeItem(1, LocalDate.now().plusDays(7), item);
 
         assertEquals(1, fridgeItem.getQuantity());

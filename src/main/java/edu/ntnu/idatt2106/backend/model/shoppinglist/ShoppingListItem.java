@@ -26,7 +26,7 @@ public class ShoppingListItem {
 
     private int quantity;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 

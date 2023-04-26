@@ -98,6 +98,7 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
+
     public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItemRequest> fridgeItemRequests) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         List<FridgeItem> fridgeItems = convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests);

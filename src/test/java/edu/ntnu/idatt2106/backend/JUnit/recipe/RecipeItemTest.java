@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.JUnit.recipe;
 
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ public class RecipeItemTest {
 
     @BeforeEach
     void setUp() {
-        itemMac = new Item(1L,"Macaroni","Full grain pasta", Category.DRYGOODS, 39, 400, "");
+        itemMac = new Item("Macaroni","Full grain pasta", Category.DRYGOODS, 39, 400, "", Unit.GRAMS, 30);
 
         recipeItemMac = new RecipeItem(1L, recipeMacNCheese, itemMac, 200);
 

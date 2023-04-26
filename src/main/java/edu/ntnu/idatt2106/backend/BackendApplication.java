@@ -3,9 +3,15 @@ package edu.ntnu.idatt2106.backend;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.Base64;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -120,24 +126,38 @@ public class BackendApplication {
             String myUrl = "jdbc:mysql://localhost:3306/mydatabase?createDatabaseIfNotExist=true&serverTimezone=UTC&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false";
             Connection conn = DriverManager.getConnection(myUrl, "root", "mypassword");
 
-            String sql = " insert into recipe (name, description, number_of_items )"
-                    + " values (?, ?, ?)";
+            String sql = " insert into recipe (name, estimated_time, description, number_of_items, image)"
+                    + " values (?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStmtRecipeSteakPotatoes = conn.prepareStatement(sql);
             preparedStmtRecipeSteakPotatoes.setString(1, "Steak and Potatoes");
-            preparedStmtRecipeSteakPotatoes.setString(2, "What to do");
-            preparedStmtRecipeSteakPotatoes.setInt(3,2);
+            preparedStmtRecipeSteakPotatoes.setString(2,"30 min");
+            preparedStmtRecipeSteakPotatoes.setString(3, "What to do");
+            preparedStmtRecipeSteakPotatoes.setInt(4,2);
+
+            File file = new File(System.getProperty("user.dir") + System.getProperty("file.separator") +
+                    "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") +
+                    "resources" + System.getProperty("file.separator") + "recipe_image"  + System.getProperty("file.separator") + "steak-and-potatoes.jpg");
+            InputStream input = new ByteArrayInputStream(Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath())).getBytes());
+
+            preparedStmtRecipeSteakPotatoes.setBlob(5, input);
 
             preparedStmtRecipeSteakPotatoes.execute();
 
-
             PreparedStatement preparedStmtRecipePastaSalmon = conn.prepareStatement(sql);
             preparedStmtRecipePastaSalmon.setString(1, "Pasta and Salmon");
-            preparedStmtRecipePastaSalmon.setString(2, "What to do");
-            preparedStmtRecipePastaSalmon.setInt(3,2);
+            preparedStmtRecipePastaSalmon.setString(2,"25 min");
+            preparedStmtRecipePastaSalmon.setString(3, "What to do");
+            preparedStmtRecipePastaSalmon.setInt(4,2);
+
+            File fileSalmon = new File(System.getProperty("user.dir") + System.getProperty("file.separator") +
+                    "src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") +
+                    "resources" + System.getProperty("file.separator") + "recipe_image"  + System.getProperty("file.separator") + "salmon-and-pasta.jpg");
+            InputStream inputSalmon = new ByteArrayInputStream(Base64.getEncoder().encodeToString(Files.readAllBytes(fileSalmon.toPath())).getBytes());
+
+            preparedStmtRecipePastaSalmon.setBlob(5, inputSalmon);
 
             preparedStmtRecipePastaSalmon.execute();
-
 
             String sqlRecipe_Item = " insert into recipe_item (item_id, recipe_id, quantity )"
                     + " values (?, ?, ?)";

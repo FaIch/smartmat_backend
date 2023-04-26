@@ -19,9 +19,16 @@ public class Recipe {
 
     private String name;
 
+    private String estimatedTime;
+
     private String description;
 
     private int numberOfItems;
+
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private String image;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "recipe")
