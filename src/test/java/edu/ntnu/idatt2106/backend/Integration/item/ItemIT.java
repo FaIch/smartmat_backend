@@ -40,7 +40,6 @@ public class ItemIT {
 
     private String baseURL;
     private HttpHeaders authHeaders;
-    private HttpEntity<?> authRequest;
 
     @BeforeEach
     public void setUp() {
@@ -67,7 +66,7 @@ public class ItemIT {
         authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
         authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
-        authRequest = new HttpEntity<>(authHeaders);
+        HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
     }
 
     @AfterEach

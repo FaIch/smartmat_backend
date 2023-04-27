@@ -46,10 +46,9 @@ public class ShoppingListIT {
 
     private String baseURL;
     private HttpHeaders authHeaders;
-    private HttpEntity<?> authRequest;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         baseURL = "http://localhost:" + port;
@@ -72,8 +71,6 @@ public class ShoppingListIT {
         authHeaders = new HttpHeaders();
         authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
         authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
-
-        authRequest = new HttpEntity<>(authHeaders);
     }
 
     @AfterEach
@@ -137,6 +134,7 @@ public class ShoppingListIT {
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
 
         List<Map<String, Object>> shoppingListItems = getResponse.getBody();
+        assert shoppingListItems != null;
         assertFalse(shoppingListItems.isEmpty());
 
         Long shoppingListItemId = ((Number) shoppingListItems.get(0).get("id")).longValue();

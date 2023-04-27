@@ -55,7 +55,7 @@ public class FridgeIT {
     private HttpEntity<?> authRequest;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         baseURL = "http://localhost:" + port;

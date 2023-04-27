@@ -42,12 +42,10 @@ public class RecipeIT {
 
     private String baseURL;
 
-    private HttpHeaders authHeaders;
-
     private HttpEntity<?> authRequest;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         baseURL = "http://localhost:" + port;
@@ -67,7 +65,7 @@ public class RecipeIT {
                 .filter(header -> header.startsWith("JWTRefreshToken="))
                 .findFirst().get().substring("JWTRefreshToken=".length());
 
-        authHeaders = new HttpHeaders();
+        HttpHeaders authHeaders = new HttpHeaders();
         authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
         authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
