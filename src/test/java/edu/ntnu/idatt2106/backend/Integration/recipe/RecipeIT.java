@@ -102,7 +102,7 @@ public class RecipeIT {
     @Test
     @DisplayName("Test that recipes gets sorted in order of the most items in recipe and in fridge")
     public void testSortRecipesByFridge(){
-        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/recipe/sorted-by-fridge",
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/recipe/list/sorted",
                 HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
