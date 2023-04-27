@@ -20,9 +20,12 @@ public class BackendApplication {
         SpringApplication.run(BackendApplication.class, args);
 
         BackendApplication backendApplication = new BackendApplication();
+        /*
         backendApplication.addCategoryAndDatDB();
         backendApplication.addToItemDB();
         backendApplication.addRecipeToDB();
+
+         */
 
     }
 

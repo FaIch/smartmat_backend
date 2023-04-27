@@ -16,6 +16,18 @@ services:
       timeout: 5s
       retries: 5
 
+  db-loader:
+    image: python:3.8
+    depends_on:
+      - db
+    volumes:
+      - "./mysql-init:/docker-entrypoint-initdb.d"
+    environment:
+      MYSQL_USER: myusername
+      MYSQL_PASSWORD: mypassword
+      MYSQL_DATABASE: mydatabase
+    command: [ "/bin/bash", "-c", "pip install -r /docker-entrypoint-initdb.d/requirements.txt && python /docker-entrypoint-initdb.d/load_data.py" ]
+
   test-db:
     image: mysql:latest
     environment:
