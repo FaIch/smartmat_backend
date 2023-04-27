@@ -60,6 +60,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/recipe/**").permitAll()
                 .requestMatchers("/user/auth/refreshToken").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/user/edit/password").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();
