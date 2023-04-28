@@ -1,10 +1,10 @@
 package edu.ntnu.idatt2106.backend.service;
 
-import edu.ntnu.idatt2106.backend.model.Response.RecipeSortedByFridgeResponse;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.RecipeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.RecipeRepository;
@@ -18,17 +18,17 @@ import java.util.*;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
-
     private final RecipeItemRepository recipeItemRepository;
-
-
     private final FridgeItemRepository fridgeItemRepository;
+    private final FridgeItemService fridgeItemService;
 
     @Autowired
-    public RecipeService(RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository, FridgeItemRepository fridgeItemRepository) {
+    public RecipeService(RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository,
+                         FridgeItemRepository fridgeItemRepository, FridgeItemService fridgeItemService) {
         this.recipeRepository = recipeRepository;
         this.recipeItemRepository = recipeItemRepository;
         this.fridgeItemRepository = fridgeItemRepository;
+        this.fridgeItemService = fridgeItemService;
     }
 
     public ResponseEntity<List<Recipe>> getAllRecipes() {
@@ -46,44 +46,18 @@ public class RecipeService {
         return ResponseEntity.status(HttpStatus.OK).body(recipes);
     }
 
-
-    public ResponseEntity<List<RecipeSortedByFridgeResponse>> getRecipesByFridge() {
+    public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user) {
         List<Recipe> recipes = recipeRepository.findAll();
-        List<RecipeWithFridgeCount> recipeCounts = new ArrayList<>();
+        List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
+        List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
+        List<RecipeWithFridgeCount> recipeWithFridgeCounts = new ArrayList<>();
         for (Recipe recipe : recipes) {
-
-            int count = getCountOfIngredientsInFridge(recipe);
-            recipeCounts.add(new RecipeWithFridgeCount(recipe, count));
+            List<Long> recipeItemIds = recipeItemRepository.findItemIdsByRecipeId(recipe.getId());
+            int fridgeCount = (int) recipeItemIds.stream().filter(fridgeItemIds::contains).count();
+            int expiringCount = (int) recipeItemIds.stream().filter(expiringFridgeItemIds::contains).count();
+            recipeWithFridgeCounts.add(new RecipeWithFridgeCount(recipe, fridgeCount, expiringCount));
         }
-        Collections.sort(recipeCounts);
-        List<RecipeSortedByFridgeResponse> sortedRecipes = new ArrayList<>();
-        for (RecipeWithFridgeCount recipeCount : recipeCounts) {
-
-            RecipeSortedByFridgeResponse recipeSorted = new RecipeSortedByFridgeResponse();
-            recipeSorted.setName(recipeCount.getRecipe().getName());
-            recipeSorted.setId(recipeCount.getRecipe().getId());
-            recipeSorted.setDescription(recipeCount.getRecipe().getDescription());
-            recipeSorted.setEstimated_time(recipeCount.getRecipe().getEstimatedTime());
-            recipeSorted.setImage(recipeCount.getRecipe().getImage());
-            recipeSorted.setNumberOfItemsRecipe(recipeCount.getRecipe().getNumberOfItems());
-            recipeSorted.setNumberOfItemsFridge(recipeCount.getFridgeCount());
-
-            sortedRecipes.add(recipeSorted);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(sortedRecipes);
-    }
-
-    private int getCountOfIngredientsInFridge(Recipe recipe) {
-        int count = 0;
-        List<RecipeItem> recipeItems = recipe.getRecipeItems();
-        for (RecipeItem recipeItem : recipeItems) {
-            Long itemId = recipeItem.getItem().getId();
-            FridgeItem fridgeItem = fridgeItemRepository.findByItemId(itemId);
-            if (fridgeItem != null && fridgeItem.getQuantity() >= recipeItem.getQuantity()) {
-                count++;
-            }
-        }
-        return count;
+        return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
 
 }

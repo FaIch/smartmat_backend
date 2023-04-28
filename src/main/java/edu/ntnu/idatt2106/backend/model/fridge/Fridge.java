@@ -21,9 +21,6 @@ public class Fridge {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @OneToMany(mappedBy = "fridge", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<FridgeItem> fridgeItems = new ArrayList<>();
-
     public void addFridgeItem(FridgeItem fridgeItem) {
         fridgeItem.setFridge(this);
     }
