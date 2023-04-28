@@ -23,5 +23,4 @@ public class RecipeWithFridgeCount{
         return amountNearlyExpired;
     }
 
-
 }
