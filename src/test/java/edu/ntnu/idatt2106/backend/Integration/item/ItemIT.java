@@ -88,7 +88,7 @@ public class ItemIT {
     @DisplayName("Test that you can get an item by its id")
     public void testGetItemById() {
         Item item = new Item();
-        item.setId(1L);
+        item.setId(100L);
         item.setName("Test Item");
         item.setShortDesc("Test Description");
         item.setCategory(Category.DAIRY);

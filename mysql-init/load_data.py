@@ -36,7 +36,7 @@ cursor = connection.cursor()
 # Create the items table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS item (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     base_amount DECIMAL(10, 2),
     category VARCHAR(255),
     image VARCHAR(255),
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS item (
 # Create the recipes table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS recipe (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     estimated_time VARCHAR(255),
     description TEXT,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS recipe (
 # Create the recipe_items table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS recipe_item (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     quantity DOUBLE,
     item_id INT,
     recipe_id INT,
