@@ -22,13 +22,13 @@ public class Waste {
     @JsonIgnore
     private User user;
 
-    private int weight;
+    private double weight;
 
     @Column(name = "entry_date")
     private LocalDate entryDate;
 
 
-    public Waste(User user, int weight, LocalDate entryDate) {
+    public Waste(User user, double weight, LocalDate entryDate) {
         this.user = user;
         this.weight = weight;
         this.entryDate = entryDate;

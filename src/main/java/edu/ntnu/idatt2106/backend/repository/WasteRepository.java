@@ -10,8 +10,8 @@ import java.time.LocalDate;
 public interface WasteRepository extends JpaRepository<Waste, Long> {
 
     @Query("SELECT SUM(w.weight) FROM Waste w WHERE w.user = :user")
-    Integer getTotalWasteByUser(@Param("user") User user);
+    Double getTotalWasteByUser(@Param("user") User user);
 
     @Query("SELECT SUM(w.weight) FROM Waste w WHERE w.user = :user AND w.entryDate BETWEEN :startDate AND :endDate")
-    Integer getTotalWasteByUserBetweenDates(@Param("user") User user, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Double getTotalWasteByUserBetweenDates(@Param("user") User user, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
