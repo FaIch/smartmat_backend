@@ -57,6 +57,8 @@ public class RecipeService {
             int expiringCount = (int) recipeItemIds.stream().filter(expiringFridgeItemIds::contains).count();
             recipeWithFridgeCounts.add(new RecipeWithFridgeCount(recipe, fridgeCount, expiringCount));
         }
+        recipeWithFridgeCounts.sort(Comparator.comparingInt(RecipeWithFridgeCount::getAmountInFridge).reversed());
+        recipeWithFridgeCounts.sort(Comparator.comparingInt(RecipeWithFridgeCount::getAmountNearlyExpired).reversed());
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
 
