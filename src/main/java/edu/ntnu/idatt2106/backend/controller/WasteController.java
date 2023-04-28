@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/waste")
@@ -23,38 +26,49 @@ public class WasteController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addWasteEntry(@AuthenticationPrincipal User user, @RequestBody WasteRequest wasteRequest) {
+    public ResponseEntity<String> addWasteEntry(@AuthenticationPrincipal User user,@RequestBody WasteRequest wasteRequest) {
         return wasteService.addWasteEntry(user, wasteRequest);
     }
 
-    @GetMapping("/total")
-    public ResponseEntity<Double> getTotalWasteByUser(@AuthenticationPrincipal User user) {
-        return wasteService.getTotalWasteByUser(user);
+    @GetMapping("/total/all-time")
+    public ResponseEntity<List<Double>> getTotalWasteByUser(@AuthenticationPrincipal User user) {
+        Double totalWaste = wasteService.getTotalWasteByUser(user);
+        Double totalMoneyLost = totalWaste * 63.0;
+        Double totalEmissions = totalWaste * 3.6;
+        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(Arrays.asList(totalWaste,
+                totalMoneyLost, totalEmissions)));
     }
 
-    @GetMapping("/total/date-range")
-    public ResponseEntity<Double> getTotalWasteByUserBetweenDates(@AuthenticationPrincipal User user
-            , @RequestParam String startDate, @RequestParam String endDate) {
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-        return wasteService.getTotalWasteByUserBetweenDates(user, start, end);
+    @GetMapping("/total/last-week")
+    public ResponseEntity<List<Double>> getLastWeekWasteByUser(@AuthenticationPrincipal User user) {
+        LocalDate start = LocalDate.now().minusDays(7);
+        LocalDate end = LocalDate.now();
+        Double lastWeekWaste = wasteService.getTotalWasteByUserBetweenDates(user, start, end).getBody();
+        Double lastWeekMoneyLost = lastWeekWaste * 63.0;
+        Double lastWeekEmissions = lastWeekWaste * 3.6;
+        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(Arrays.asList(lastWeekWaste,
+                lastWeekMoneyLost, lastWeekEmissions)));
     }
 
-    @GetMapping("/money")
-    public ResponseEntity<Double> getMoneyLostByUser(@AuthenticationPrincipal User user) {
-        Double moneyLost = wasteService.getTotalWasteByUser(user).getBody(); // 63kr per kg of food waste
-        if (moneyLost == null || moneyLost == 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(0.0);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(moneyLost*63.0);
+    @GetMapping("/total/last-month")
+    public ResponseEntity<List<Double>> getLastMonthWasteByUser(@AuthenticationPrincipal User user) {
+        LocalDate start = LocalDate.now().minusMonths(1);
+        LocalDate end = LocalDate.now();
+        Double lastMonthWaste = wasteService.getTotalWasteByUserBetweenDates(user, start, end).getBody();
+        Double lastMonthMoneyLost = lastMonthWaste * 63.0;
+        Double lastMonthEmissions = lastMonthWaste * 3.6;
+        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(Arrays.asList(lastMonthWaste,
+                lastMonthMoneyLost, lastMonthEmissions)));
     }
 
-    @GetMapping("/emissions")
-    public ResponseEntity<Double> getCo2EmissionsByUser(@AuthenticationPrincipal User user) {
-        Double co2Emissions = wasteService.getTotalWasteByUser(user).getBody();
-        if (co2Emissions == null || co2Emissions == 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(0.0);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(co2Emissions*3.6); // 3.6 kg CO2 per kg of food waste
+    @GetMapping("/total/last-year")
+    public ResponseEntity<List<Double>> getLastYearWasteByUser(@AuthenticationPrincipal User user) {
+        LocalDate start = LocalDate.now().minusYears(1);
+        LocalDate end = LocalDate.now();
+        Double lastYearWaste = wasteService.getTotalWasteByUserBetweenDates(user, start, end).getBody();
+        Double lastYearMoneyLost = lastYearWaste * 63.0;
+        Double lastYearEmissions = lastYearWaste * 3.6;
+        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(Arrays.asList(lastYearWaste,
+                lastYearMoneyLost, lastYearEmissions)));
     }
 }

@@ -26,13 +26,15 @@ public class WasteService {
         return ResponseEntity.status(HttpStatus.OK).body("Waste was added successfully");
     }
 
-    public ResponseEntity<Double> getTotalWasteByUser(User user) {
-        Double totalWaste = wasteRepository.getTotalWasteByUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(totalWaste != null ? totalWaste : 0);
+    public Double getTotalWasteByUser(User user) {
+        return wasteRepository.getTotalWasteByUser(user);
     }
 
     public ResponseEntity<Double> getTotalWasteByUserBetweenDates(User user, LocalDate startDate, LocalDate endDate) {
         Double totalWaste = wasteRepository.getTotalWasteByUserBetweenDates(user, startDate, endDate);
-        return ResponseEntity.status(HttpStatus.OK).body(totalWaste != null ? totalWaste : 0);
+        if (totalWaste == null || totalWaste == 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(0.0);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(totalWaste);
     }
 }
