@@ -60,6 +60,13 @@ public class RecipeService {
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
 
+    public ResponseEntity<Recipe> getRecipeById(Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.getRecipeById(id));
+    }
+
+    public ResponseEntity<List<RecipeItem>> getRecipeItems(Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeItemRepository.findAllByRecipeId(id));
+    }
 }
 
 
