@@ -116,14 +116,14 @@ public class UserController {
     }
 
     /**
-     * Edits the name of a sub user.
+     * Edits sub user.
      * @param subUserRequest the user request containing the user's details
      * @return ResponseEntity containing a success or error message
      */
     @PutMapping("/sub-user/edit")
-    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
+    public ResponseEntity<String> editSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return userService.editSubUserName(user, subUserRequest);
+        return userService.editSubUser(user, subUserRequest);
     }
 
     /**
