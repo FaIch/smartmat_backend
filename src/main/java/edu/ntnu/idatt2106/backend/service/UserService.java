@@ -76,6 +76,7 @@ public class UserService {
 
         // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
+        user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -110,6 +111,7 @@ public class UserService {
 
         // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
+        user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -202,6 +204,15 @@ public class UserService {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Login successful");
             responseBody.put("userEmail", optionalUser.get().getEmail());
+            List<SubUser> subUsers = subUserRepository.findSubUserByMainUser(optionalUser.get());
+            boolean hasChildUser = false;
+            for (SubUser subUser : subUsers) {
+                if (subUser.getRole().equals(Role.CHILD)) {
+                    hasChildUser = true;
+                    break;
+                }
+            }
+            responseBody.put("childUser", hasChildUser);
             return ResponseEntity.ok(responseBody);
         }
         // Returns a response indicating that the login was unsuccessful
