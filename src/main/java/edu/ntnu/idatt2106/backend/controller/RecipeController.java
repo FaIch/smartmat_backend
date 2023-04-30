@@ -41,6 +41,7 @@ public class RecipeController {
         return recipeService.getRecipeById(id);
     }
 
+    //todo: hente herfra på week menu
     @GetMapping("/list/sorted")
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(@AuthenticationPrincipal User user) {
         return recipeService.getRecipesSorted(user);
