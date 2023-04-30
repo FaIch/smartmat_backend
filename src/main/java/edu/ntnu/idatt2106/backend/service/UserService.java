@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
+import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
@@ -413,5 +414,9 @@ public class UserService {
         user.setPassword(null);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 }
