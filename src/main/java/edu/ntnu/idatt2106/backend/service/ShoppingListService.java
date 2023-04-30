@@ -74,15 +74,25 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items deleted");
     }
 
-    public ResponseEntity<String> updateShoppingListItemQuantity(Long shoppingListItemId, int quantity) {
-        Optional<ShoppingListItem> shoppingListItemOptional = shoppingListItemRepository.findById(shoppingListItemId);
-        if (shoppingListItemOptional.isPresent()) {
-            ShoppingListItem shoppingListItem = shoppingListItemOptional.get();
-            shoppingListItem.setQuantity(quantity);
-            shoppingListItemRepository.save(shoppingListItem);
-            return ResponseEntity.status(HttpStatus.OK).body("Shopping list item quantity updated");
-        } else {
+    public ResponseEntity<String> updateShoppingListItem(User user, ShoppingListItemRequest shoppingListItemRequest) {
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
+        }
+        Optional<ShoppingListItem> shoppingListItemOptional = shoppingListItemRepository
+                                                            .findById(shoppingListItemRequest.getItemId());
+        if (shoppingListItemOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+
+        ShoppingListItem shoppingListItem = shoppingListItemOptional.get();
+        if (!shoppingListItem.getShoppingList().getId().equals(shoppingListOptional.get().getId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("The shopping list item is not in the user's shopping list");
+        }
+
+        shoppingListItem.setQuantity(shoppingListItemRequest.getQuantity());
+        shoppingListItemRepository.save(shoppingListItem);
+        return ResponseEntity.status(HttpStatus.OK).body("Shopping list item quantity updated");
     }
 }

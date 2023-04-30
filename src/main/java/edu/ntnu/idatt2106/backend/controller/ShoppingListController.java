@@ -40,8 +40,8 @@ public class ShoppingListController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestParam Long shoppingListItemId
-            , @RequestParam int updatedShoppingListItemQuantity) {
-        return shoppingListService.updateShoppingListItemQuantity(shoppingListItemId, updatedShoppingListItemQuantity);
+    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestBody ShoppingListItemRequest shoppingListItemRequest,
+                                                                 @AuthenticationPrincipal User user) {
+        return shoppingListService.updateShoppingListItem(user, shoppingListItemRequest);
     }
 }
