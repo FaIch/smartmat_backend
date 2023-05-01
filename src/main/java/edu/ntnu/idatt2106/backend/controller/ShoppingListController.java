@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -27,6 +29,15 @@ public class ShoppingListController {
         return shoppingListService.getShoppingListItemsByUserId(user);
     }
 
+    @GetMapping("/get/number")
+    public ResponseEntity<Map<String, Integer>> getNumberOfShoppingListItems(@AuthenticationPrincipal User user) {
+        return shoppingListService.getNumberOfShoppingListItemsByUserId(user);
+    }
+    @GetMapping("/get/suggestions")
+    public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
+        return shoppingListService.getSuggestedItems(user.getId());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addListOfShoppingListItems(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
                                                              @AuthenticationPrincipal User user) {
@@ -40,8 +51,8 @@ public class ShoppingListController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestBody ShoppingListItemRequest shoppingListItemRequest,
-                                                                 @AuthenticationPrincipal User user) {
-        return shoppingListService.updateShoppingListItem(user, shoppingListItemRequest);
+    public ResponseEntity<String> updateShoppingListItemsQuantity(@RequestBody List<ShoppingListItemRequest> shoppingListItemRequests,
+                                                                  @AuthenticationPrincipal User user) {
+        return shoppingListService.updateShoppingListItems(user, shoppingListItemRequests);
     }
 }
