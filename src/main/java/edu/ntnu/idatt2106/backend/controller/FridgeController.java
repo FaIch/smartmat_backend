@@ -58,6 +58,12 @@ public class FridgeController {
         return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem, user);
     }
 
+    @PostMapping("remove/byRecipe")
+    public ResponseEntity<String> removeFridgeItemsByRecipe(@RequestBody List<FridgeItemRequest> items,
+                                                            @AuthenticationPrincipal User user) {
+        return fridgeService.removeFridgeItemsByRecipe(items, user);
+    }
+
     //Not tested!!!
     @GetMapping("fridge-items/list/date")
     public ResponseEntity<List<FridgeItem>> getItemsByDate(){
