@@ -191,4 +191,22 @@ public class FridgeService {
         }
         return fridgeItems;
     }
+
+    public ResponseEntity<String> removeFridgeItemsByRecipe(List<FridgeItemRequest> items, User user) {
+        for (FridgeItemRequest item : items) {
+            int quantity = item.getQuantity();
+            List<FridgeItem> fridgeItems = fridgeItemRepository.findByUserIdAndItemId(user.getId(), item.getItemId());
+            for (FridgeItem fridgeItem : fridgeItems) {
+                if (fridgeItem.getQuantity() > quantity) {
+                    fridgeItem.setQuantity(fridgeItem.getQuantity() - quantity);
+                    fridgeItemRepository.save(fridgeItem);
+                    break;
+                } else {
+                    quantity -= fridgeItem.getQuantity();
+                    fridgeItemRepository.delete(fridgeItem);
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
+    }
 }

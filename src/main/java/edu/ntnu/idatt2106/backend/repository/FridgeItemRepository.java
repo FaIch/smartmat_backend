@@ -19,4 +19,8 @@ public interface FridgeItemRepository extends JpaRepository<FridgeItem, Long> {
     @Query("SELECT fi.item.id FROM FridgeItem fi WHERE fi.fridge.user.id = :userId AND " +
             "fi.expirationDate BETWEEN :today AND :threeDaysFromNow")
     List<Long> findExpiringItemIdsByUserId(Long userId, LocalDate today, LocalDate threeDaysFromNow);
+
+    @Query("SELECT fi FROM FridgeItem fi JOIN fi.fridge fr WHERE fr.user.id = :userId AND fi.item.id = :itemId")
+    List<FridgeItem> findByUserIdAndItemId(Long userId, Long itemId);
+
 }

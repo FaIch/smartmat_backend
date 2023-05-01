@@ -7,7 +7,8 @@
 2. Installation
 3. Running the Application
 4. Running the tests
-5. Docker Commands
+5. Swagger Documentation
+6. Docker Commands
 
 ---
 
@@ -45,7 +46,13 @@ Open a terminal and navigate to the root directory of the project, from here you
 
 ---
 
-### 5. Docker Commands
+### 5. Swagger Documentation
+To get an overview of the API endpoints, you can use the swagger documentation.
+To access this, make sure the application is running and open a browser and navigate to `http://localhost:8080/swagger-ui/index.html`
+
+---
+
+### 6. Docker Commands
 Here is a list of commands you can use in docker to manage the containers. These commands should be run from the root directory of the project.
 
 

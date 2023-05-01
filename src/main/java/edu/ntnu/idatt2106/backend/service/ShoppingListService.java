@@ -12,6 +12,7 @@ import edu.ntnu.idatt2106.backend.repository.ShoppingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -157,5 +158,35 @@ public class ShoppingListService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items quantity updated");
+    }
+
+    public ResponseEntity<String> addWishedItem(List<ShoppingListItemRequest> shoppingListItemRequests,
+                                                @AuthenticationPrincipal User user) {
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
+        }
+        ShoppingList shoppingList = shoppingListOptional.get();
+        for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItemRequests) {
+            ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(),
+                    itemService.getItemById(shoppingListItemRequest.getItemId()), true);
+            shoppingListItem.setShoppingList(shoppingList);
+            shoppingListItemRepository.save(shoppingListItem);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Wished items added");
+    }
+
+    public ResponseEntity<List<ShoppingListItem>> getWishedItemsByUser(User user) {
+        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
+        if (shoppingListOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        ShoppingList shoppingList = shoppingListOptional.get();
+        List<ShoppingListItem> allShoppingListItems = shoppingListRepository
+                .findShoppingListItemsByShoppingListId(shoppingList.getId());
+        List<ShoppingListItem> shoppingListItems = allShoppingListItems.stream().filter(ShoppingListItem::isWishedItem)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(shoppingListItems);
     }
 }
