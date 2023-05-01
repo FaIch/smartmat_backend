@@ -9,6 +9,7 @@ import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.service.WeekMenuService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -56,10 +57,14 @@ public class WeekMenuController {
         return weekMenuService.saveWeekMenu(request.getIntList(), request.getMessage(), user);
     }
 
-    @GetMapping("/check-for-week-menu")
-    public /*ResponseEntity<WeekMenu>*/ void  getWeekMenuUser(@AuthenticationPrincipal User user) {
-        //return weekMenuService.getWeekMenuByUser(user);
-        weekMenuService.getWeekMenuByUser(user);
+    @GetMapping("/get")
+    public ResponseEntity<WeekMenu> getWeekMenuByUserId(@AuthenticationPrincipal User user) {
+        WeekMenu weekMenu = weekMenuService.getWeekMenuByUser(user);
+        if (weekMenu != null) {
+            return ResponseEntity.ok(weekMenu);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PostMapping("/remove")

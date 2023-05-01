@@ -50,6 +50,7 @@ public class WeekMenuService {
     }
 
     public ResponseEntity<WeekMenuData> getDataWeekMenu(List<Integer> recipeIds, User user) {
+        recipeIds.remove(null);
         List<Recipe> recipes = getRecipesById(recipeIds);
 
         List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
@@ -78,6 +79,7 @@ public class WeekMenuService {
 
 
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesById(List<Integer> recipeIds, User user) {
+        recipeIds.remove(null);
         List<Recipe>  recipes = getRecipesById(recipeIds);
         List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
         List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
@@ -124,15 +126,10 @@ public class WeekMenuService {
         return recipes;
     }
 
-    public /*ResponseEntity<WeekMenu>*/ void getWeekMenuByUser(User user) {
+    public WeekMenu getWeekMenuByUser(User user) {
         Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
-        System.out.println(weekMenuOptional.get());
-       /* if (weekMenuOptional.isPresent()) {
-            System.out.println("true");
-            return ResponseEntity.status(HttpStatus.OK).body(weekMenuOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }*/
+        System.out.println(weekMenuOptional.get().getUser().getEmail());
+        return weekMenuOptional.orElse(null);
     }
 }
 

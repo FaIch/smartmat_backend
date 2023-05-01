@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.model.WeekMenu;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import jakarta.persistence.*;
@@ -18,6 +19,7 @@ public class WeekMenu {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
@@ -51,10 +53,5 @@ public class WeekMenu {
         this.recipe4 = recipe4;
         this.recipe5 = recipe5;
         this.type = type;
-    }
-
-    @Override
-    public String toString(){
-        return "";
     }
 }
