@@ -58,7 +58,7 @@ public class ShoppingListService {
 
         int shoppingListSize = shoppingListItems.size();
         List<Long> suggestedItemIds = getSuggestedItemIds(user.getId());
-        int suggestedItemsSize = suggestedItemIds.size();
+        int suggestedItemsSize = (suggestedItemIds != null) ? suggestedItemIds.size() : 0;
 
         Map<String, Integer> itemCounts = new HashMap<>();
         itemCounts.put("shoppingListItemsNumber", shoppingListSize);
