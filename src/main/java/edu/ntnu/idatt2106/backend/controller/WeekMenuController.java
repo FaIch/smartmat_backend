@@ -46,14 +46,11 @@ public class WeekMenuController {
 
     @PostMapping("/get-data-week-menu")
     public ResponseEntity<WeekMenuData> getWeekMenuData(@RequestBody List<Integer> recipeIds, @AuthenticationPrincipal User user) {
-        System.out.println(recipeIds.toString());
         return weekMenuService.getDataWeekMenu(recipeIds, user);
     }
 
     @PostMapping("/save")
     public ResponseEntity<String> saveMenu(@RequestBody WeekMenuRequest request, @AuthenticationPrincipal User user ) {
-        System.out.println(request.getMessage());
-        System.out.println(request.getIntList().toString());
         return weekMenuService.saveWeekMenu(request.getIntList(), request.getMessage(), user);
     }
 
@@ -63,11 +60,11 @@ public class WeekMenuController {
         if (weekMenu != null) {
             return ResponseEntity.ok(weekMenu);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    @PostMapping("/remove")
+    @GetMapping("/remove")
     public ResponseEntity<String> removeMenu(@AuthenticationPrincipal User user) {
         return weekMenuService.removeWeekMenu(user);
     }

@@ -9,6 +9,7 @@ import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.RecipeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.repository.WeekMenuRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,16 +107,13 @@ public class WeekMenuService {
             return ResponseEntity.status(HttpStatus.OK).body("Week menu saved");
         }
 
+
+    @Transactional
     public ResponseEntity<String> removeWeekMenu(User user) {
-        Optional<WeekMenu> optionalWeekMenu = weekMenuRepository.findByUser(user);
+        Optional<WeekMenu> weekMenu = weekMenuRepository.findByUser(user);
 
-        if (optionalWeekMenu.isPresent()) {
-            weekMenuRepository.delete(optionalWeekMenu.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not find week menu");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("Weekmenu with id removed");
+        weekMenu.ifPresent(weekMenuRepository::delete);
+        return ResponseEntity.status(HttpStatus.OK).body("removed week menu");
     }
 
     public List<Recipe> getRecipesById(List<Integer> recipeIds) {
@@ -128,7 +126,6 @@ public class WeekMenuService {
 
     public WeekMenu getWeekMenuByUser(User user) {
         Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
-        System.out.println(weekMenuOptional.get().getUser().getEmail());
         return weekMenuOptional.orElse(null);
     }
 }
