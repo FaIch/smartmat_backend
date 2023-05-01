@@ -39,6 +39,11 @@ public class FridgeController {
         return fridgeService.getExpiredFridgeItemsByUserId(user);
     }
 
+    @GetMapping("/get/notification")
+    public ResponseEntity<List<FridgeItem>> getNotificationItems(@AuthenticationPrincipal User user) {
+        return fridgeService.getExpiredAndAlmostExpiredFridgeItemsByUser(user);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addFridgeItems(@RequestBody List<FridgeItemRequest> fridgeItemRequests,
                                                  @AuthenticationPrincipal User user) {

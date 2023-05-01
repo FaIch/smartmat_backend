@@ -33,6 +33,17 @@ public class ShoppingListController {
         return shoppingListService.addListOfShoppingListItems(user, shoppingListItems);
     }
 
+    @GetMapping("/get/wished")
+    public ResponseEntity<List<ShoppingListItem>> getWishedShoppingListItems(@AuthenticationPrincipal User user) {
+        return shoppingListService.getWishedItemsByUser(user);
+    }
+
+    @PostMapping("/add/wished")
+    public ResponseEntity<String> addWishedShoppingListItem(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
+                                                             @AuthenticationPrincipal User user) {
+        return shoppingListService.addWishedItem(shoppingListItems, user);
+    }
+
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeListOfShoppingListItems(@RequestParam List<Long> shoppingListItemIds,
                                                                 @AuthenticationPrincipal User user) {
@@ -40,8 +51,8 @@ public class ShoppingListController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestParam Long shoppingListItemId
-            , @RequestParam int updatedShoppingListItemQuantity) {
-        return shoppingListService.updateShoppingListItemQuantity(shoppingListItemId, updatedShoppingListItemQuantity);
+    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestBody ShoppingListItemRequest shoppingListItemRequest,
+                                                                 @AuthenticationPrincipal User user) {
+        return shoppingListService.updateShoppingListItem(user, shoppingListItemRequest);
     }
 }

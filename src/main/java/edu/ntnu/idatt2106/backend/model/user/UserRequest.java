@@ -8,7 +8,6 @@ import lombok.*;
  */
 @Data
 @NoArgsConstructor
-
 @AllArgsConstructor
 public class UserRequest {
 
@@ -17,6 +16,7 @@ public class UserRequest {
     private String address;
     private String password;
     private int passcode;
+    private int numberOfHouseholdMembers;
 
     public UserRequest(String email, Long phoneNumber, String address, int passcode) {
         this.email = email;
@@ -25,10 +25,14 @@ public class UserRequest {
         this.passcode = passcode;
     }
 
-
-
-    public UserRequest(String email, String token){
+    public UserRequest(String email, String token) {
         this.email = email;
         this.password = token;
+    }
+
+    public UserRequest(String email, String token, int numberOfHouseholdMembers) {
+        this.email = email;
+        this.password = token;
+        this.numberOfHouseholdMembers = numberOfHouseholdMembers;
     }
 }

@@ -1,6 +1,5 @@
 package edu.ntnu.idatt2106.backend.service;
 
-import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
@@ -35,6 +34,10 @@ public class RecipeService {
         return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.findAll());
     }
 
+    public ResponseEntity<Recipe> getRecipeById(Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.findById(id).orElse(null));
+    }
+
 
     public ResponseEntity<List<Recipe>> getRecipesByItemName(String itemName) {
         System.out.println(itemName);
@@ -55,15 +58,11 @@ public class RecipeService {
             List<Long> recipeItemIds = recipeItemRepository.findItemIdsByRecipeId(recipe.getId());
             int fridgeCount = (int) recipeItemIds.stream().filter(fridgeItemIds::contains).count();
             int expiringCount = (int) recipeItemIds.stream().filter(expiringFridgeItemIds::contains).count();
-            recipeWithFridgeCounts.add(new RecipeWithFridgeCount(recipe, fridgeCount, expiringCount));
+            recipeWithFridgeCounts.add(new RecipeWithFridgeCount(recipe.getId(), recipe, fridgeCount, expiringCount));
         }
         recipeWithFridgeCounts.sort(Comparator.comparingInt(RecipeWithFridgeCount::getAmountInFridge).reversed());
         recipeWithFridgeCounts.sort(Comparator.comparingInt(RecipeWithFridgeCount::getAmountNearlyExpired).reversed());
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
-    }
-
-    public ResponseEntity<Recipe> getRecipeById(Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.getRecipeById(id));
     }
 
     public ResponseEntity<List<RecipeItem>> getRecipeItems(Long id) {
