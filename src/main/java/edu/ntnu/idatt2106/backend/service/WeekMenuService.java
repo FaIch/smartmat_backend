@@ -1,12 +1,14 @@
 package edu.ntnu.idatt2106.backend.service;
 
+import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.RecipeItemRepository;
-import edu.ntnu.idatt2106.backend.repository.RecipeRepository;
+import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.repository.WeekMenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,7 @@ import java.util.*;
 @Service
 public class WeekMenuService {
 
-    private final RecipeRepository recipeRepository;
-
+    private final WeekMenuRepository weekMenuRepository;
     private final RecipeItemRepository recipeItemRepository;
 
     private final RecipeService recipeService;
@@ -25,16 +26,13 @@ public class WeekMenuService {
     private final FridgeItemService fridgeItemService;
     private final FridgeItemRepository fridgeItemRepository;
 
-    private final UserService userService;
-
     @Autowired
-    public WeekMenuService(RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository, RecipeService recipeService, FridgeItemService fridgeItemService, FridgeItemRepository fridgeItemRepository, UserService userService) {
-        this.recipeRepository = recipeRepository;
+    public WeekMenuService(WeekMenuRepository weekMenuRepository, RecipeItemRepository recipeItemRepository, RecipeService recipeService, FridgeItemService fridgeItemService, FridgeItemRepository fridgeItemRepository) {
+        this.weekMenuRepository = weekMenuRepository;
         this.recipeItemRepository = recipeItemRepository;
         this.recipeService = recipeService;
         this.fridgeItemService = fridgeItemService;
         this.fridgeItemRepository = fridgeItemRepository;
-        this.userService = userService;
     }
 
     public ResponseEntity<List<Recipe>> getRandomWeekMenu() {
@@ -52,10 +50,7 @@ public class WeekMenuService {
     }
 
     public ResponseEntity<WeekMenuData> getDataWeekMenu(List<Integer> recipeIds, User user) {
-        List<Recipe> recipes = new ArrayList<>();
-        for (Integer recipeId : recipeIds) {
-            recipes.add(recipeService.getRecipeById(Long.valueOf(recipeId)).getBody());
-        }
+        List<Recipe> recipes = getRecipesById(recipeIds);
 
         List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
         List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
@@ -83,11 +78,7 @@ public class WeekMenuService {
 
 
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesById(List<Integer> recipeIds, User user) {
-        List<Recipe> recipes = new ArrayList<>();
-        for (Integer recipeId : recipeIds) {
-            recipes.add(recipeService.getRecipeById(Long.valueOf(recipeId)).getBody());
-        }
-
+        List<Recipe>  recipes = getRecipesById(recipeIds);
         List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
         List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
         List<RecipeWithFridgeCount> recipeWithFridgeCounts = new ArrayList<>();
@@ -100,5 +91,48 @@ public class WeekMenuService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
+
+    public ResponseEntity<String> saveWeekMenu(List<Integer> recipeIds, String type, User user) {
+            List<Recipe> recipes = getRecipesById(recipeIds);
+
+            if (weekMenuRepository.findByUser(user).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Week menu already exists for this user");
+            }
+
+            WeekMenu weekMenu = new WeekMenu(user, recipes.get(0), recipes.get(1), recipes.get(2), recipes.get(3), recipes.get(4), type);
+            weekMenuRepository.save(weekMenu);
+            return ResponseEntity.status(HttpStatus.OK).body("Week menu saved");
+        }
+
+    public ResponseEntity<String> removeWeekMenu(User user) {
+        Optional<WeekMenu> optionalWeekMenu = weekMenuRepository.findByUser(user);
+
+        if (optionalWeekMenu.isPresent()) {
+            weekMenuRepository.delete(optionalWeekMenu.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not find week menu");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Weekmenu with id removed");
+    }
+
+    public List<Recipe> getRecipesById(List<Integer> recipeIds) {
+        List<Recipe> recipes = new ArrayList<>();
+        for (Integer recipeId : recipeIds) {
+            recipes.add(recipeService.getRecipeById(Long.valueOf(recipeId)).getBody());
+        }
+        return recipes;
+    }
+
+    public /*ResponseEntity<WeekMenu>*/ void getWeekMenuByUser(User user) {
+        Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
+        System.out.println(weekMenuOptional.get());
+       /* if (weekMenuOptional.isPresent()) {
+            System.out.println("true");
+            return ResponseEntity.status(HttpStatus.OK).body(weekMenuOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }*/
+    }
 }
-//TODO: finne alle itemene vha id, finne ut hvor mange item det er tilsammen i de og finne ut hvor mange de mangler tilsammen se i dev branch
+

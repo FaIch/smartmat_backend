@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.Response.ResponseWeekMenu;
+import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRequest;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
@@ -46,6 +47,24 @@ public class WeekMenuController {
     public ResponseEntity<WeekMenuData> getWeekMenuData(@RequestBody List<Integer> recipeIds, @AuthenticationPrincipal User user) {
         System.out.println(recipeIds.toString());
         return weekMenuService.getDataWeekMenu(recipeIds, user);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<String> saveMenu(@RequestBody WeekMenuRequest request, @AuthenticationPrincipal User user ) {
+        System.out.println(request.getMessage());
+        System.out.println(request.getIntList().toString());
+        return weekMenuService.saveWeekMenu(request.getIntList(), request.getMessage(), user);
+    }
+
+    @GetMapping("/check-for-week-menu")
+    public /*ResponseEntity<WeekMenu>*/ void  getWeekMenuUser(@AuthenticationPrincipal User user) {
+        //return weekMenuService.getWeekMenuByUser(user);
+        weekMenuService.getWeekMenuByUser(user);
+    }
+
+    @PostMapping("/remove")
+    public ResponseEntity<String> removeMenu(@AuthenticationPrincipal User user) {
+        return weekMenuService.removeWeekMenu(user);
     }
 
 }
