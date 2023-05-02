@@ -172,14 +172,12 @@ public class ShoppingListIT {
         List<Map<String, Object>> shoppingListItems = getResponse.getBody();
         assertFalse(shoppingListItems.isEmpty());
 
-        Long shoppingListItemId = ((Number) shoppingListItems.get(0).get("id")).longValue();
-        int updatedShoppingListItemQuantity = 3;
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseURL + "/shopping-list/update")
-                .queryParam("shoppingListItemId", shoppingListItemId)
-                .queryParam("updatedShoppingListItemQuantity", updatedShoppingListItemQuantity);
+        Long shoppingListItemId1 = ((Number) shoppingListItems.get(0).get("id")).longValue();
+        int updatedShoppingListItemQuantity1 = 3;
+        ShoppingListItemRequest newShoppingListItemRequest= new ShoppingListItemRequest(shoppingListItemId1, updatedShoppingListItemQuantity1);
 
-        HttpEntity<?> updateRequest = new HttpEntity<>(authHeaders);
-        ResponseEntity<String> updateResponse = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.PUT, updateRequest, String.class);
+        HttpEntity<?> updateRequest = new HttpEntity<>(List.of(newShoppingListItemRequest), authHeaders);
+        ResponseEntity<String> updateResponse = restTemplate.exchange(baseURL + "/shopping-list/update", HttpMethod.PUT, updateRequest, String.class);
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
     }
