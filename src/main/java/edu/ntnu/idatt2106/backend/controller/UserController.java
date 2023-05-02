@@ -12,9 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -170,4 +173,13 @@ public class UserController {
     public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
         return userService.getUserDetails(user);
     }
+    @GetMapping("/numberOfHouseholdMembers")
+    public ResponseEntity<Integer> getNumberOfHouseholdMembers(@AuthenticationPrincipal User user) {
+        user.getNumberOfHouseholdMembers();
+        if (user != null) {
+            return ResponseEntity.ok(user.getNumberOfHouseholdMembers());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
 }
+
