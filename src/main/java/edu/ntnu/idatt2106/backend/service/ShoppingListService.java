@@ -107,10 +107,17 @@ public class ShoppingListService {
         }
         ShoppingList shoppingList = shoppingListOptional.get();
         for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItems) {
-            ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(),
-                    itemService.getItemById(shoppingListItemRequest.getItemId()));
-            shoppingListItem.setShoppingList(shoppingList);
-            shoppingListItemRepository.save(shoppingListItem);
+            Item item = itemService.getItemById(shoppingListItemRequest.getItemId());
+            Optional<ShoppingListItem> existingShoppingListItemOptional = shoppingListItemRepository.findByShoppingListAndItem(shoppingList, item);
+            if (existingShoppingListItemOptional.isPresent()) {
+                ShoppingListItem existingShoppingListItem = existingShoppingListItemOptional.get();
+                existingShoppingListItem.setQuantity(existingShoppingListItem.getQuantity() + shoppingListItemRequest.getQuantity());
+                shoppingListItemRepository.save(existingShoppingListItem);
+            } else {
+                ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(), item);
+                shoppingListItem.setShoppingList(shoppingList);
+                shoppingListItemRepository.save(shoppingListItem);
+            }
         }
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items added");
     }
