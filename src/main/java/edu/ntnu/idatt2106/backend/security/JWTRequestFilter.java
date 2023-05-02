@@ -111,7 +111,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 
     if (invalidToken) {
       HttpServletResponseWrapper wrappedResponse = new HttpServletResponseWrapper(response);
-      wrappedResponse.setStatus(600);
+      wrappedResponse.setStatus(401);
       wrappedResponse.getWriter().write("Invalid JWT token");
       wrappedResponse.getWriter().flush();
       wrappedResponse.getWriter().close();
