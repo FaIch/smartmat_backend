@@ -5,6 +5,10 @@ import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +41,20 @@ public class UserController {
      * @param userRequest email, phone number, address, role and password for the user being saved
      * @return the saved user
      */
+
+    @ApiResponse(responseCode = "200", description = "User created successfully",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) })
+    @ApiResponse(responseCode = "409", description = "User with given email already exists",
+            content = { @Content(mediaType = "application/json") })
     @PostMapping("/create")
     public ResponseEntity<String> createUserWithoutChild(@RequestBody UserRequest userRequest) {
         return userService.createUserWithoutChild(userRequest);
     }
 
+    @ApiResponse(responseCode = "200", description = "User created successfully",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) })
+    @ApiResponse(responseCode = "409", description = "User with given email already exists",
+            content = { @Content(mediaType = "application/json") })
     @PostMapping("/create/child")
     public ResponseEntity<String> createUserWithChild(@RequestBody UserRequest userRequest) {
         return userService.createUserWithChild(userRequest);
@@ -57,6 +70,10 @@ public class UserController {
      * @return a {@link UserRequest} object containing the user's details and JWT token if the authentication succeeds,
      *         or null if the authentication fails
      */
+    @ApiResponse(responseCode = "200", description = "Login successful",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) })
+    @ApiResponse(responseCode = "400", description = "User with given email does not exist",
+            content = { @Content(mediaType = "application/json") })
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(
             @RequestBody UserRequest user,
@@ -75,6 +92,8 @@ public class UserController {
      * @param phoneNumber The new phone number for the user.
      * @return A ResponseEntity containing a success or error message.
      */
+    @ApiResponse(responseCode = "200", description = "Phone number changed",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class)) })
     @PutMapping("/edit/phone")
     public ResponseEntity<String> editPhoneNumber(@RequestParam String phoneNumber, @AuthenticationPrincipal User user){
         return userService.editPhoneNumber(user, phoneNumber);
@@ -116,14 +135,14 @@ public class UserController {
     }
 
     /**
-     * Edits the name of a sub user.
+     * Edits sub user.
      * @param subUserRequest the user request containing the user's details
      * @return ResponseEntity containing a success or error message
      */
     @PutMapping("/sub-user/edit")
-    public ResponseEntity<String> editSubUserName(@RequestBody SubUserRequest subUserRequest
+    public ResponseEntity<String> editSubUser(@RequestBody SubUserRequest subUserRequest
             , @AuthenticationPrincipal User user) {
-        return userService.editSubUserName(user, subUserRequest);
+        return userService.editSubUser(user, subUserRequest);
     }
 
     /**

@@ -39,7 +39,12 @@ public class JWTRequestFilter extends OncePerRequestFilter {
           new AntPathRequestMatcher("/user/create/child"),
           new AntPathRequestMatcher("/user/auth/refreshToken"),
           new AntPathRequestMatcher("/swagger-ui/**"),
-          new AntPathRequestMatcher("/v3/api-docs/**")
+          new AntPathRequestMatcher("/v3/api-docs/**"),
+          new AntPathRequestMatcher("/swagger-ui.html"),
+          new AntPathRequestMatcher("/swagger.json"),
+          new AntPathRequestMatcher("/swagger-resources/**"),
+          new AntPathRequestMatcher("/webjars/**"),
+          new AntPathRequestMatcher("/addProduct")
   );
   private final RequestMatcher allowedUrls = new OrRequestMatcher(PUBLIC_URLS);
   /**

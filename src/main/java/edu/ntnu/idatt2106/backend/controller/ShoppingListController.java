@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -27,10 +29,30 @@ public class ShoppingListController {
         return shoppingListService.getShoppingListItemsByUserId(user);
     }
 
+    @GetMapping("/get/number")
+    public ResponseEntity<Map<String, Integer>> getNumberOfShoppingListItems(@AuthenticationPrincipal User user) {
+        return shoppingListService.getNumberOfShoppingListItemsByUserId(user);
+    }
+    @GetMapping("/get/suggestions")
+    public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
+        return shoppingListService.getSuggestedItems(user.getId());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addListOfShoppingListItems(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
                                                              @AuthenticationPrincipal User user) {
         return shoppingListService.addListOfShoppingListItems(user, shoppingListItems);
+    }
+
+    @GetMapping("/get/wished")
+    public ResponseEntity<List<ShoppingListItem>> getWishedShoppingListItems(@AuthenticationPrincipal User user) {
+        return shoppingListService.getWishedItemsByUser(user);
+    }
+
+    @PostMapping("/add/wished")
+    public ResponseEntity<String> addWishedShoppingListItem(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
+                                                             @AuthenticationPrincipal User user) {
+        return shoppingListService.addWishedItem(shoppingListItems, user);
     }
 
     @DeleteMapping("/remove")
@@ -40,8 +62,8 @@ public class ShoppingListController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateShoppingListItemQuantity(@RequestParam Long shoppingListItemId
-            , @RequestParam int updatedShoppingListItemQuantity) {
-        return shoppingListService.updateShoppingListItemQuantity(shoppingListItemId, updatedShoppingListItemQuantity);
+    public ResponseEntity<String> updateShoppingListItemsQuantity(@RequestBody List<ShoppingListItemRequest> shoppingListItemRequests,
+                                                                  @AuthenticationPrincipal User user) {
+        return shoppingListService.updateShoppingListItems(user, shoppingListItemRequests);
     }
 }

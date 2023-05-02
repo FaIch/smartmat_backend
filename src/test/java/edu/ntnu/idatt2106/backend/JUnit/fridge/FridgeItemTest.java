@@ -14,11 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class FridgeItemTest {
 
     private FridgeItem fridgeItem;
-    private Item item;
 
     @BeforeEach
     void setUp() {
-        item = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
+        Item item = new Item("TestItem", "Short description", Category.FISH, 100.0, 5.0, "TestImage", Unit.ITEM, 10);
         fridgeItem = new FridgeItem(1, LocalDate.now().plusDays(7), item);
     }
 

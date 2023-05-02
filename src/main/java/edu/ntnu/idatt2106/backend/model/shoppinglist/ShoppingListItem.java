@@ -26,6 +26,8 @@ public class ShoppingListItem {
 
     private int quantity;
 
+    private boolean wishedItem;
+
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
@@ -33,6 +35,12 @@ public class ShoppingListItem {
     public ShoppingListItem(int quantity, Item item) {
         this.quantity = quantity;
         this.item = item;
+    }
+
+    public ShoppingListItem(int quantity, Item item, boolean wishedItem) {
+        this.quantity = quantity;
+        this.item = item;
+        this.wishedItem = wishedItem;
     }
 
     @Override

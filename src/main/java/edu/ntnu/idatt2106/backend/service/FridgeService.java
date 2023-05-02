@@ -98,6 +98,22 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
+    public ResponseEntity<List<FridgeItem>> getExpiredAndAlmostExpiredFridgeItemsByUser(User user){
+        Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
+        if (fridgeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        Fridge fridge = fridgeOptional.get();
+        List<FridgeItem> allFridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+        for (FridgeItem fridgeItem : allFridgeItems) {
+            if (fridgeItem.getExpirationDate().isBefore(LocalDate.now().plusDays(3))) {
+                fridgeItems.add(fridgeItem);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
+    }
+
 
     public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItemRequest> fridgeItemRequests) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
@@ -174,5 +190,23 @@ public class FridgeService {
             fridgeItems.add(fridgeItem);
         }
         return fridgeItems;
+    }
+
+    public ResponseEntity<String> removeFridgeItemsByRecipe(List<FridgeItemRequest> items, User user) {
+        for (FridgeItemRequest item : items) {
+            int quantity = item.getQuantity();
+            List<FridgeItem> fridgeItems = fridgeItemRepository.findByUserIdAndItemId(user.getId(), item.getItemId());
+            for (FridgeItem fridgeItem : fridgeItems) {
+                if (fridgeItem.getQuantity() > quantity) {
+                    fridgeItem.setQuantity(fridgeItem.getQuantity() - quantity);
+                    fridgeItemRepository.save(fridgeItem);
+                    break;
+                } else {
+                    quantity -= fridgeItem.getQuantity();
+                    fridgeItemRepository.delete(fridgeItem);
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
     }
 }

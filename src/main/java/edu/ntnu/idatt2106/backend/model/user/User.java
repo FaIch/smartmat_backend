@@ -26,6 +26,7 @@ public class User {
     private String email;
     private Long phoneNumber;
     private String address;
+    private int numberOfHouseholdMembers;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Fridge fridge;

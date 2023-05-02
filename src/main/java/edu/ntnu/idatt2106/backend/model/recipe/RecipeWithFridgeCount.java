@@ -1,24 +1,32 @@
 package edu.ntnu.idatt2106.backend.model.recipe;
 
-public class RecipeWithFridgeCount implements Comparable<RecipeWithFridgeCount> {
+public class RecipeWithFridgeCount{
+    private final long id;
     private Recipe recipe;
-    private int fridgeCount;
+    private final int amountInFridge;
+    private final int amountNearlyExpired;
 
-    public RecipeWithFridgeCount(Recipe recipe, int fridgeCount) {
+    public RecipeWithFridgeCount(long id, Recipe recipe, int amountInFridge, int amountNearlyExpired) {
+        this.id = id;
         this.recipe = recipe;
-        this.fridgeCount = fridgeCount;
+        this.amountInFridge = amountInFridge;
+        this.amountNearlyExpired = amountNearlyExpired;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Recipe getRecipe() {
         return recipe;
     }
 
-    public int getFridgeCount() {
-        return fridgeCount;
+    public int getAmountInFridge() {
+        return amountInFridge;
     }
 
-    @Override
-    public int compareTo(RecipeWithFridgeCount other) {
-        return Integer.compare(other.fridgeCount, this.fridgeCount);
+    public int getAmountNearlyExpired() {
+        return amountNearlyExpired;
     }
+
 }
