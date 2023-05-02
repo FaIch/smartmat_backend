@@ -405,15 +405,12 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(optionalSubUserList);
     }
 
-    public ResponseEntity<User> getUserDetails(User user) {
+    public ResponseEntity<UserRequest> getUserDetails(User user) {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
-        // Remove sensitive information like password before sending it to the client
-        user.setPassword(null);
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(new UserRequest(user.getPhoneNumber(), user.getAddress(),
+                user.getNumberOfHouseholdMembers()), HttpStatus.OK);
     }
 
     public User getUserById(Long id) {

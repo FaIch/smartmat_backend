@@ -25,6 +25,12 @@ public class UserRequest {
         this.passcode = passcode;
     }
 
+    public UserRequest(Long phoneNumber, String address, int numberOfHouseholdMembers) {
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.numberOfHouseholdMembers = numberOfHouseholdMembers;
+    }
+
     public UserRequest(String email, String token) {
         this.email = email;
         this.password = token;

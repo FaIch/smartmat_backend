@@ -170,7 +170,7 @@ public class UserController {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserRequest> getUserDetails(@AuthenticationPrincipal User user) {
         return userService.getUserDetails(user);
     }
     @GetMapping("/numberOfHouseholdMembers")
