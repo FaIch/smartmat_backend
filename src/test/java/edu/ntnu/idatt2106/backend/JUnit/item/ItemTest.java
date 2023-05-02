@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.JUnit.item;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.item.Unit;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +63,6 @@ class ItemTest {
     public void testIdGeneration() {
         Item item1 = new Item(1L, "Ost", "Gulost", Category.CHEESE, 80.0, 1.0, "itemImg", Unit.ITEM, 10);
         Item item2 = new Item(2L,"Ost", "Gulost", Category.CHEESE, 50.0, 0.5, "itemImg", Unit.ITEM, 10);
-        assertNotEquals(item1.getId(), item2.getId());
+        Assertions.assertNotEquals(item1.getId(), item2.getId());
     }
 }

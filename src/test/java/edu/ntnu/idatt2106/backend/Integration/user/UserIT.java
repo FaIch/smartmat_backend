@@ -143,7 +143,7 @@ public class UserIT {
 
     @Test
     @DisplayName("Test that getting subusers returns the subusers of the logged in user")
-    public void testGetSubusers() {
+    public void testGetSubUsers() {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
         restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
 

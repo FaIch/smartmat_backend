@@ -40,7 +40,6 @@ public class ItemIT {
 
     private String baseURL;
     private HttpHeaders authHeaders;
-    private HttpEntity<?> authRequest;
 
     @BeforeEach
     public void setUp() {
@@ -67,7 +66,7 @@ public class ItemIT {
         authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
         authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
 
-        authRequest = new HttpEntity<>(authHeaders);
+        HttpEntity<?> authRequest = new HttpEntity<>(authHeaders);
     }
 
     @AfterEach
@@ -89,7 +88,7 @@ public class ItemIT {
     @DisplayName("Test that you can get an item by its id")
     public void testGetItemById() {
         Item item = new Item();
-        item.setId(1L);
+        item.setId(100L);
         item.setName("Test Item");
         item.setShortDesc("Test Description");
         item.setCategory(Category.DAIRY);

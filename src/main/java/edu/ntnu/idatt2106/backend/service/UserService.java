@@ -1,6 +1,7 @@
 package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
+import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
@@ -76,6 +77,7 @@ public class UserService {
 
         // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
+        user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -110,6 +112,7 @@ public class UserService {
 
         // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
+        user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -202,6 +205,15 @@ public class UserService {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("message", "Login successful");
             responseBody.put("userEmail", optionalUser.get().getEmail());
+            List<SubUser> subUsers = subUserRepository.findSubUserByMainUser(optionalUser.get());
+            boolean hasChildUser = false;
+            for (SubUser subUser : subUsers) {
+                if (subUser.getRole().equals(Role.CHILD)) {
+                    hasChildUser = true;
+                    break;
+                }
+            }
+            responseBody.put("childUser", hasChildUser);
             return ResponseEntity.ok(responseBody);
         }
         // Returns a response indicating that the login was unsuccessful
@@ -340,20 +352,21 @@ public class UserService {
     }
 
     /**
-     * Edits the nickname of the specified sub user.
+     * Edits specified sub user.
      *
-     * @param subUserRequest The request object containing the email of the main user, the nickname,
+     * @param subUserRequest The request object containing the email of the main user, the nickname, passcode
      *                       and the role of the sub user.
      * @return A ResponseEntity containing a success message if the sub user was edited successfully,
      * or an error message if the user or sub user does not exist.
      */
-    public ResponseEntity<String> editSubUserName(User user, SubUserRequest subUserRequest) {
+    public ResponseEntity<String> editSubUser(User user, SubUserRequest subUserRequest) {
         for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
                 subUser.setNickname(subUserRequest.getNickname());
+                subUser.setPasscode(subUserRequest.getPasscode());
                 userRepository.save(user);
                 subUserRepository.save(subUser);
-                return ResponseEntity.ok("Name changed");
+                return ResponseEntity.ok("Sub user edited");
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given id does not exist");
@@ -401,5 +414,9 @@ public class UserService {
         user.setPassword(null);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 }

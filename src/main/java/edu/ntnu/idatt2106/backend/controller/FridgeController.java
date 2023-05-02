@@ -39,6 +39,11 @@ public class FridgeController {
         return fridgeService.getExpiredFridgeItemsByUserId(user);
     }
 
+    @GetMapping("/get/notification")
+    public ResponseEntity<List<FridgeItem>> getNotificationItems(@AuthenticationPrincipal User user) {
+        return fridgeService.getExpiredAndAlmostExpiredFridgeItemsByUser(user);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addFridgeItems(@RequestBody List<FridgeItemRequest> fridgeItemRequests,
                                                  @AuthenticationPrincipal User user) {
@@ -56,6 +61,12 @@ public class FridgeController {
             , @RequestBody FridgeItemRequest updatedFridgeItem
             , @AuthenticationPrincipal User user) {
         return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem, user);
+    }
+
+    @PostMapping("remove/byRecipe")
+    public ResponseEntity<String> removeFridgeItemsByRecipe(@RequestBody List<FridgeItemRequest> items,
+                                                            @AuthenticationPrincipal User user) {
+        return fridgeService.removeFridgeItemsByRecipe(items, user);
     }
 
     //Not tested!!!
