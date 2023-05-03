@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.model.WeekMenu;
+package edu.ntnu.idatt2106.backend.model.weekMenu;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,13 +1,12 @@
 package edu.ntnu.idatt2106.backend.service;
 
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenuData;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.RecipeItemRepository;
-import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.repository.WeekMenuRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
