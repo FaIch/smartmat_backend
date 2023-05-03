@@ -33,7 +33,6 @@ public class ShoppingListController {
     public ResponseEntity<Map<String, Integer>> getNumberOfShoppingListItems(@AuthenticationPrincipal User user) {
         return shoppingListService.getNumberOfShoppingListItemsByUserId(user);
     }
-
     @GetMapping("/get/suggestions")
     public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
         return shoppingListService.getSuggestedItems(user.getId());
@@ -44,26 +43,6 @@ public class ShoppingListController {
                                                              @AuthenticationPrincipal User user) {
         return shoppingListService.addListOfShoppingListItems(user, shoppingListItems);
     }
-
-    @GetMapping("/get/wished")
-    public ResponseEntity<List<ShoppingListItem>> getWishedShoppingListItems(@AuthenticationPrincipal User user) {
-        return shoppingListService.getWishedItemsByUser(user);
-    }
-
-    @PostMapping("/add/wished")
-    public ResponseEntity<String> addWishedShoppingListItem(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
-                                                             @AuthenticationPrincipal User user) {
-        return shoppingListService.addWishedItem(shoppingListItems, user);
-    }
-
-
-    @DeleteMapping("/remove/wished")
-    public ResponseEntity<String> removeWishedShoppingListItem(@AuthenticationPrincipal User user,
-                                                       @RequestBody List<Long> shoppingListItemIds) {
-        return shoppingListService.removeWishedShoppingListItems(user, shoppingListItemIds);
-    }
-
-
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeListOfShoppingListItems(@RequestParam List<Long> shoppingListItemIds,
                                                                 @AuthenticationPrincipal User user) {
