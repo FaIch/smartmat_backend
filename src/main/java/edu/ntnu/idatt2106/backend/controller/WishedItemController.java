@@ -35,7 +35,7 @@ public class WishedItemController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateWishedItem(@RequestBody WishedItemRequest wishedItemRequest,
+    public ResponseEntity<String> updateWishedItem(@RequestBody List<WishedItemRequest> wishedItemRequest,
                                                    @AuthenticationPrincipal User user) {
         return wishedItemService.updateWishedItem(user, wishedItemRequest);
     }

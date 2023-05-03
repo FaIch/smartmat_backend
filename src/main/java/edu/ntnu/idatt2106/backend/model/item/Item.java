@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.WishedItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,6 +53,10 @@ public class Item {
     @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingListItem> shoppingItems;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishedItem> wishedItems;
 
 
     public Item(String name) {
