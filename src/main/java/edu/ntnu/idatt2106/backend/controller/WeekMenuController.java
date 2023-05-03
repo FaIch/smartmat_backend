@@ -24,17 +24,25 @@ import java.util.List;
 @RequestMapping(value = "/week-menu")
 public class WeekMenuController {
 
+    //TODO: lage endepunkt for å fjerne oppskrift i ukesmeny hvis den er lagd
+    //TODO: sjekker om recipen og brukeren finnes i ukesmenyen, hvis det er trykket på spist, så fjernes den fra ukesmenyen
     private final WeekMenuService weekMenuService;
 
-    //TODO: ha tabell for ukes meny i db, vise en random ukes meny (og en anbefalt)? har mulighet til å lagre en uke meny av gangen
-    //TODO: kan se på lagret ukesmeny og fjerne den fra db
-    //TODO: metode for å legge til alle itemene som skal være i ukes menyen men som ikke har?
     public WeekMenuController(WeekMenuService weekMenuService) {
         this.weekMenuService = weekMenuService;
     }
 
 
     @GetMapping("/list-random")
+    public ResponseEntity<List<Recipe>> listRandom(){
+        return weekMenuService.getRandomWeekMenu();
+    }
+
+    @GetMapping("/list-recommended")
+    public ResponseEntity<List<Recipe>> listRecommended(@AuthenticationPrincipal User user){
+        return weekMenuService.getRecommendedWeekMenu(user);
+    }
+
     public ResponseEntity<List<Recipe>> list(){
         return weekMenuService.getRandomWeekMenu();
     }

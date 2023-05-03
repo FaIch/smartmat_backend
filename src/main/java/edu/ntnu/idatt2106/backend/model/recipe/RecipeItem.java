@@ -25,5 +25,8 @@ public class RecipeItem {
 
     private double quantity;
 
-
+    @Override
+    public String toString() {
+        return "";
+    }
 }
