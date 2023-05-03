@@ -50,6 +50,17 @@ public class WeekMenuService {
         return new ResponseEntity<>(randomRecipes, HttpStatus.OK);
     }
 
+    public ResponseEntity<List<Recipe>> getRecommendedWeekMenu(User user) {
+        List<Recipe> recommendedRecipes = new ArrayList<>();
+
+     List<RecipeWithFridgeCount> recipesWithFridgeCounts =  Objects.requireNonNull(recipeService.getRecipesSorted(user).getBody()).subList(0,5);
+
+     for (RecipeWithFridgeCount recipeWithFridgeCount: recipesWithFridgeCounts) {
+        recommendedRecipes.add(recipeWithFridgeCount.getRecipe());
+     }
+     return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
+    }
+
     public ResponseEntity<WeekMenuData> getDataWeekMenu(List<Integer> recipeIds, User user) {
         recipeIds.remove(null);
         List<Recipe> recipes = getRecipesById(recipeIds);

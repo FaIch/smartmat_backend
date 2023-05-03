@@ -8,11 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeekMenu {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,23 +27,23 @@ public class WeekMenu {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "recipe1_id", nullable = false)
+    @JoinColumn(name = "recipe1_id", nullable = true)
     private Recipe recipe1;
 
     @ManyToOne
-    @JoinColumn(name = "recipe2_id", nullable = false)
+    @JoinColumn(name = "recipe2_id", nullable = true)
     private Recipe recipe2;
 
     @ManyToOne
-    @JoinColumn(name = "recipe3_id", nullable = false)
+    @JoinColumn(name = "recipe3_id", nullable = true)
     private Recipe recipe3;
 
     @ManyToOne
-    @JoinColumn(name = "recipe4_id", nullable = false)
+    @JoinColumn(name = "recipe4_id", nullable = true)
     private Recipe recipe4;
 
     @ManyToOne
-    @JoinColumn(name = "recipe5_id", nullable = false)
+    @JoinColumn(name = "recipe5_id", nullable = true)
     private Recipe recipe5;
 
     @Column(nullable = false)
