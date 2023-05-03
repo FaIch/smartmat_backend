@@ -124,6 +124,12 @@ public class UserController {
         return userService.editPassword(user, oldPassword, newPassword);
     }
 
+    @PutMapping("/edit/household")
+    public ResponseEntity<String> editNumberOfHouseholdMembers(@RequestParam int numberOfHouseholdMembers,
+                                                               @AuthenticationPrincipal User user){
+        return userService.editNumberOfHouseholdMembers(user, numberOfHouseholdMembers);
+    }
+
     /**
      * Creates a sub user with the provided user request and admin email.
      *

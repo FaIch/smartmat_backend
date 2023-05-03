@@ -331,6 +331,12 @@ public class UserService {
         return ResponseEntity.ok("Address changed");
     }
 
+    public ResponseEntity<String> editNumberOfHouseholdMembers(User user, int number) {
+        user.setNumberOfHouseholdMembers(number);
+        userRepository.save(user);
+        return ResponseEntity.ok("Number of household members changed");
+    }
+
     /**
      * Adds a new sub user to the specified user account with the given nickname and role.
      *
