@@ -179,19 +179,6 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
     }
 
-
-    private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
-        List<FridgeItem> fridgeItems = new ArrayList<>();
-        for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
-            FridgeItem fridgeItem = new FridgeItem();
-            fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
-            fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
-            fridgeItem.setExpirationDate(fridgeItemRequest.getExpirationDate());
-            fridgeItems.add(fridgeItem);
-        }
-        return fridgeItems;
-    }
-
     public ResponseEntity<String> removeFridgeItemsByRecipe(List<FridgeItemRequest> items, User user) {
         for (FridgeItemRequest item : items) {
             int quantity = item.getQuantity();
@@ -208,5 +195,30 @@ public class FridgeService {
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
+    }
+
+    private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+
+        for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
+            FridgeItem fridgeItem = new FridgeItem();
+            fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
+            LocalDate date = LocalDate.now().plusDays(getGoodForDaysFromCategory(fridgeItem
+                    .getItem().getCategory().toString()));
+            fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
+            fridgeItem.setExpirationDate(date);
+            fridgeItems.add(fridgeItem);
+        }
+        return fridgeItems;
+    }
+
+    private int getGoodForDaysFromCategory(String category) {
+        return switch (category) {
+            case "FISH", "CHICKEN", "MEAT", "VEGETABLES" -> 5;
+            case "DAIRY" -> 7;
+            case "EGG" -> 14;
+            case "CHEESE" -> 20;
+            default -> 60;
+        };
     }
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public class FridgeItemRequest {
     private Long itemId;
     private int quantity;
-
     private LocalDate expirationDate;
 
     public FridgeItemRequest(Long itemId, int quantity) {
