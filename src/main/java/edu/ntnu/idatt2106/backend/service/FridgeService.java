@@ -155,13 +155,12 @@ public class FridgeService {
     /**
      * Updates the expiration date and quantity of a specific fridge item.
      *
-     * @param fridgeItemId      the ID of the fridge item to be updated
      * @param updatedFridgeItem the updated fridge item object
      * @return a ResponseEntity containing a "Fridge item updated" message if the item is found and
      * updated successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<FridgeItem> editFridgeItem(Long fridgeItemId, FridgeItemRequest updatedFridgeItem, User user) {
-        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
+    public ResponseEntity<FridgeItem> editFridgeItem(FridgeItemRequest updatedFridgeItem, User user) {
+        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(updatedFridgeItem.getItemId());
         if (fridgeItemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

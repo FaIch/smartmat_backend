@@ -56,11 +56,10 @@ public class FridgeController {
         return fridgeService.removeListOfFridgeItems(fridgeItemIds, user);
     }
 
-    @PutMapping("/edit/{fridgeItemId}")
-    public ResponseEntity<FridgeItem> editFridgeItem(@PathVariable Long fridgeItemId
-            , @RequestBody FridgeItemRequest updatedFridgeItem
+    @PutMapping("/edit")
+    public ResponseEntity<FridgeItem> editFridgeItem(@RequestBody FridgeItemRequest updatedFridgeItem
             , @AuthenticationPrincipal User user) {
-        return fridgeService.editFridgeItem(fridgeItemId, updatedFridgeItem, user);
+        return fridgeService.editFridgeItem(updatedFridgeItem, user);
     }
 
     @PostMapping("remove/byRecipe")
