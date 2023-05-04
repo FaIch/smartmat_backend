@@ -1,30 +1,29 @@
 package edu.ntnu.idatt2106.backend.model.WeekMenu;
-
 import com.fasterxml.jackson.annotation.*;
-import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WeekMenu {
+public class WeekMenuRecipe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "week_menu_id")
+    private WeekMenu weekMenu;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "weekMenu")
-    private List<WeekMenuRecipe> weekMenuRecipes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
+
+    private boolean completed;
+
 }

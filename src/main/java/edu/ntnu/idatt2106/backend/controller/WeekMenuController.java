@@ -2,11 +2,12 @@ package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.model.Response.ResponseWeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
+import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRecipe;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRequest;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.service.WeekMenuService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -26,32 +27,27 @@ public class WeekMenuController {
 
     private final WeekMenuService weekMenuService;
 
-    //TODO: ha tabell for ukes meny i db, vise en random ukes meny (og en anbefalt)? har mulighet til å lagre en uke meny av gangen
-    //TODO: kan se på lagret ukesmeny og fjerne den fra db
-    //TODO: metode for å legge til alle itemene som skal være i ukes menyen men som ikke har?
-    public WeekMenuController(WeekMenuService weekMenuService) {
+    private UserRepository userRepository;
+
+    public WeekMenuController(WeekMenuService weekMenuService, UserRepository userRepository) {
         this.weekMenuService = weekMenuService;
+        this.userRepository = userRepository;
     }
 
-
-    @GetMapping("/list-random")
-    public ResponseEntity<List<Recipe>> list(){
-        return weekMenuService.getRandomWeekMenu();
-    }
-
-    @PostMapping("/get-recipes-by-id")
-    public ResponseEntity<List<RecipeWithFridgeCount>> listByIds(@RequestBody List<Integer> recipeIds, @AuthenticationPrincipal User user) {
-        return weekMenuService.getRecipesById(recipeIds, user);
-    }
-
-    @PostMapping("/get-data-week-menu")
-    public ResponseEntity<WeekMenuData> getWeekMenuData(@RequestBody List<Integer> recipeIds, @AuthenticationPrincipal User user) {
-        return weekMenuService.getDataWeekMenu(recipeIds, user);
-    }
-
-    @PostMapping("/save")
-    public ResponseEntity<String> saveMenu(@RequestBody WeekMenuRequest request, @AuthenticationPrincipal User user ) {
-        return weekMenuService.saveWeekMenu(request.getIntList(), request.getMessage(), user);
+    @PostMapping
+    public ResponseEntity<WeekMenu> saveWeeklyMenu(@RequestParam("userId") Long userId, @RequestBody WeekMenu weekMenu) {
+        if (weekMenu.getWeekMenuRecipes().size() == 5) {
+            User user = userRepository.findById(userId).orElse(null);
+            if (user != null) {
+                weekMenu.setUser(user);
+                WeekMenu savedWeeklyMenu = weekMenuService.saveWeekMenu(weekMenu);
+                return new ResponseEntity<>(savedWeeklyMenu, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/get")
@@ -64,9 +60,18 @@ public class WeekMenuController {
         }
     }
 
-    @GetMapping("/remove")
-    public ResponseEntity<String> removeMenu(@AuthenticationPrincipal User user) {
-        return weekMenuService.removeWeekMenu(user);
+    @PutMapping("/week-menu-recipe/{weekMenuRecipeId}/toggle-completed")
+    public ResponseEntity<WeekMenuRecipe> toggleRecipeCompleted(@PathVariable("weekMenuRecipeId") Long weekMenuRecipeId) {
+        WeekMenuRecipe updatedWeekMenuRecipe = weekMenuService.toggleRecipeCompleted(weekMenuRecipeId);
+
+        if (updatedWeekMenuRecipe != null) {
+            return new ResponseEntity<>(updatedWeekMenuRecipe, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
+
+
+
 
 }
