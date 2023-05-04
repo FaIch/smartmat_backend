@@ -418,8 +418,4 @@ public class UserService {
         return new ResponseEntity<>(new UserRequest(user.getPhoneNumber(), user.getAddress(),
                 user.getNumberOfHouseholdMembers()), HttpStatus.OK);
     }
-
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
 }

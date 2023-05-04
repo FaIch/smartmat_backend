@@ -3,11 +3,16 @@ package edu.ntnu.idatt2106.backend.Integration.shoppinglist;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItemRequest;
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.Item;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
+import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ShoppingListItemRepository;
+import edu.ntnu.idatt2106.backend.repository.ShoppingListRepository;
+import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.service.ShoppingListService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,16 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,6 +43,12 @@ public class ShoppingListIT {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ShoppingListService shoppingListService;
 
     @Autowired
     private ShoppingListItemRepository shoppingListItemRepository;
@@ -181,4 +193,5 @@ public class ShoppingListIT {
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
     }
+
 }
