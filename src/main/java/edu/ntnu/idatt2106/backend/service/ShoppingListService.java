@@ -4,6 +4,7 @@ import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.WishedItem;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
@@ -12,7 +13,6 @@ import edu.ntnu.idatt2106.backend.repository.ShoppingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,18 +25,20 @@ public class ShoppingListService {
     private final ItemService itemService;
     private final FridgeItemRepository fridgeItemRepository;
     private final ItemRepository itemRepository;
+    private final WishedItemService wishedItemService;
 
     @Autowired
     public ShoppingListService(ShoppingListRepository shoppingListRepository,
                                ShoppingListItemRepository shoppingListItemRepository,
                                ItemService itemService,
                                FridgeItemRepository fridgeItemRepository,
-                               ItemRepository itemRepository) {
+                               ItemRepository itemRepository, WishedItemService wishedItemService) {
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListItemRepository = shoppingListItemRepository;
         this.itemService = itemService;
         this.fridgeItemRepository = fridgeItemRepository;
         this.itemRepository = itemRepository;
+        this.wishedItemService = wishedItemService;
     }
 
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(User user) {
@@ -59,12 +61,14 @@ public class ShoppingListService {
         int shoppingListSize = shoppingListItems.size();
         List<Long> suggestedItemIds = getSuggestedItemIds(user.getId());
         int suggestedItemsSize = (suggestedItemIds != null) ? suggestedItemIds.size() : 0;
-        int wishlistItemsSize = Objects.requireNonNull(getWishedItemsByUser(user).getBody()).size();
+
+        List<WishedItem> wishedItems = wishedItemService.getWishedItems(user).getBody();
+        int wishedItemsSize = (wishedItems != null) ? wishedItems.size() : 0;
 
         Map<String, Integer> itemCounts = new HashMap<>();
         itemCounts.put("shoppingListItemsNumber", shoppingListSize);
         itemCounts.put("suggestedItemsNumber", suggestedItemsSize);
-        itemCounts.put("wishlistItemsNumber", wishlistItemsSize);
+        itemCounts.put("wishedItemsNumber", wishedItemsSize);
         return ResponseEntity.status(HttpStatus.OK).body(itemCounts);
     }
 
@@ -99,9 +103,7 @@ public class ShoppingListService {
         }
 
         ShoppingList shoppingList = shoppingListOptional.get();
-        return shoppingListRepository
-                .findShoppingListItemsByShoppingListId(shoppingList.getId())
-                .stream().filter(p -> !p.isWishedItem()).toList();
+        return shoppingListRepository.findShoppingListItemsByShoppingListId(shoppingList.getId());
     }
 
     public ResponseEntity<String> addListOfShoppingListItems(User user, List<ShoppingListItemRequest> shoppingListItems) {
@@ -112,10 +114,15 @@ public class ShoppingListService {
         ShoppingList shoppingList = shoppingListOptional.get();
         for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItems) {
             Item item = itemService.getItemById(shoppingListItemRequest.getItemId());
-            Optional<ShoppingListItem> existingShoppingListItemOptional = shoppingListItemRepository.findByShoppingListAndItem(shoppingList, item);
+
+            Optional<ShoppingListItem> existingShoppingListItemOptional = shoppingListItemRepository.
+                    findByShoppingListAndItem(shoppingList, item);
+
             if (existingShoppingListItemOptional.isPresent()) {
                 ShoppingListItem existingShoppingListItem = existingShoppingListItemOptional.get();
-                existingShoppingListItem.setQuantity(existingShoppingListItem.getQuantity() + shoppingListItemRequest.getQuantity());
+                existingShoppingListItem.setQuantity(existingShoppingListItem.getQuantity() +
+                        shoppingListItemRequest.getQuantity());
+
                 shoppingListItemRepository.save(existingShoppingListItem);
             } else {
                 ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(), item);
@@ -146,7 +153,8 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items deleted");
     }
 
-    public ResponseEntity<String> updateShoppingListItems(User user, List<ShoppingListItemRequest> shoppingListItemRequests) {
+    public ResponseEntity<String> updateShoppingListItems(User user,
+                                                          List<ShoppingListItemRequest> shoppingListItemRequests) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
         if (shoppingListOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
@@ -169,56 +177,5 @@ public class ShoppingListService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items quantity updated");
-    }
-
-
-    public ResponseEntity<String> addWishedItem(List<ShoppingListItemRequest> shoppingListItemRequests, User user) {
-        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
-        if (shoppingListOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
-        }
-        ShoppingList shoppingList = shoppingListOptional.get();
-        for (ShoppingListItemRequest shoppingListItemRequest : shoppingListItemRequests) {
-            ShoppingListItem shoppingListItem = new ShoppingListItem(shoppingListItemRequest.getQuantity(),
-                    itemService.getItemById(shoppingListItemRequest.getItemId()), true);
-            shoppingListItem.setShoppingList(shoppingList);
-            shoppingListItemRepository.save(shoppingListItem);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Wished items added");
-    }
-
-    public ResponseEntity<String> removeWishedShoppingListItems(User user,
-                                                        List<Long> shoppingListItemIds) {
-        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
-        if (shoppingListOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wishlist not found");
-        }
-        ShoppingList shoppingList = shoppingListOptional.get();
-        for (Long itemId : shoppingListItemIds) {
-            Optional<ShoppingListItem> shoppingListItemOptional = shoppingListItemRepository.findById(itemId);
-            if (shoppingListItemOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wishlist item not found");
-            }
-            ShoppingListItem shoppingListItem = shoppingListItemOptional.get();
-            if (!Objects.equals(shoppingListItem.getShoppingList().getId(), shoppingList.getId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wishlist item not found in wish list");
-            }
-            shoppingListItemRepository.delete(shoppingListItem);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Shopping list items deleted");
-    }
-
-    public ResponseEntity<List<ShoppingListItem>> getWishedItemsByUser(User user) {
-        Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
-        if (shoppingListOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        ShoppingList shoppingList = shoppingListOptional.get();
-        List<ShoppingListItem> allShoppingListItems = shoppingListRepository
-                .findShoppingListItemsByShoppingListId(shoppingList.getId());
-        List<ShoppingListItem> shoppingListItems = allShoppingListItems.stream().filter(ShoppingListItem::isWishedItem)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(shoppingListItems);
     }
 }

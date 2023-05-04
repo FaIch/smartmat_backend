@@ -81,31 +81,4 @@ public class ItemController {
     public ResponseEntity<String> addItem(@RequestBody Item item){
         return itemService.saveOrUpdateItem(item);
     }
-
-    //Date must be on form yyyy-mm-dd
-    /*
-    Add custom items
-     */
-    @PostMapping("/addCustom")
-    public ResponseEntity<?> uploadCustomItem(@RequestParam("name")String name, @RequestParam("weight") double weight,
-                                               @RequestParam("category") String category, @RequestParam("date") String date,
-                                                @AuthenticationPrincipal User user) {
-
-        if (Arrays.stream(Category.values()).noneMatch((t) -> t.name().equals(category)) || weight <= 0 || name.isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Illegal arguments");
-        }
-            if (date.isEmpty()) {
-                return itemService.saveOrUpdateCustomItemWithoutDate(new CustomItem(name,weight, Category.valueOf(category),user));
-            } else {
-               return itemService.saveOrUpdateCustomItemWithDate(new CustomItem(name,weight,Category.valueOf(category),user), LocalDate.parse(date));
-            }
-    }
-
-    /*
-    Get custom items by user
-     */
-    @GetMapping("/getCustom")
-    public ResponseEntity<List<CustomItem>>  getCustomItemsByUser(@AuthenticationPrincipal User user){
-        return itemService.getCustomItemByUser(user);
-    }
 }

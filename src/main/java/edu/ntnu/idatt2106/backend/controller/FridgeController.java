@@ -95,7 +95,6 @@ public class FridgeController {
         return fridgeService.removeFridgeItemsByRecipe(items, user);
     }
 
-    //Not tested!!!
     @GetMapping("fridge-items/list/date")
     public ResponseEntity<List<FridgeItem>> getItemsByDate(){
         return fridgeService.expirationDate();
