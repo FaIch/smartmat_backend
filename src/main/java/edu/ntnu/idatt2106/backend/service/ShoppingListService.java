@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * ShoppingListService is a service class responsible for handling business logic related to
+ * shopping list items. It interacts with the repositories to manage and retrieve data.
+ */
 @Service
 public class ShoppingListService {
 
@@ -27,6 +31,16 @@ public class ShoppingListService {
     private final ItemRepository itemRepository;
     private final WishedItemService wishedItemService;
 
+    /**
+     * Constructs a ShoppingListService with the provided repository and service instances.
+     *
+     * @param shoppingListRepository        an instance of ShoppingListRepository
+     * @param shoppingListItemRepository    an instance of ShoppingListItemRepository
+     * @param itemService                   an instance of ItemService
+     * @param fridgeItemRepository          an instance of FridgeItemRepository
+     * @param itemRepository                an instance of ItemRepository
+     * @param wishedItemService             an instance of WishedItemService
+     */
     @Autowired
     public ShoppingListService(ShoppingListRepository shoppingListRepository,
                                ShoppingListItemRepository shoppingListItemRepository,
@@ -41,6 +55,12 @@ public class ShoppingListService {
         this.wishedItemService = wishedItemService;
     }
 
+    /**
+     * Retrieves shopping list items for the given user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing a list of shopping list items for the user
+     */
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(User user) {
         List<ShoppingListItem> shoppingListItems = getShoppingListItems(user);
 
@@ -51,6 +71,13 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body(shoppingListItems);
     }
 
+    /**
+     * Retrieves the number of shopping list items, suggested items, and wished items for the given user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing the number of shopping list items, suggested items, and wished items
+     *         for the user
+     */
     public ResponseEntity<Map<String, Integer>> getNumberOfShoppingListItemsByUserId(User user) {
         List<ShoppingListItem> shoppingListItems = getShoppingListItems(user);
 
@@ -72,6 +99,12 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body(itemCounts);
     }
 
+    /**
+     * Retrieves suggested items for the given user.
+     *
+     * @param userId the user ID
+     * @return ResponseEntity containing a list of suggested items for the user
+     */
     public ResponseEntity<List<Item>> getSuggestedItems(Long userId) {
         List<Long> idsToSuggest = getSuggestedItemIds(userId);
 
@@ -106,6 +139,13 @@ public class ShoppingListService {
         return shoppingListRepository.findShoppingListItemsByShoppingListId(shoppingList.getId());
     }
 
+    /**
+     * Adds a list of shopping list items for the given user.
+     *
+     * @param user              the authenticated user
+     * @param shoppingListItems the list of ShoppingListItemRequest objects to add
+     * @return ResponseEntity containing a message about the result of the operation
+     */
     public ResponseEntity<String> addListOfShoppingListItems(User user, List<ShoppingListItemRequest> shoppingListItems) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
         if (shoppingListOptional.isEmpty()) {
@@ -133,6 +173,13 @@ public class ShoppingListService {
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items added");
     }
 
+    /**
+     * Removes a list of shopping list items for the given user.
+     *
+     * @param user        the authenticated user
+     * @param itemIds     the list of shopping list item IDs to remove
+     * @return ResponseEntity containing a message about the result of the operation
+     */
     public ResponseEntity<String> removeListOfShoppingListItems(User user, List<Long> itemIds) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
         if (shoppingListOptional.isEmpty()) {
@@ -146,13 +193,21 @@ public class ShoppingListService {
             }
             ShoppingListItem shoppingListItem = shoppingListItemOptional.get();
             if (!Objects.equals(shoppingListItem.getShoppingList().getId(), shoppingList.getId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list item not found in shopping list");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Shopping list item not found in shopping list");
             }
             shoppingListItemRepository.delete(shoppingListItem);
         }
         return ResponseEntity.status(HttpStatus.OK).body("Shopping list items deleted");
     }
 
+    /**
+     * Updates the quantities of shopping list items for the given user.
+     *
+     * @param user                    the authenticated user
+     * @param shoppingListItemRequests the list of ShoppingListItemRequest objects with updated quantities
+     * @return ResponseEntity containing a message about the result of the operation
+     */
     public ResponseEntity<String> updateShoppingListItems(User user,
                                                           List<ShoppingListItemRequest> shoppingListItemRequests) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);

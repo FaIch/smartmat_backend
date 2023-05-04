@@ -1,6 +1,5 @@
 # Smart Mat Backend README
 
----
 
 ## Table of Contents
 1. Prerequisites
@@ -16,9 +15,9 @@
 Before starting, make sure that the following tools and software are installed on your local machine:
 
 
-Docker --- [Download Docker](https://www.docker.com/products/docker-desktop/)
+- Docker: [Download Docker](https://www.docker.com/products/docker-desktop/)
 
-Maven --- [Download Maven](https://maven.apache.org/install.html)
+- Maven: [Download Maven](https://maven.apache.org/install.html)
 
 
 ---
