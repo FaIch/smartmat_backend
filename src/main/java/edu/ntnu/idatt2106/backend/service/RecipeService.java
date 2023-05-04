@@ -13,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
+/**
+ * RecipeService is a service class responsible for handling the business logic related to recipes.
+ * It uses various repositories to interact with the database and retrieve the necessary data.
+ */
 @Service
 public class RecipeService {
 
@@ -21,6 +25,14 @@ public class RecipeService {
     private final FridgeItemRepository fridgeItemRepository;
     private final FridgeItemService fridgeItemService;
 
+    /**
+     * Constructs a RecipeService with the provided repository and service instances.
+     *
+     * @param recipeRepository     an instance of RecipeRepository
+     * @param recipeItemRepository an instance of RecipeItemRepository
+     * @param fridgeItemRepository an instance of FridgeItemRepository
+     * @param fridgeItemService    an instance of FridgeItemService
+     */
     @Autowired
     public RecipeService(RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository,
                          FridgeItemRepository fridgeItemRepository, FridgeItemService fridgeItemService) {
@@ -30,15 +42,31 @@ public class RecipeService {
         this.fridgeItemService = fridgeItemService;
     }
 
+    /**
+     * Retrieves all recipes from the database.
+     *
+     * @return ResponseEntity containing a list of all recipes
+     */
     public ResponseEntity<List<Recipe>> getAllRecipes() {
         return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.findAll());
     }
 
+    /**
+     * Retrieves a recipe with the specified ID from the database.
+     *
+     * @param id the ID of the recipe to retrieve
+     * @return ResponseEntity containing the recipe with the specified ID
+     */
     public ResponseEntity<Recipe> getRecipeById(Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(recipeRepository.findById(id).orElse(null));
     }
 
-
+    /**
+     * Retrieves a list of recipes containing an item with the specified name.
+     *
+     * @param itemName the name of the item to search for in the recipes
+     * @return ResponseEntity containing a list of recipes with the specified item
+     */
     public ResponseEntity<List<Recipe>> getRecipesByItemName(String itemName) {
         System.out.println(itemName);
         List<RecipeItem> recipeItems = recipeItemRepository.findByItemName(itemName);
@@ -49,6 +77,13 @@ public class RecipeService {
         return ResponseEntity.status(HttpStatus.OK).body(recipes);
     }
 
+    /**
+     * Retrieves a sorted list of recipes with their fridge count and nearly expired count.
+     * Sorted by the number of items in the fridge and nearly expired items.
+     *
+     * @param user an instance of the User for whom to retrieve the data
+     * @return ResponseEntity containing a sorted list of recipes with fridge and nearly expired counts
+     */
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user) {
         List<Recipe> recipes = recipeRepository.findAll();
         List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
@@ -65,6 +100,12 @@ public class RecipeService {
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
 
+    /**
+     * Retrieves a list of RecipeItems associated with the specified recipe ID.
+     *
+     * @param id the ID of the recipe for which to retrieve the RecipeItems
+     * @return ResponseEntity containing a list of RecipeItems associated with the specified recipe
+     */
     public ResponseEntity<List<RecipeItem>> getRecipeItems(Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(recipeItemRepository.findAllByRecipeId(id));
     }
