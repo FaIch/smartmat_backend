@@ -3,6 +3,7 @@ package edu.ntnu.idatt2106.backend.service;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
+import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
@@ -27,6 +28,15 @@ public class WeekMenuService {
     private final FridgeItemService fridgeItemService;
     private final FridgeItemRepository fridgeItemRepository;
 
+    /**
+     * Constructs a {@code WeekMenuService} instance with the specified repositories and services.
+     *
+     * @param weekMenuRepository    the week menu repository
+     * @param recipeItemRepository  the recipe item repository
+     * @param recipeService         the recipe service
+     * @param fridgeItemService     the fridge item service
+     * @param fridgeItemRepository  the fridge item repository
+     */
     @Autowired
     public WeekMenuService(WeekMenuRepository weekMenuRepository, RecipeItemRepository recipeItemRepository, RecipeService recipeService, FridgeItemService fridgeItemService, FridgeItemRepository fridgeItemRepository) {
         this.weekMenuRepository = weekMenuRepository;
@@ -36,6 +46,11 @@ public class WeekMenuService {
         this.fridgeItemRepository = fridgeItemRepository;
     }
 
+    /**
+     * Generates a random week menu containing 5 recipes.
+     *
+     * @return a {@link ResponseEntity} containing the list of random recipes with a {@link HttpStatus} of OK
+     */
     public ResponseEntity<List<Recipe>> getRandomWeekMenu() {
         List<Recipe> allRecipes = recipeService.getAllRecipes().getBody(); // get all recipes
         List<Recipe> randomRecipes = new ArrayList<>();
@@ -50,10 +65,16 @@ public class WeekMenuService {
         return new ResponseEntity<>(randomRecipes, HttpStatus.OK);
     }
 
+    /**
+     * Generates a recommended week menu for the specified user based on their preferences and available ingredients.
+     *
+     * @param user the user for whom the week menu is being generated
+     * @return a {@link ResponseEntity} containing the list of recommended recipes with a {@link HttpStatus} of OK
+     */
     public ResponseEntity<List<Recipe>> getRecommendedWeekMenu(User user) {
         List<Recipe> recommendedRecipes = new ArrayList<>();
 
-     List<RecipeWithFridgeCount> recipesWithFridgeCounts =  Objects.requireNonNull(recipeService.getRecipesSorted(user).getBody()).subList(0,5);
+     List<RecipeWithFridgeCount> recipesWithFridgeCounts =  Objects.requireNonNull(recipeService.getRecipesSorted(user, 4).getBody()).subList(0,5);
 
      for (RecipeWithFridgeCount recipeWithFridgeCount: recipesWithFridgeCounts) {
         recommendedRecipes.add(recipeWithFridgeCount.getRecipe());
@@ -61,6 +82,13 @@ public class WeekMenuService {
      return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
     }
 
+    /**
+     * Gets the week menu data for the specified list of recipe IDs and user.
+     *
+     * @param recipeIds the list of recipe IDs
+     * @param user      the user for whom the data is being fetched
+     * @return a {@link ResponseEntity} containing the {@link WeekMenuData} object with a {@link HttpStatus} of OK
+     */
     public ResponseEntity<WeekMenuData> getDataWeekMenu(List<Integer> recipeIds, User user) {
         recipeIds.remove(null);
         List<Recipe> recipes = getRecipesById(recipeIds);
@@ -89,7 +117,13 @@ public class WeekMenuService {
         return ResponseEntity.ok(weekMenuData);
     }
 
-
+    /**
+     * Retrieves a list of {@link RecipeWithFridgeCount} objects for the specified list of recipe IDs and user.
+     *
+     * @param recipeIds the list of recipe IDs
+     * @param user      the user for whom the recipes are being fetched
+     * @return a {@link ResponseEntity} containing the list of {@link RecipeWithFridgeCount} objects with a {@link HttpStatus} of OK
+     */
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesById(List<Integer> recipeIds, User user) {
         recipeIds.remove(null);
         List<Recipe>  recipes = getRecipesById(recipeIds);
@@ -106,6 +140,14 @@ public class WeekMenuService {
         return ResponseEntity.status(HttpStatus.OK).body(recipeWithFridgeCounts);
     }
 
+    /**
+     * Saves a week menu for the specified user with the given list of recipe IDs and menu type.
+     *
+     * @param recipeIds the list of recipe IDs
+     * @param type      the type of the week menu
+     * @param user      the user for whom the week menu is being saved
+     * @return a {@link ResponseEntity} containing a success message or an error message with the corresponding {@link HttpStatus}
+     */
     public ResponseEntity<String> saveWeekMenu(List<Integer> recipeIds, String type, User user) {
             List<Recipe> recipes = getRecipesById(recipeIds);
 
@@ -118,7 +160,12 @@ public class WeekMenuService {
             return ResponseEntity.status(HttpStatus.OK).body("Week menu saved");
         }
 
-
+    /**
+     * Removes the week menu associated with the specified user.
+     *
+     * @param user the user whose week menu is to be removed
+     * @return a {@link ResponseEntity} containing a success message with a {@link HttpStatus} of OK
+     */
     @Transactional
     public ResponseEntity<String> removeWeekMenu(User user) {
         Optional<WeekMenu> weekMenu = weekMenuRepository.findByUser(user);
@@ -127,6 +174,12 @@ public class WeekMenuService {
         return ResponseEntity.status(HttpStatus.OK).body("removed week menu");
     }
 
+    /**
+     * Retrieves a list of {@link Recipe} objects for the specified list of recipe IDs.
+     *
+     * @param recipeIds the list of recipe IDs
+     * @return a list of {@link Recipe} objects
+     */
     public List<Recipe> getRecipesById(List<Integer> recipeIds) {
         List<Recipe> recipes = new ArrayList<>();
         for (Integer recipeId : recipeIds) {
@@ -135,9 +188,33 @@ public class WeekMenuService {
         return recipes;
     }
 
+    /**
+     * Retrieves the week menu associated with the specified user.
+     *
+     * @param user the user whose week menu is to be retrieved
+     * @return the {@link WeekMenu} object associated with the user or {@code null} if no week menu is found
+     */
     public WeekMenu getWeekMenuByUser(User user) {
         Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
         return weekMenuOptional.orElse(null);
+    }
+
+    public ResponseEntity<List<RecipeItem>> getRecipeItems(List<Integer> recipeIds) {
+        Map<Long, RecipeItem> recipeItemsMap = new HashMap<>();
+        for (Integer recipeId : recipeIds) {
+            if (recipeId != null) {
+                for (RecipeItem recipeItem : recipeItemRepository.findAllByRecipeId(Long.valueOf(recipeId))) {
+                    RecipeItem existingRecipeItem = recipeItemsMap.get(recipeItem.getItem().getId());
+                    if (existingRecipeItem == null) {
+                        recipeItemsMap.put(recipeItem.getItem().getId(), recipeItem);
+                    } else {
+                        existingRecipeItem.setQuantity(existingRecipeItem.getQuantity() + recipeItem.getQuantity());
+                    }
+                }
+            }
+        }
+        List<RecipeItem> recipeItems = new ArrayList<>(recipeItemsMap.values());
+        return ResponseEntity.status(HttpStatus.OK).body(recipeItems);
     }
 }
 

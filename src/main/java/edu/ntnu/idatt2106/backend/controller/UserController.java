@@ -175,7 +175,6 @@ public class UserController {
     }
     @GetMapping("/numberOfHouseholdMembers")
     public ResponseEntity<Integer> getNumberOfHouseholdMembers(@AuthenticationPrincipal User user) {
-        user.getNumberOfHouseholdMembers();
         if (user != null) {
             return ResponseEntity.ok(user.getNumberOfHouseholdMembers());
         }

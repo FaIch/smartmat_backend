@@ -23,4 +23,6 @@ public interface FridgeItemRepository extends JpaRepository<FridgeItem, Long> {
     @Query("SELECT fi FROM FridgeItem fi JOIN fi.fridge fr WHERE fr.user.id = :userId AND fi.item.id = :itemId")
     List<FridgeItem> findByUserIdAndItemId(Long userId, Long itemId);
 
+    @Query("SELECT fi FROM FridgeItem fi WHERE fi.fridge.user.id = :userId")
+    List<FridgeItem> findByUserId(Long userId);
 }
