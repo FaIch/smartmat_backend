@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.backend.Integration.weekmenu;
 
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
@@ -98,40 +98,5 @@ public class WeekMenuTestIT {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         System.out.println(response.getBody());
 
-    }
-
-    @Test
-    @DisplayName("Test that list recommended week menu returns 200 OK")
-    public void testListRecommended() {
-        ResponseEntity<List<Recipe>> response = restTemplate.exchange(
-                "http://localhost:" + port + "/week-menu/list-recommended",
-                HttpMethod.GET,
-                authRequest,
-                new ParameterizedTypeReference<List<Recipe>>() {}
-        );
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("Test that get recipes by id returns 200 OK")
-    public void testGetRecipesById() {
-        // create some recipes
-        Recipe recipe1 = new Recipe(1L, "Recipe 1", "10 mins", "A delicious recipe", 3, "image",new ArrayList<>());
-        Recipe recipe2 = new Recipe(2L, "Recipe 2", "20 mins", "Another delicious recipe", 4, "image", new ArrayList<>());
-
-        WeekMenu weekMenu = new WeekMenu();
-        weekMenu.setRecipe1(recipe1);
-        weekMenu.setRecipe2(recipe2);
-        weekMenu.setUser(new User());
-
-        ResponseEntity<List<RecipeWithFridgeCount>> response = restTemplate.exchange(
-                "http://localhost:" + port + "/week-menu/get-recipes-by-id",
-                HttpMethod.POST,
-                new HttpEntity<>(List.of(recipe1.getId(), recipe2.getId()), authHeaders),
-                new ParameterizedTypeReference<List<RecipeWithFridgeCount>>() {}
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
     }
 }

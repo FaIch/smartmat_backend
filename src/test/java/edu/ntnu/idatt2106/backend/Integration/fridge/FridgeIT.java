@@ -205,7 +205,7 @@ public class FridgeIT {
 
         HttpEntity<FridgeItemRequest> updateQuantityRequest = new HttpEntity<>(updatedFridgeItem, authHeaders);
         ResponseEntity<String> response = restTemplate.exchange(
-                baseURL + "/fridge/edit/" + fridgeItem.getId(),
+                baseURL + "/fridge/edit",
                 HttpMethod.PUT,
                 updateQuantityRequest,
                 String.class

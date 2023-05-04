@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.backend.JUnit.weekmenu;
 
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRequest;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenuRequest;
 import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;

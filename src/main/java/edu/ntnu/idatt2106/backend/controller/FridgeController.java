@@ -90,7 +90,6 @@ public class FridgeController {
 
     /**
      * Edit a fridge item
-     * @param fridgeItemId the id of the fridge item to edit
      * @param updatedFridgeItem the updated fridge item
      * @param user the user to edit the fridge item for
      * @return a response entity with the updated fridge item

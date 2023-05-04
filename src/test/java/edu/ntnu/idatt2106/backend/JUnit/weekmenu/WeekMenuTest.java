@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.backend.JUnit.weekmenu;
 
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import org.junit.jupiter.api.DisplayName;
