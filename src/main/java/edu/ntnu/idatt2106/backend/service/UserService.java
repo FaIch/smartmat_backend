@@ -67,7 +67,6 @@ public class UserService {
      * @return a ResponseEntity with the status code and response body indicating whether the operation was successful.
      */
     public ResponseEntity<String> createUserWithoutChild(UserRequest userRequest) {
-        // Checks if the user already exists in the repository
 
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
@@ -75,7 +74,6 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
-        // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
         user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
@@ -103,14 +101,12 @@ public class UserService {
     }
 
     public ResponseEntity<String> createUserWithChild(UserRequest userRequest) {
-        // Checks if the user already exists in the repository
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
             String response = "Bruker med gitt e-post eksisterer allerede";
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
-        // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
         user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
@@ -284,6 +280,13 @@ public class UserService {
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
+    /**
+     * Edit the password for the specified user.
+     * @param user The user to be edited.
+     * @param oldPassword The old password.
+     * @param newPassword The new password.
+     * @return A ResponseEntity containing a message indicating whether the password was successfully changed.
+     */
     public ResponseEntity<String> editPassword(User user, String oldPassword, String newPassword) {
         if (tryLogin(user.getEmail(), oldPassword)) {
             Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(user.getEmail());

@@ -175,13 +175,23 @@ public class UserController {
         return userService.getSubUsers(user);
     }
 
+    /**
+     * Get endpoint for getting all sub users for a user
+     * @param user the user to get sub users for
+     * @return a list of sub users
+     */
     @GetMapping("/details")
     public ResponseEntity<UserRequest> getUserDetails(@AuthenticationPrincipal User user) {
         return userService.getUserDetails(user);
     }
+
+    /**
+     * Get endpoint of household members
+     * @param user the user to get household members for
+     * @return The number of household members
+     */
     @GetMapping("/numberOfHouseholdMembers")
     public ResponseEntity<Integer> getNumberOfHouseholdMembers(@AuthenticationPrincipal User user) {
-        user.getNumberOfHouseholdMembers();
         if (user != null) {
             return ResponseEntity.ok(user.getNumberOfHouseholdMembers());
         }
