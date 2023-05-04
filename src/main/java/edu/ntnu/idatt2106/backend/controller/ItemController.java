@@ -62,7 +62,6 @@ public class ItemController {
         return itemService.saveOrUpdateItem(item);
     }
 
-    //Date must be on form yyyy-mm-dd
   @PostMapping("/addCustom")
   public ResponseEntity<?> uploadCustomItem(@RequestParam("name")String name, @RequestParam("weight") double weight,
                                            @RequestParam("category") String category, @RequestParam("date") String date,

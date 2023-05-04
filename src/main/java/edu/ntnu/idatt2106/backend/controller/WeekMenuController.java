@@ -23,9 +23,6 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping(value = "/week-menu")
 public class WeekMenuController {
-
-    //TODO: lage endepunkt for å fjerne oppskrift i ukesmeny hvis den er lagd
-    //TODO: sjekker om recipen og brukeren finnes i ukesmenyen, hvis det er trykket på spist, så fjernes den fra ukesmenyen
     private final WeekMenuService weekMenuService;
 
     public WeekMenuController(WeekMenuService weekMenuService) {

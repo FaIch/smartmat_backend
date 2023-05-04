@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.JUnit.item;
 
 import edu.ntnu.idatt2106.backend.model.item.Category;
 import edu.ntnu.idatt2106.backend.model.item.CustomItem;
+
 import edu.ntnu.idatt2106.backend.model.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
