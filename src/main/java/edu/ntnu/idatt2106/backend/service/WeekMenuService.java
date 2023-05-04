@@ -53,7 +53,6 @@ public class WeekMenuService {
         List<Recipe> recommendedRecipes = new ArrayList<>();
 
      List<RecipeWithFridgeCount> recipesWithFridgeCounts =  Objects.requireNonNull(recipeService.getRecipesSorted(user).getBody()).subList(0,5);
-
      for (RecipeWithFridgeCount recipeWithFridgeCount: recipesWithFridgeCounts) {
         recommendedRecipes.add(recipeWithFridgeCount.getRecipe());
      }

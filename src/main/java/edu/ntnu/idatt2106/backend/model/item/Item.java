@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItem;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.WishedItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,6 +54,10 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingListItem> shoppingItems;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishedItem> wishedItems;
+
 
     public Item(String name) {
         this.name = name;
@@ -67,6 +72,18 @@ public class Item {
         this.unit = unit;
         this.baseAmount = baseAmount;
     }
+
+  /*  public Item (long id,Integer baseAmount,Category category,String itemImg, String name, double price, String shortDesc, Unit unit, double weightPerUnit){
+        this.id = id;
+        this.name = name;
+        this.shortDesc = shortDesc;
+        this.category = category;
+        this.price = price;
+        this.weightPerUnit = weightPerUnit;
+        this.image = itemImg;
+        this.unit = unit;
+        this.baseAmount = baseAmount;
+    }*/
 
     public Item (Long id, String name,String shortDesc,Category category,double price,double weightPerUnit,String itemImg, Unit unit, Integer baseAmount){
         this.id = id;

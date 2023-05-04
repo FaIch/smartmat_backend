@@ -1,9 +1,7 @@
 package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.model.item.Item;
-import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
-import edu.ntnu.idatt2106.backend.model.shoppinglist.WishedItem;
-import edu.ntnu.idatt2106.backend.model.shoppinglist.WishedItemRequest;
+import edu.ntnu.idatt2106.backend.model.shoppinglist.*;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.ShoppingListRepository;
 import edu.ntnu.idatt2106.backend.repository.WishedItemRepository;
@@ -73,24 +71,31 @@ public class WishedItemService {
         return ResponseEntity.status(HttpStatus.OK).body("Wished items deleted");
     }
 
-    public ResponseEntity<String> updateWishedItem(User user, WishedItemRequest wishedItemRequest) {
+    public ResponseEntity<String> updateWishedItem(User user, List<WishedItemRequest> wishedItemRequests) {
         Optional<ShoppingList> shoppingListOptional = shoppingListRepository.findShoppingListByUser(user);
         if (shoppingListOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Shopping list not found");
         }
-        ShoppingList shoppingList = shoppingListOptional.get();
 
-        Item item = itemService.getItemById(wishedItemRequest.getItemId());
-        Optional<WishedItem> optionalWishedItem = wishedItemRepository.findByShoppingListAndItem(shoppingList, item);
+        for (WishedItemRequest wishedItemRequest : wishedItemRequests) {
+            Optional<WishedItem> wishedItemOptional =
+                    wishedItemRepository.findById(wishedItemRequest.getItemId());
 
-        if (optionalWishedItem.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wished item not found");
+            if (wishedItemOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wished item not found");
+            }
+
+            WishedItem wishedItem = wishedItemOptional.get();
+            if (!wishedItem.getShoppingList().getId().equals(shoppingListOptional.get().getId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("The shopping list item is not in the user's shopping list");
+            }
+
+            wishedItem.setQuantity(wishedItemRequest.getQuantity());
+            wishedItemRepository.save(wishedItem);
         }
-        WishedItem wishedItem = optionalWishedItem.get();
-        wishedItem.setQuantity(wishedItemRequest.getQuantity());
 
-        wishedItemRepository.save(wishedItem);
-        return ResponseEntity.status(HttpStatus.OK).body("Wished item updated");
+        return ResponseEntity.status(HttpStatus.OK).body("Shopping list items quantity updated");
     }
 
     public ResponseEntity<List<WishedItem>> getWishedItems(User user) {

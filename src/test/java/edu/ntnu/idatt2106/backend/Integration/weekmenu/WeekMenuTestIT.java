@@ -1,0 +1,137 @@
+package edu.ntnu.idatt2106.backend.Integration.weekmenu;
+
+import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
+import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
+import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
+import edu.ntnu.idatt2106.backend.model.user.User;
+import edu.ntnu.idatt2106.backend.model.user.UserRequest;
+import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
+import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
+import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.repository.WasteRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class WeekMenuTestIT {
+
+    @LocalServerPort
+    public int port;
+
+    @Autowired
+    public TestRestTemplate restTemplate;
+
+    @Autowired
+    public UserRepository userRepository;
+
+    @Autowired
+    public SubUserRepository subUserRepository;
+
+    @Autowired
+    public WasteRepository wasteRepository;
+
+    private String baseURL;
+
+    private HttpHeaders authHeaders;
+
+    private HttpEntity<?> authRequest;
+    private UserRequest userRequest;
+
+
+    @BeforeEach
+    public void setUp() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        baseURL = "http://localhost:" + port;
+
+         userRequest = new UserRequest("testnewuser@test.com", "testPassword");
+
+        HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
+        restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/login", request, String.class);
+
+        String jwtAccessToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTAccessToken="))
+                .findFirst().get().substring("JWTAccessToken=".length());
+
+        String jwtRefreshToken = response.getHeaders().get("Set-Cookie").stream()
+                .filter(header -> header.startsWith("JWTRefreshToken="))
+                .findFirst().get().substring("JWTRefreshToken=".length());
+
+        authHeaders = new HttpHeaders();
+        authHeaders.add(HttpHeaders.COOKIE, "JWTAccessToken=" + jwtAccessToken);
+        authHeaders.add(HttpHeaders.COOKIE, "JWTRefreshToken=" + jwtRefreshToken);
+
+        authRequest = new HttpEntity<>(authHeaders);
+    }
+
+    @AfterEach
+    public void clearDatabase() {
+        subUserRepository.deleteAll();
+        wasteRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Test that get random week menu")
+    public void getRandomMenu() {
+        ResponseEntity<String> response = restTemplate.exchange(baseURL + "/week-menu/list-random",
+                HttpMethod.GET, authRequest, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response.getBody());
+
+    }
+
+    @Test
+    @DisplayName("Test that list recommended week menu returns 200 OK")
+    public void testListRecommended() {
+        ResponseEntity<List<Recipe>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/week-menu/list-recommended",
+                HttpMethod.GET,
+                authRequest,
+                new ParameterizedTypeReference<List<Recipe>>() {}
+        );
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Test that get recipes by id returns 200 OK")
+    public void testGetRecipesById() {
+        // create some recipes
+        Recipe recipe1 = new Recipe(1L, "Recipe 1", "10 mins", "A delicious recipe", 3, "image",new ArrayList<>());
+        Recipe recipe2 = new Recipe(2L, "Recipe 2", "20 mins", "Another delicious recipe", 4, "image", new ArrayList<>());
+
+        WeekMenu weekMenu = new WeekMenu();
+        weekMenu.setRecipe1(recipe1);
+        weekMenu.setRecipe2(recipe2);
+        weekMenu.setUser(new User());
+
+        ResponseEntity<List<RecipeWithFridgeCount>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/week-menu/get-recipes-by-id",
+                HttpMethod.POST,
+                new HttpEntity<>(List.of(recipe1.getId(), recipe2.getId()), authHeaders),
+                new ParameterizedTypeReference<List<RecipeWithFridgeCount>>() {}
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+    }
+}
