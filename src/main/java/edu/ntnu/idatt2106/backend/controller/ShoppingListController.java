@@ -58,32 +58,6 @@ public class ShoppingListController {
     }
 
     /*
-    * Get all wished shopping list items for a user
-     */
-    @GetMapping("/get/wished")
-    public ResponseEntity<List<ShoppingListItem>> getWishedShoppingListItems(@AuthenticationPrincipal User user) {
-        return shoppingListService.getWishedItemsByUser(user);
-    }
-
-    /*
-    * Add a list of wished shopping list items
-     */
-    @PostMapping("/add/wished")
-    public ResponseEntity<String> addWishedShoppingListItem(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
-                                                             @AuthenticationPrincipal User user) {
-        return shoppingListService.addWishedItem(shoppingListItems, user);
-    }
-
-    /*
-    * Remove a list of wished shopping list items
-     */
-    @DeleteMapping("/remove/wished")
-    public ResponseEntity<String> removeWishedShoppingListItem(@AuthenticationPrincipal User user,
-                                                       @RequestBody List<Long> shoppingListItemIds) {
-        return shoppingListService.removeWishedShoppingListItems(user, shoppingListItemIds);
-    }
-
-    /*
     * Remove a list of shopping list items
      */
     @DeleteMapping("/remove")

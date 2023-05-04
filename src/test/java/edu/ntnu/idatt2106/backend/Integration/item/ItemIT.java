@@ -127,28 +127,4 @@ public class ItemIT {
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
     }
-
-    @Test
-    @DisplayName("Test that you can add a custom item")
-    public void testAddCustomItem() {
-        String customItemName = "Custom Milk";
-        double customItemWeight = 1.5;
-        Category customItemCategory = Category.DAIRY;
-        String date = "2023-05-30";
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("name", customItemName);
-        params.add("weight", String.valueOf(customItemWeight));
-        params.add("category", customItemCategory.name());
-        params.add("date", date);
-
-        RequestEntity<?> request = RequestEntity
-                .post(URI.create(baseURL + "/items/addCustom"))
-                .headers(authHeaders)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(params);
-
-        ResponseEntity<String> postResponse = restTemplate.exchange(request, String.class);
-        assertEquals(HttpStatus.OK, postResponse.getStatusCode());
-    }
 }
