@@ -25,6 +25,9 @@ public class SuggestionController {
         this.suggestionService = suggestionService;
     }
 
+    /*
+    * Get all suggested items for a user
+     */
     @GetMapping("/get")
     public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
         return suggestionService.getSuggestedItems(user.getId());

@@ -343,6 +343,12 @@ public class UserService {
         return ResponseEntity.ok("Address changed");
     }
 
+    public ResponseEntity<String> editNumberOfHouseholdMembers(User user, int number) {
+        user.setNumberOfHouseholdMembers(number);
+        userRepository.save(user);
+        return ResponseEntity.ok("Number of household members changed");
+    }
+
     /**
      * Adds a new sub user to the specified user account with the given nickname and role.
      *
@@ -417,18 +423,11 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(optionalSubUserList);
     }
 
-    public ResponseEntity<User> getUserDetails(User user) {
+    public ResponseEntity<UserRequest> getUserDetails(User user) {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
-        // Remove sensitive information like password before sending it to the client
-        user.setPassword(null);
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return new ResponseEntity<>(new UserRequest(user.getPhoneNumber(), user.getAddress(),
+                user.getNumberOfHouseholdMembers()), HttpStatus.OK);
     }
 }

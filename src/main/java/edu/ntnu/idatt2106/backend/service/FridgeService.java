@@ -155,13 +155,12 @@ public class FridgeService {
     /**
      * Updates the expiration date and quantity of a specific fridge item.
      *
-     * @param fridgeItemId      the ID of the fridge item to be updated
      * @param updatedFridgeItem the updated fridge item object
      * @return a ResponseEntity containing a "Fridge item updated" message if the item is found and
      * updated successfully, or a NOT_FOUND status code if the item is not found
      */
-    public ResponseEntity<FridgeItem> editFridgeItem(Long fridgeItemId, FridgeItemRequest updatedFridgeItem, User user) {
-        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(fridgeItemId);
+    public ResponseEntity<FridgeItem> editFridgeItem(FridgeItemRequest updatedFridgeItem, User user) {
+        Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(updatedFridgeItem.getItemId());
         if (fridgeItemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -177,19 +176,6 @@ public class FridgeService {
     public ResponseEntity<List<FridgeItem>> expirationDate() {
         Sort sort = Sort.by(Sort.Direction.ASC, "expirationDate");
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
-    }
-
-
-    private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
-        List<FridgeItem> fridgeItems = new ArrayList<>();
-        for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
-            FridgeItem fridgeItem = new FridgeItem();
-            fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
-            fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
-            fridgeItem.setExpirationDate(fridgeItemRequest.getExpirationDate());
-            fridgeItems.add(fridgeItem);
-        }
-        return fridgeItems;
     }
 
     public ResponseEntity<String> removeFridgeItemsByRecipe(List<FridgeItemRequest> items, User user) {
@@ -208,5 +194,30 @@ public class FridgeService {
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
+    }
+
+    private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
+        List<FridgeItem> fridgeItems = new ArrayList<>();
+
+        for (FridgeItemRequest fridgeItemRequest : fridgeItemRequests) {
+            FridgeItem fridgeItem = new FridgeItem();
+            fridgeItem.setItem(itemService.getItemById(fridgeItemRequest.getItemId()));
+            LocalDate date = LocalDate.now().plusDays(getGoodForDaysFromCategory(fridgeItem
+                    .getItem().getCategory().toString()));
+            fridgeItem.setQuantity(fridgeItemRequest.getQuantity());
+            fridgeItem.setExpirationDate(date);
+            fridgeItems.add(fridgeItem);
+        }
+        return fridgeItems;
+    }
+
+    private int getGoodForDaysFromCategory(String category) {
+        return switch (category) {
+            case "FISH", "CHICKEN", "MEAT", "VEGETABLES" -> 5;
+            case "DAIRY" -> 7;
+            case "EGG" -> 14;
+            case "CHEESE" -> 20;
+            default -> 60;
+        };
     }
 }

@@ -25,11 +25,17 @@ public class WasteController {
         this.wasteService = wasteService;
     }
 
+    /*
+    Add a new waste entry
+     */
     @PostMapping("/add")
     public ResponseEntity<String> addWasteEntry(@AuthenticationPrincipal User user,@RequestBody WasteRequest wasteRequest) {
         return wasteService.addWasteEntry(user, wasteRequest);
     }
 
+    /*
+    Get total waste by user
+     */
     @GetMapping("/total/all-time")
     public ResponseEntity<List<Double>> getTotalWasteByUser(@AuthenticationPrincipal User user) {
         Double totalWaste = wasteService.getTotalWasteByUser(user);
@@ -39,6 +45,9 @@ public class WasteController {
                 totalMoneyLost, totalEmissions)));
     }
 
+    /*
+    Get total waste by user last week
+     */
     @GetMapping("/total/last-week")
     public ResponseEntity<List<Double>> getLastWeekWasteByUser(@AuthenticationPrincipal User user) {
         LocalDate start = LocalDate.now().minusDays(7);
@@ -50,6 +59,9 @@ public class WasteController {
                 lastWeekMoneyLost, lastWeekEmissions)));
     }
 
+    /*
+    Get total waste by user last month
+     */
     @GetMapping("/total/last-month")
     public ResponseEntity<List<Double>> getLastMonthWasteByUser(@AuthenticationPrincipal User user) {
         LocalDate start = LocalDate.now().minusMonths(1);
@@ -61,6 +73,9 @@ public class WasteController {
                 lastMonthMoneyLost, lastMonthEmissions)));
     }
 
+    /*
+    Get total waste by user last year
+     */
     @GetMapping("/total/last-year")
     public ResponseEntity<List<Double>> getLastYearWasteByUser(@AuthenticationPrincipal User user) {
         LocalDate start = LocalDate.now().minusYears(1);

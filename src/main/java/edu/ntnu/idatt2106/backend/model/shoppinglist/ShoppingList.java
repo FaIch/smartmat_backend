@@ -27,6 +27,9 @@ public class ShoppingList {
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingListItem> shoppingListItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishedItem> wishedItems = new ArrayList<>();
+
     public void addShoppingListItem(ShoppingListItem shoppingListItem) {
         shoppingListItems.add(shoppingListItem);
     }

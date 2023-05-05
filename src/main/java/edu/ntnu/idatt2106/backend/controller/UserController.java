@@ -124,6 +124,12 @@ public class UserController {
         return userService.editPassword(user, oldPassword, newPassword);
     }
 
+    @PutMapping("/edit/household")
+    public ResponseEntity<String> editNumberOfHouseholdMembers(@RequestParam int numberOfHouseholdMembers,
+                                                               @AuthenticationPrincipal User user){
+        return userService.editNumberOfHouseholdMembers(user, numberOfHouseholdMembers);
+    }
+
     /**
      * Creates a sub user with the provided user request and admin email.
      *
@@ -170,12 +176,11 @@ public class UserController {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserRequest> getUserDetails(@AuthenticationPrincipal User user) {
         return userService.getUserDetails(user);
     }
     @GetMapping("/numberOfHouseholdMembers")
     public ResponseEntity<Integer> getNumberOfHouseholdMembers(@AuthenticationPrincipal User user) {
-        user.getNumberOfHouseholdMembers();
         if (user != null) {
             return ResponseEntity.ok(user.getNumberOfHouseholdMembers());
         }

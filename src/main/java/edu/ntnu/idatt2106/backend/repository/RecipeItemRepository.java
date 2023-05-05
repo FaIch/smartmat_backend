@@ -17,4 +17,7 @@ public interface RecipeItemRepository extends JpaRepository<RecipeItem, Long> {
     List<Long> findItemIdsByRecipeId(Long recipeId);
 
     List<RecipeItem> findAllByRecipeId(Long id);
+
+    @Query("SELECT ri FROM RecipeItem ri WHERE ri.item.id = :id AND ri.recipe.id = :recipeId")
+    RecipeItem findByItemIdAndRecipeId(Long id, Long recipeId);
 }

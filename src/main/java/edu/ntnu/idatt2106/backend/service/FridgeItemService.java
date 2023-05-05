@@ -17,6 +17,9 @@ public class FridgeItemService {
         return fridgeItemRepository.findItemIdsByUserId(userId);
     }
 
+    /*
+     * Get all expiring items for a user
+     */
     public List<Long> getExpiringItemIdsByUserId(Long userId) {
         LocalDate today = LocalDate.now();
         LocalDate threeDaysFromNow = today.plusDays(3);

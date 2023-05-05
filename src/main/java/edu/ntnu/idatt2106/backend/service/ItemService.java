@@ -79,6 +79,12 @@ public class ItemService {
 
     }
 
+    /**
+     * Saves or updates a custom item without a specified date.
+     *
+     * @param customItem the custom item to save or update
+     * @return a {@link ResponseEntity} containing a success message or an error message with the corresponding {@link HttpStatus}
+     */
     public ResponseEntity<String> saveOrUpdateCustomItemWithoutDate(CustomItem customItem) {
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(customItem.getUser().getEmail());
         if (existingUser.isPresent()) {
@@ -115,6 +121,12 @@ public class ItemService {
 
     }
 
+    /**
+     * Retrieves custom items associated with a user.
+     *
+     * @param user the user whose custom items are to be retrieved
+     * @return a {@link ResponseEntity} containing the list of custom items associated with the user and a {@link HttpStatus} of OK
+     */
     public ResponseEntity<List<CustomItem>> getCustomItemByUser(User user) {
 
         return ResponseEntity.status(HttpStatus.OK).body(customItemRepository.findAllByUser(user));
