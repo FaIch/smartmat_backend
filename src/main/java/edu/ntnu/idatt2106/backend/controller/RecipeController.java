@@ -71,8 +71,8 @@ public class RecipeController {
      * @return A ResponseEntity containing a list of RecipeWithFridgeCount objects.
      */
     @GetMapping("/list/sorted")
-    public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(@AuthenticationPrincipal User user) {
-        return recipeService.getRecipesSorted(user);
+    public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(@AuthenticationPrincipal User user, @RequestParam int amount) {
+        return recipeService.getRecipesSorted(user, amount);
     }
 
     /**

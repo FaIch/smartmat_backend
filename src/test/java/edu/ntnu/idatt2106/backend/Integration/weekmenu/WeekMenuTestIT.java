@@ -1,11 +1,6 @@
 package edu.ntnu.idatt2106.backend.Integration.weekmenu;
 
-import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
-import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
-import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
-import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
-import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.repository.WasteRepository;
@@ -17,16 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -97,6 +87,5 @@ public class WeekMenuTestIT {
                 HttpMethod.GET, authRequest, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         System.out.println(response.getBody());
-
     }
 }

@@ -1,5 +1,6 @@
 package edu.ntnu.idatt2106.backend.service;
 
+import edu.ntnu.idatt2106.backend.model.fridge.FridgeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
@@ -85,13 +86,21 @@ public class RecipeService {
      * @return ResponseEntity containing a sorted list of recipes with fridge and nearly expired counts
      */
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user) {
+    public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user, int amount) {
         List<Recipe> recipes = recipeRepository.findAll();
-        List<Long> fridgeItemIds = fridgeItemRepository.findItemIdsByUserId(user.getId());
+        List<FridgeItem> fridgeItems = fridgeItemRepository.findByUserId(user.getId());
         List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
         List<RecipeWithFridgeCount> recipeWithFridgeCounts = new ArrayList<>();
         for (Recipe recipe : recipes) {
             List<Long> recipeItemIds = recipeItemRepository.findItemIdsByRecipeId(recipe.getId());
-            int fridgeCount = (int) recipeItemIds.stream().filter(fridgeItemIds::contains).count();
+            int fridgeCount = 0;
+            for (FridgeItem item : fridgeItems) {
+                if (recipeItemIds.contains(item.getItem().getId())) {
+                    if (recipeItemRepository.findByItemIdAndRecipeId(item.getItem().getId(), recipe.getId()).getQuantity() * amount / 4 <= item.getQuantity()) {
+                        fridgeCount++;
+                    }
+                }
+            }
             int expiringCount = (int) recipeItemIds.stream().filter(expiringFridgeItemIds::contains).count();
             recipeWithFridgeCounts.add(new RecipeWithFridgeCount(recipe.getId(), recipe, fridgeCount, expiringCount));
         }
