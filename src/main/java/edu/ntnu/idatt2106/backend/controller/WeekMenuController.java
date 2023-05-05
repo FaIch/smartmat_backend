@@ -6,7 +6,6 @@ import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.service.WeekMenuService;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
