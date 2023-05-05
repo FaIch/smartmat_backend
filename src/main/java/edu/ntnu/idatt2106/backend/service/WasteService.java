@@ -49,7 +49,11 @@ public class WasteService {
      * @return the total waste for the user
      */
     public Double getTotalWasteByUser(User user) {
-        return wasteRepository.getTotalWasteByUser(user);
+        Double totalWaste = wasteRepository.getTotalWasteByUser(user);
+        if (totalWaste == null || totalWaste == 0) {
+            return 0.0;
+        }
+        return totalWaste;
     }
 
     /**

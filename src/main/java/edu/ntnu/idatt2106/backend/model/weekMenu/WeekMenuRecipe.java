@@ -5,11 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * The WeekMenu class represents a weekly menu containing a list of recipes.
+ * It is associated with a User and maintains a list of WeekMenuRecipe objects.
+ *
+ * @author YourName
+ */
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeekMenuRecipe {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
