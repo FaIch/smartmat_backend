@@ -111,9 +111,4 @@ public class FridgeController {
                                                             @AuthenticationPrincipal User user) {
         return fridgeService.removeFridgeItemsByRecipe(items, user);
     }
-
-    @GetMapping("fridge-items/list/date")
-    public ResponseEntity<List<FridgeItem>> getItemsByDate(){
-        return fridgeService.expirationDate();
-    }
 }

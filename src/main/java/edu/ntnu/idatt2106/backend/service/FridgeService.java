@@ -7,12 +7,10 @@ import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.FridgeItemRepository;
 import edu.ntnu.idatt2106.backend.repository.FridgeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -188,11 +186,6 @@ public class FridgeService {
         existingFridgeItem.setExpirationDate(updatedFridgeItem.getExpirationDate());
         existingFridgeItem.setQuantity(updatedFridgeItem.getQuantity());
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.save(existingFridgeItem));
-    }
-
-    public ResponseEntity<List<FridgeItem>> expirationDate() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "expirationDate");
-        return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
     }
 
     /**
