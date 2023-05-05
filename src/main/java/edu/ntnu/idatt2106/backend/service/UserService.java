@@ -1,11 +1,12 @@
 package edu.ntnu.idatt2106.backend.service;
 
+import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
-import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
 import edu.ntnu.idatt2106.backend.model.user.*;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
+import edu.ntnu.idatt2106.backend.repository.WeekMenuRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,21 +44,24 @@ public class UserService {
      */
     private final UserRepository userRepository;
     private final SubUserRepository subUserRepository;
+    private final WeekMenuRepository weekMenuRepository;
 
     private final JWTService jwtService;
 
     /**
      * Constructs a new UserService instance.
      *
-     * @param userRepository the repository for managing User entities.
-     * @param jwtService     jwt service class
+     * @param userRepository     the repository for managing User entities.
+     * @param jwtService         jwt service class
+     * @param weekMenuRepository
      */
     @Autowired
-    public UserService(UserRepository userRepository, JWTService jwtService, SubUserRepository subUserRepository) {
+    public UserService(UserRepository userRepository, JWTService jwtService, SubUserRepository subUserRepository, WeekMenuRepository weekMenuRepository) {
 
         this.userRepository = userRepository;
         this.subUserRepository = subUserRepository;
         this.jwtService = jwtService;
+        this.weekMenuRepository = weekMenuRepository;
     }
 
     /**
@@ -88,6 +92,7 @@ public class UserService {
         SubUser subUser = new SubUser("Your User", Role.PARENT, userRequest.getPasscode());
         Fridge fridge = new Fridge();
         ShoppingList shoppingList = new ShoppingList();
+        WeekMenu weekMenu = new WeekMenu();
 
         user.setShoppingList(shoppingList);
         user.setFridge(fridge);
@@ -97,6 +102,9 @@ public class UserService {
         subUser.setMainUser(createdUser);
         fridge.setUser(createdUser);
         shoppingList.setUser(createdUser);
+        weekMenu.setUser(createdUser);
+
+        weekMenuRepository.save(weekMenu);
 
         subUserRepository.save(subUser);
         return ResponseEntity.ok("User created");
@@ -124,6 +132,7 @@ public class UserService {
         SubUser childSubUser = new SubUser("Child", Role.CHILD);
         Fridge fridge = new Fridge();
         ShoppingList shoppingList = new ShoppingList();
+        WeekMenu weekMenu = new WeekMenu();
 
         user.setShoppingList(shoppingList);
         user.setFridge(fridge);
@@ -134,6 +143,9 @@ public class UserService {
         shoppingList.setUser(createdUser);
         parentSubUser.setMainUser(createdUser);
         childSubUser.setMainUser(createdUser);
+        weekMenu.setUser(createdUser);
+
+        weekMenuRepository.save(weekMenu);
 
         subUserRepository.save(parentSubUser);
         subUserRepository.save(childSubUser);

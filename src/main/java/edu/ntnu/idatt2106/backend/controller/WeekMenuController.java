@@ -1,10 +1,12 @@
 package edu.ntnu.idatt2106.backend.controller;
 
+import edu.ntnu.idatt2106.backend.dto.WeekMenuDTO;
 import edu.ntnu.idatt2106.backend.model.Response.ResponseWeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRecipe;
 import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRequest;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
+import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @EnableAutoConfiguration
@@ -37,7 +40,7 @@ public class WeekMenuController {
     @PostMapping
     public ResponseEntity<WeekMenu> saveWeeklyMenu(@RequestParam("userId") Long userId, @RequestBody WeekMenu weekMenu) {
         if (weekMenu.getWeekMenuRecipes().size() == 5) {
-            User user = userRepository.findById(userId).orElse(null);
+              User user = userRepository.findById(userId).orElse(null);
             if (user != null) {
                 weekMenu.setUser(user);
                 WeekMenu savedWeeklyMenu = weekMenuService.saveWeekMenu(weekMenu);
@@ -51,27 +54,30 @@ public class WeekMenuController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<WeekMenu> getWeekMenuByUserId(@AuthenticationPrincipal User user) {
+    public ResponseEntity<WeekMenuDTO> getWeekMenuByUserId(@AuthenticationPrincipal User user) {
         WeekMenu weekMenu = weekMenuService.getWeekMenuByUser(user);
         if (weekMenu != null) {
-            return ResponseEntity.ok(weekMenu);
+            return ResponseEntity.ok(weekMenuService.toWeekMenuDTO(weekMenu));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @PutMapping("/week-menu-recipe/{weekMenuRecipeId}/toggle-completed")
-    public ResponseEntity<WeekMenuRecipe> toggleRecipeCompleted(@PathVariable("weekMenuRecipeId") Long weekMenuRecipeId) {
-        WeekMenuRecipe updatedWeekMenuRecipe = weekMenuService.toggleRecipeCompleted(weekMenuRecipeId);
-
-        if (updatedWeekMenuRecipe != null) {
-            return new ResponseEntity<>(updatedWeekMenuRecipe, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> toggleRecipeCompleted(@PathVariable("weekMenuRecipeId") Long weekMenuRecipeId, @AuthenticationPrincipal User user) {
+        weekMenuService.toggleRecipeCompleted(weekMenuRecipeId);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
+    @PostMapping("/get-recipes-items")
+    public ResponseEntity<List<RecipeItem>> getRecipeItems(@RequestBody List<Integer> recipeIds, @AuthenticationPrincipal User user) {
+        return weekMenuService.getRecipeItems(recipeIds);
+    }
 
-
+    @PutMapping("/reroll/{currentRecipeId}")
+    public ResponseEntity<String> rerollRecipe(@PathVariable Long currentRecipeId, @AuthenticationPrincipal User user) {
+        weekMenuService.rerollRecipe(currentRecipeId, user);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
 
 }
