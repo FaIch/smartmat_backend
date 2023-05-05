@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@EnableAutoConfiguration
 @CrossOrigin("*")
 @RequestMapping(value = "/recipe")
 public class RecipeController {
