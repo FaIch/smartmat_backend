@@ -90,12 +90,18 @@ public class RecipeService {
         List<FridgeItem> fridgeItems = fridgeItemRepository.findByUserId(user.getId());
         List<Long> expiringFridgeItemIds = fridgeItemService.getExpiringItemIdsByUserId(user.getId());
         List<RecipeWithFridgeCount> recipeWithFridgeCounts = new ArrayList<>();
+
+        Map<Long, Integer> collapsedFridgeItems = new HashMap<>();
+        for (FridgeItem item : fridgeItems) {
+            collapsedFridgeItems.put(item.getItem().getId(), collapsedFridgeItems.getOrDefault(item.getItem().getId(), 0) + item.getQuantity());
+        }
+
         for (Recipe recipe : recipes) {
             List<Long> recipeItemIds = recipeItemRepository.findItemIdsByRecipeId(recipe.getId());
             int fridgeCount = 0;
-            for (FridgeItem item : fridgeItems) {
-                if (recipeItemIds.contains(item.getItem().getId())) {
-                    if (recipeItemRepository.findByItemIdAndRecipeId(item.getItem().getId(), recipe.getId()).getQuantity() * amount / 4 <= item.getQuantity()) {
+            for (Long itemId : collapsedFridgeItems.keySet()) {
+                if (recipeItemIds.contains(itemId)) {
+                    if (recipeItemRepository.findByItemIdAndRecipeId(itemId, recipe.getId()).getQuantity() * amount / 4 <= collapsedFridgeItems.get(itemId)) {
                         fridgeCount++;
                     }
                 }
