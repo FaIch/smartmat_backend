@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -105,16 +106,11 @@ public class FridgeService {
                 fridgeItems.add(fridgeItem);
             }
         }
+        fridgeItems.sort(Comparator.comparing(FridgeItem::getExpirationDate));
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
-    /**
-     * Gets a list of fridge items that are either expired or will expire within the next three days.
-     *
-     * @param user the user whose fridge items are to be retrieved
-     * @return a ResponseEntity containing the list of fridge items that are expired or are about to expire
-     */
-    public ResponseEntity<List<FridgeItem>> getExpiredAndAlmostExpiredFridgeItemsByUser(User user){
+    public ResponseEntity<List<FridgeItem>> getAlmostExpired(User user){
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -123,10 +119,11 @@ public class FridgeService {
         List<FridgeItem> allFridgeItems = fridgeRepository.findFridgeItemsByFridgeId(fridge.getId());
         List<FridgeItem> fridgeItems = new ArrayList<>();
         for (FridgeItem fridgeItem : allFridgeItems) {
-            if (fridgeItem.getExpirationDate().isBefore(LocalDate.now().plusDays(3))) {
+            if (fridgeItem.getExpirationDate().isBefore(LocalDate.now().plusDays(4)) && fridgeItem.getExpirationDate().isAfter(LocalDate.now().minusDays(1))) {
                 fridgeItems.add(fridgeItem);
             }
         }
+        fridgeItems.sort(Comparator.comparing(FridgeItem::getExpirationDate));
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
