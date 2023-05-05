@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -93,7 +95,9 @@ public class RecipeService {
 
         Map<Long, Integer> collapsedFridgeItems = new HashMap<>();
         for (FridgeItem item : fridgeItems) {
-            collapsedFridgeItems.put(item.getItem().getId(), collapsedFridgeItems.getOrDefault(item.getItem().getId(), 0) + item.getQuantity());
+            if (item.getExpirationDate().isAfter(LocalDate.now())) {
+                collapsedFridgeItems.put(item.getItem().getId(), collapsedFridgeItems.getOrDefault(item.getItem().getId(), 0) + item.getQuantity());
+            }
         }
 
         for (Recipe recipe : recipes) {
