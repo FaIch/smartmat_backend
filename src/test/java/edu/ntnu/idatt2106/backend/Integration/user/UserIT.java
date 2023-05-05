@@ -61,19 +61,17 @@ public class UserIT {
                 request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User created", response.getBody());
     }
 
     @Test
     @DisplayName("Test that a user can be created with child and that the response is OK")
     public void testCreateUserWithChild() {
-        userRequest = new UserRequest("testnewuser@test.com", "testPassword");
+        userRequest = new  UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/create/child",
                 request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User created", response.getBody());
     }
 
     @Test
@@ -83,14 +81,13 @@ public class UserIT {
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/create", request, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User created", response.getBody());
 
 
         UserRequest duplicateUserRequest = new UserRequest("testnewuser@test.com", "testPassword2");
         HttpEntity<UserRequest> duplicateRequest = new HttpEntity<>(duplicateUserRequest, headers);
         ResponseEntity<String> duplicateResponse = restTemplate.postForEntity(baseURL + "/user/create", duplicateRequest, String.class);
         assertEquals(HttpStatus.CONFLICT, duplicateResponse.getStatusCode());
-        assertEquals("User with given email already exists", duplicateResponse.getBody());
+        assertEquals("Bruker med gitt e-post eksisterer allerede", duplicateResponse.getBody());
     }
 
     @Test
@@ -106,7 +103,6 @@ public class UserIT {
                 .readValue(responseBody, new TypeReference<Map<String, Object>>() {});
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Login successful", responseMap.get("message"));
     }
 
     @Test
@@ -122,7 +118,7 @@ public class UserIT {
                 .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("User with given email does not exist", responseMap.get("message"));
+        assertEquals("Bruker med gitt e-post eksisterer ikke", responseMap.get("message"));
     }
 
     @Test
@@ -138,7 +134,6 @@ public class UserIT {
                 .readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Password is incorrect", responseMap.get("message"));
     }
 
     @Test

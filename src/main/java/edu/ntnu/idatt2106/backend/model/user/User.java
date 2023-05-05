@@ -2,6 +2,7 @@ package edu.ntnu.idatt2106.backend.model.user;
 
 import edu.ntnu.idatt2106.backend.model.fridge.Fridge;
 import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingList;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.*;
@@ -33,6 +34,9 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ShoppingList shoppingList;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private WeekMenu weekMenu;
 
     private byte[] password;
     private byte[] salt;

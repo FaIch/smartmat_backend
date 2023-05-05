@@ -5,16 +5,17 @@ import edu.ntnu.idatt2106.backend.model.user.SubUserRequest;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
@@ -121,6 +122,12 @@ public class UserController {
         return userService.editPassword(user, oldPassword, newPassword);
     }
 
+    @PutMapping("/edit/household")
+    public ResponseEntity<String> editNumberOfHouseholdMembers(@RequestParam int numberOfHouseholdMembers,
+                                                               @AuthenticationPrincipal User user){
+        return userService.editNumberOfHouseholdMembers(user, numberOfHouseholdMembers);
+    }
+
     /**
      * Creates a sub user with the provided user request and admin email.
      *
@@ -166,8 +173,27 @@ public class UserController {
         return userService.getSubUsers(user);
     }
 
+    /**
+     * Get endpoint for getting all sub users for a user
+     * @param user the user to get sub users for
+     * @return a list of sub users
+     */
     @GetMapping("/details")
-    public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserRequest> getUserDetails(@AuthenticationPrincipal User user) {
         return userService.getUserDetails(user);
     }
+
+    /**
+     * Get endpoint of household members
+     * @param user the user to get household members for
+     * @return The number of household members
+     */
+    @GetMapping("/numberOfHouseholdMembers")
+    public ResponseEntity<Integer> getNumberOfHouseholdMembers(@AuthenticationPrincipal User user) {
+        if (user != null) {
+            return ResponseEntity.ok(user.getNumberOfHouseholdMembers());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
 }
+

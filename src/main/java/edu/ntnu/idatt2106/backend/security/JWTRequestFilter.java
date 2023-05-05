@@ -70,13 +70,11 @@ public class JWTRequestFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
           throws ServletException, IOException {
 
-    // Allow access to public endpoints
     if (allowedUrls.matches(request)) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    // Extract JWT token from HttpOnly cookie
     String jwtAccessToken = null;
     boolean invalidToken = false;
     Cookie[] cookies = request.getCookies();
@@ -111,7 +109,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 
     if (invalidToken) {
       HttpServletResponseWrapper wrappedResponse = new HttpServletResponseWrapper(response);
-      wrappedResponse.setStatus(600);
+      wrappedResponse.setStatus(401);
       wrappedResponse.getWriter().write("Invalid JWT token");
       wrappedResponse.getWriter().flush();
       wrappedResponse.getWriter().close();

@@ -5,6 +5,7 @@ import edu.ntnu.idatt2106.backend.model.waste.WasteRequest;
 import edu.ntnu.idatt2106.backend.repository.SubUserRepository;
 import org.glassfish.jaxb.core.v2.TODO;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.ActiveProfiles;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.model.waste.Waste;
@@ -25,9 +26,11 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -102,6 +105,36 @@ public class WasteIT {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Waste was added successfully", response.getBody());
     }
+
+    // TODO: REPLACE THIS TEST
+    /*
+    @Test
+    @DisplayName("Test that a user can retrieve their total waste for the last week")
+    public void testGetLastWeekWasteByUser() {
+        ResponseEntity<List<Double>> response = restTemplate.exchange(
+                baseURL + "/waste/total/last-week", HttpMethod.GET, authRequest, new ParameterizedTypeReference<List<Double>>() {});
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Test that a user can retrieve their total waste for the last month")
+    public void testGetLastMonthWasteByUser() {
+        ResponseEntity<List<Double>> response = restTemplate.exchange(
+                baseURL + "/waste/total/last-month", HttpMethod.GET, authRequest, new ParameterizedTypeReference<List<Double>>() {});
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+
+    @Test
+    @DisplayName("Test that a user can retrieve their total waste for the last year")
+    public void testGetLastYearWasteByUser() {
+        ResponseEntity<List<Double>> response = restTemplate.exchange(
+                baseURL + "/waste/total/last-year", HttpMethod.GET, authRequest, new ParameterizedTypeReference<List<Double>>() {});
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
 
     // TODO: REPLACE THIS TEST
     /*

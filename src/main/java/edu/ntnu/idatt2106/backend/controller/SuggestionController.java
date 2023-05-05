@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * SuggestionController is a REST controller responsible for handling requests related to
+ * getting suggestions for a user. It interacts with the SuggestionService to manage and retrieve data.
+ */
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/suggestion")
@@ -20,11 +24,22 @@ public class SuggestionController {
 
     SuggestionService suggestionService;
 
+    /**
+     * Constructs a SuggestionController with the provided SuggestionService instance.
+     *
+     * @param suggestionService an instance of SuggestionService
+     */
     @Autowired
     public SuggestionController(SuggestionService suggestionService) {
         this.suggestionService = suggestionService;
     }
 
+    /**
+     * Retrieves suggested items for the given user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing a list of suggested items for the user
+     */
     @GetMapping("/get")
     public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
         return suggestionService.getSuggestedItems(user.getId());

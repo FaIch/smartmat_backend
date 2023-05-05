@@ -16,7 +16,6 @@ public class InvalidTokenHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
 
-        // Replace HttpStatus.valueOf(600) with the desired custom error code
-        return ResponseEntity.status(HttpStatus.valueOf(600)).body(response);
+        return ResponseEntity.status(HttpStatus.valueOf(401)).body(response);
     }
 }

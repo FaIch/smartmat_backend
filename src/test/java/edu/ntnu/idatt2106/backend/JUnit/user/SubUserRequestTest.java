@@ -10,7 +10,7 @@ class SubUserRequestTest {
 
     @Test
     void testAllArgsConstructor() {
-        SubUserRequest request = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, 1234);
+        SubUserRequest request = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, "1234");
 
         assertEquals("test@example.com", request.getUserEmail());
         assertEquals("TestNickname", request.getNickname());
@@ -28,10 +28,10 @@ class SubUserRequestTest {
 
     @Test
     void testEqualsAndHashCode() {
-        SubUserRequest request1 = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, 1234);
-        SubUserRequest request2 = new SubUserRequest("test@example.com", "TestNickname", Role.CHILD, 4321);
-        SubUserRequest request3 = new SubUserRequest("test@example.com", "TestNickname2", Role.PARENT, 2134);
-        SubUserRequest request4 = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, 1234);
+        SubUserRequest request1 = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, "1234");
+        SubUserRequest request2 = new SubUserRequest("test@example.com", "TestNickname", Role.CHILD, "4321");
+        SubUserRequest request3 = new SubUserRequest("test@example.com", "TestNickname2", Role.PARENT, "2134");
+        SubUserRequest request4 = new SubUserRequest("test@example.com", "TestNickname", Role.PARENT, "1234");
 
         assertNotEquals(request1, request2);
         assertNotEquals(request1.hashCode(), request2.hashCode());
