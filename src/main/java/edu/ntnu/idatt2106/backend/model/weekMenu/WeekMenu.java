@@ -13,7 +13,6 @@ import java.util.List;
  * The WeekMenu class represents a weekly menu containing a list of recipes.
  * It is associated with a User and maintains a list of WeekMenuRecipe objects.
  *
- * @author YourName
  */
 @Entity
 @Data
