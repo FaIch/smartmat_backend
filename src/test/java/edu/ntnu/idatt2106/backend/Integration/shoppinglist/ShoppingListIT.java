@@ -6,8 +6,6 @@ import edu.ntnu.idatt2106.backend.model.shoppinglist.ShoppingListItemRequest;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
 import edu.ntnu.idatt2106.backend.repository.ItemRepository;
 import edu.ntnu.idatt2106.backend.repository.ShoppingListItemRepository;
-import edu.ntnu.idatt2106.backend.repository.UserRepository;
-import edu.ntnu.idatt2106.backend.service.ShoppingListService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
