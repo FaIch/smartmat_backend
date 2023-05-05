@@ -55,7 +55,7 @@ public class WeekMenuController {
         }
     }
 
-    @PutMapping("/week-menu-recipe/{weekMenuRecipeId}/toggle-completed")
+    @PutMapping("/{weekMenuRecipeId}/toggle-completed")
     public ResponseEntity<String> toggleRecipeCompleted(@PathVariable("weekMenuRecipeId") Long weekMenuRecipeId, @AuthenticationPrincipal User user) {
         weekMenuService.toggleRecipeCompleted(weekMenuRecipeId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
