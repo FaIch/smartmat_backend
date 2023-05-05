@@ -16,6 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * The WeekMenuService is a service class responsible for managing the week menu functionality.
+ * It provides methods for creating and managing a week menu, toggling recipe completion status,
+ * getting a list of recipe items, rerolling recipes, and generating a new menu for the week.
+ */
 @Service
 public class WeekMenuService {
 
@@ -32,14 +38,12 @@ public class WeekMenuService {
         this.recipeItemRepository = recipeItemRepository;
     }
 
-    public List<WeekMenu> getAllWeekMenus() {
-        return weekMenuRepository.findAll();
-    }
-
-    public WeekMenu saveWeekMenu(WeekMenu weekMenu) {
-        return weekMenuRepository.save(weekMenu);
-    }
-
+    /**
+     * Toggles the completion status of a recipe in the week menu.
+     *
+     * @param weekMenuRecipeId The ID of the week menu recipe to toggle.
+     * @return The updated WeekMenuRecipe object with the new completion status.
+     */
     public WeekMenuRecipe toggleRecipeCompleted(Long weekMenuRecipeId) {
         Optional<WeekMenuRecipe> optionalWeekMenuRecipe = weekMenuRecipeRepository.findById(weekMenuRecipeId);
 
@@ -52,6 +56,12 @@ public class WeekMenuService {
         return null;
     }
 
+    /**
+     * Retrieves or creates a week menu for the given user.
+     *
+     * @param user The User object for which to retrieve or create the week menu.
+     * @return The WeekMenu object for the given user.
+     */
     public WeekMenu getWeekMenuByUser(User user) {
         WeekMenu weekMenu = weekMenuRepository.findByUser(user).orElse(null);
 
@@ -70,6 +80,14 @@ public class WeekMenuService {
         return weekMenu;
     }
 
+    /**
+     * Populates the given week menu with random recipes.
+     *
+     * @param weekMenu   The WeekMenu object to populate.
+     * @param allRecipes The list of all available recipes.
+     * @param targetSize The target size of the week menu recipes list.
+     * @return The list of WeekMenuRecipe objects added to the week menu.
+     */
     private List<WeekMenuRecipe> populateWeekMenuWithRandomRecipes(WeekMenu weekMenu, List<Recipe> allRecipes, int targetSize) {
         Collections.shuffle(allRecipes);
         List<WeekMenuRecipe> weekMenuRecipes = new ArrayList<>();
@@ -88,6 +106,12 @@ public class WeekMenuService {
         return weekMenuRecipes;
     }
 
+    /**
+     * Retrieves a list of RecipeItem objects based on the provided list of recipe IDs.
+     *
+     * @param recipeIds The list of recipe IDs.
+     * @return A ResponseEntity containing the status code and the list of RecipeItem objects.
+     */
     public ResponseEntity<List<RecipeItem>> getRecipeItems(List<Integer> recipeIds) {
         Map<Long, RecipeItem> recipeItemsMap = new HashMap<>();
         for (Integer recipeId : recipeIds) {
@@ -106,6 +130,12 @@ public class WeekMenuService {
         return ResponseEntity.status(HttpStatus.OK).body(recipeItems);
     }
 
+    /**
+     * Converts a WeekMenu object to a WeekMenuDTO object.
+     *
+     * @param weekMenu The WeekMenu object to convert.
+     * @return The converted WeekMenuDTO object.
+     */
     public WeekMenuDTO toWeekMenuDTO(WeekMenu weekMenu) {
         WeekMenuDTO dto = new WeekMenuDTO();
         dto.setId(weekMenu.getId());
@@ -115,6 +145,12 @@ public class WeekMenuService {
         return dto;
     }
 
+    /**
+     * Converts a WeekMenuRecipe object to a WeekMenuRecipeDTO object.
+     *
+     * @param weekMenuRecipe The WeekMenuRecipe object to convert.
+     * @return The converted WeekMenuRecipeDTO object.
+     */
     public WeekMenuRecipeDTO toWeekMenuRecipeDTO(WeekMenuRecipe weekMenuRecipe) {
         WeekMenuRecipeDTO dto = new WeekMenuRecipeDTO();
         dto.setId(weekMenuRecipe.getId());
@@ -123,12 +159,18 @@ public class WeekMenuService {
         return dto;
     }
 
+    /**
+     * Replaces a current recipe in the week menu with a new one.
+     *
+     * @param currentRecipeId The ID of the current recipe.
+     * @param user The User object for which to reroll the recipe.
+     * @return The updated WeekMenu object with the new recipe.
+     */
     public WeekMenu rerollRecipe(Long currentRecipeId, User user) {
         Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
         WeekMenu weekMenu = weekMenuOptional.get();
         List<WeekMenuRecipe> weekMenuRecipes = weekMenu.getWeekMenuRecipes();
 
-        // Find the WeekMenuRecipe object that contains the currentRecipeId
         Optional<WeekMenuRecipe> currentWeekMenuRecipeOptional = weekMenuRecipes.stream()
                 .filter(weekMenuRecipe -> weekMenuRecipe.getRecipe().getId().equals(currentRecipeId))
                 .findFirst();
@@ -152,15 +194,19 @@ public class WeekMenuService {
             throw new IllegalStateException("No available recipes to reroll.");
         }
 
-        // Replace the recipe in the WeekMenuRecipe object
         Random random = new Random();
         Recipe newRecipe = availableRecipes.get(random.nextInt(availableRecipes.size()));
         currentWeekMenuRecipe.setRecipe(newRecipe);
 
-        // Save the updated WeekMenu
         return weekMenuRepository.save(weekMenu);
     }
 
+    /**
+     * Generates a new menu for the week, replacing all recipes in the week menu.
+     *
+     * @param user The User object for which to generate a new menu.
+     * @return The updated WeekMenu object with the new recipes.
+     */
     public WeekMenu newMenu(User user) {
         Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
         WeekMenu weekMenu = weekMenuOptional.get();
@@ -178,7 +224,6 @@ public class WeekMenuService {
             throw new IllegalStateException("No available recipes to reroll.");
         }
 
-        // Replace the recipe in the WeekMenuRecipe object
         Random random = new Random();
         for (WeekMenuRecipe weekMenuRecipe : weekMenuRecipes) {
             Recipe newRecipe = availableRecipes.get(random.nextInt(availableRecipes.size()));
@@ -187,7 +232,6 @@ public class WeekMenuService {
             weekMenuRecipe.setCompleted(false);
         }
 
-        // Save the updated WeekMenu
         return weekMenuRepository.save(weekMenu);
     }
 }
