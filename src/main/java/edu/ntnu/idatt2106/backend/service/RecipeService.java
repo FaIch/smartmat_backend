@@ -85,7 +85,6 @@ public class RecipeService {
      * @param user an instance of the User for whom to retrieve the data
      * @return ResponseEntity containing a sorted list of recipes with fridge and nearly expired counts
      */
-    public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user) {
     public ResponseEntity<List<RecipeWithFridgeCount>> getRecipesSorted(User user, int amount) {
         List<Recipe> recipes = recipeRepository.findAll();
         List<FridgeItem> fridgeItems = fridgeItemRepository.findByUserId(user.getId());
