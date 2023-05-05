@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@EnableAutoConfiguration
 @CrossOrigin("*")
 @RequestMapping(value = "/items")
 public class ItemController {

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@EnableAutoConfiguration
 @CrossOrigin("*")
 @RequestMapping(value = "/week-menu")
 public class WeekMenuController {
