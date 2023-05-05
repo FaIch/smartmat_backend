@@ -94,6 +94,7 @@ public class UserService {
 
         user.setShoppingList(shoppingList);
         user.setFridge(fridge);
+        user.setWeekMenu(weekMenu);
 
         User createdUser = userRepository.save(user);
 
@@ -132,6 +133,7 @@ public class UserService {
 
         user.setShoppingList(shoppingList);
         user.setFridge(fridge);
+        user.setWeekMenu(weekMenu);
 
         User createdUser = userRepository.save(user);
 

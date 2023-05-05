@@ -66,7 +66,7 @@ public class UserIT {
     @Test
     @DisplayName("Test that a user can be created with child and that the response is OK")
     public void testCreateUserWithChild() {
-        userRequest = new UserRequest("testnewuser@test.com", "testPassword");
+        userRequest = new  UserRequest("testnewuser@test.com", "testPassword");
         HttpEntity<UserRequest> request = new HttpEntity<>(userRequest, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(baseURL + "/user/create/child",
                 request, String.class);
