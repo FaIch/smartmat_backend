@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ShoppingListController is a REST controller responsible for handling HTTP requests
+ * related to shopping list items. It uses ShoppingListService to process the business logic
+ * and return appropriate responses.
+ */
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/shopping-list")
@@ -19,37 +24,55 @@ public class ShoppingListController {
 
     private final ShoppingListService shoppingListService;
 
+    /**
+     * Constructs a ShoppingListController with the provided ShoppingListService instance.
+     *
+     * @param shoppingListService an instance of ShoppingListService
+     */
     @Autowired
     public ShoppingListController(ShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
     }
 
-    /*
-    * Get all shopping list items for a user
+    /**
+     * Retrieves shopping list items for the authenticated user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing a list of shopping list items for the user
      */
     @GetMapping("/get")
     public ResponseEntity<List<ShoppingListItem>> getShoppingListItemsByUserId(@AuthenticationPrincipal User user) {
         return shoppingListService.getShoppingListItemsByUserId(user);
     }
 
-    /*
-    * Get number of shopping list items for a user
+    /**
+     * Retrieves the number of shopping list items for the authenticated user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing the number of shopping list items for the user
      */
     @GetMapping("/get/number")
     public ResponseEntity<Map<String, Integer>> getNumberOfShoppingListItems(@AuthenticationPrincipal User user) {
         return shoppingListService.getNumberOfShoppingListItemsByUserId(user);
     }
 
-    /*
-    * Get suggestions by user
+    /**
+     * Retrieves item suggestions for the authenticated user.
+     *
+     * @param user the authenticated user
+     * @return ResponseEntity containing a list of suggested items for the user
      */
     @GetMapping("/get/suggestions")
     public ResponseEntity<List<Item>> getSuggestions(@AuthenticationPrincipal User user) {
         return shoppingListService.getSuggestedItems(user.getId());
     }
 
-    /*
-    * Add a list of shopping list items
+    /**
+     * Adds a list of shopping list items for the authenticated user.
+     *
+     * @param shoppingListItems the list of ShoppingListItemRequest objects to add
+     * @param user              the authenticated user
+     * @return ResponseEntity containing a message about the result of the operation
      */
     @PostMapping("/add")
     public ResponseEntity<String> addListOfShoppingListItems(@RequestBody List<ShoppingListItemRequest> shoppingListItems,
@@ -57,8 +80,12 @@ public class ShoppingListController {
         return shoppingListService.addListOfShoppingListItems(user, shoppingListItems);
     }
 
-    /*
-    * Remove a list of shopping list items
+    /**
+     * Removes a list of shopping list items for the authenticated user.
+     *
+     * @param shoppingListItemIds the list of shopping list item IDs to remove
+     * @param user                the authenticated user
+     * @return ResponseEntity containing a message about the result of the operation
      */
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeListOfShoppingListItems(@RequestParam List<Long> shoppingListItemIds,
@@ -66,8 +93,12 @@ public class ShoppingListController {
         return shoppingListService.removeListOfShoppingListItems(user, shoppingListItemIds);
     }
 
-    /*
-    * Update a list of shopping list items
+    /**
+     * Updates the quantities of shopping list items for the authenticated user.
+     *
+     * @param shoppingListItemRequests the list of ShoppingListItemRequest objects with updated quantities
+     * @param user                      the authenticated user
+     * @return ResponseEntity containing a message about the result of the operation
      */
     @PutMapping("/update")
     public ResponseEntity<String> updateShoppingListItemsQuantity(@RequestBody List<ShoppingListItemRequest> shoppingListItemRequests,

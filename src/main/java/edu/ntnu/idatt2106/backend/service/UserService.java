@@ -67,15 +67,13 @@ public class UserService {
      * @return a ResponseEntity with the status code and response body indicating whether the operation was successful.
      */
     public ResponseEntity<String> createUserWithoutChild(UserRequest userRequest) {
-        // Checks if the user already exists in the repository
 
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
-            String response = "User with given email already exists";
+            String response = "Bruker med gitt e-post eksisterer allerede";
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
-        // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
         user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
@@ -99,18 +97,16 @@ public class UserService {
         shoppingList.setUser(createdUser);
 
         subUserRepository.save(subUser);
-        return ResponseEntity.ok("User created");
+        return ResponseEntity.ok("Bruker laget");
     }
 
     public ResponseEntity<String> createUserWithChild(UserRequest userRequest) {
-        // Checks if the user already exists in the repository
         Optional<User> existingUser = userRepository.findByEmailIgnoreCase(userRequest.getEmail());
         if (existingUser.isPresent()) {
-            String response = "User with given email already exists";
+            String response = "Bruker med gitt e-post eksisterer allerede";
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
-        // Generates a salt and hashes the user's password before saving the user to the repository
         User user = new User(userRequest.getEmail());
         user.setNumberOfHouseholdMembers(userRequest.getNumberOfHouseholdMembers());
         SecureRandom random = new SecureRandom();
@@ -138,7 +134,7 @@ public class UserService {
         subUserRepository.save(parentSubUser);
         subUserRepository.save(childSubUser);
 
-        return ResponseEntity.ok("User created");
+        return ResponseEntity.ok("Bruker laget");
     }
 
     /**
@@ -196,14 +192,14 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isEmpty()) {
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "User with given email does not exist");
+            responseBody.put("message", "Bruker med gitt e-post eksisterer ikke");
             responseBody.put("userRequest", null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
         }
         if (tryLogin(email, password)) {
             createTokens(optionalUser.get(), httpServletResponse);
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "Login successful");
+            responseBody.put("message", "Innlogging vellykket");
             responseBody.put("userEmail", optionalUser.get().getEmail());
             List<SubUser> subUsers = subUserRepository.findSubUserByMainUser(optionalUser.get());
             boolean hasChildUser = false;
@@ -216,15 +212,13 @@ public class UserService {
             responseBody.put("childUser", hasChildUser);
             return ResponseEntity.ok(responseBody);
         }
-        // Returns a response indicating that the login was unsuccessful
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Password is incorrect");
+        response.put("message", "Feil passord");
         response.put("userRequest", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        // Extract the refresh token from the HttpOnly cookie
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -237,32 +231,28 @@ public class UserService {
         }
 
         if (refreshToken == null) {
-            // Return an error response if the refresh token is not provided
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "Refresh token is missing");
+            responseBody.put("message", "Mangler refresh token");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
         }
 
-        // Verify the refresh token's validity
         if (!jwtService.isTokenValid(refreshToken)) {
-            // Return an error response if the refresh token is invalid or expired
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "Invalid or expired refresh token");
+            responseBody.put("message", "Ugyldig eller utløpt token");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
         }
 
-        // Get the email from the refresh token
         String email = jwtService.getEmail(refreshToken);
         Optional<User> optionalUserEntity = userRepository.findByEmailIgnoreCase(email);
 
         if (optionalUserEntity.isPresent()) {
             createAccessToken(optionalUserEntity.get(), response);
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "Access token refreshed");
+            responseBody.put("message", "Token oppdatert");
             return ResponseEntity.ok(responseBody);
         } else {
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("message", "User not found");
+            responseBody.put("message", "Bruker ikke funnet");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
         }
     }
@@ -290,6 +280,13 @@ public class UserService {
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
+    /**
+     * Edit the password for the specified user.
+     * @param user The user to be edited.
+     * @param oldPassword The old password.
+     * @param newPassword The new password.
+     * @return A ResponseEntity containing a message indicating whether the password was successfully changed.
+     */
     public ResponseEntity<String> editPassword(User user, String oldPassword, String newPassword) {
         if (tryLogin(user.getEmail(), oldPassword)) {
             Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(user.getEmail());
@@ -299,10 +296,10 @@ public class UserService {
                 byte[] hashedPassword = hashPassword(newPassword, salt);
                 foundUser.setPassword(hashedPassword);
                 userRepository.save(foundUser);
-                return ResponseEntity.ok("Password changed");
+                return ResponseEntity.ok("Passord endret");
             }
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Incorrect password");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Feil passord");
     }
 
     /**
@@ -315,7 +312,7 @@ public class UserService {
     public ResponseEntity<String> editPhoneNumber(User user, String phoneNumber) {
         user.setPhoneNumber(Long.parseLong(phoneNumber));
         userRepository.save(user);
-        return ResponseEntity.ok("Phone number changed");
+        return ResponseEntity.ok("Telefon nummer endret");
     }
 
     /**
@@ -328,13 +325,13 @@ public class UserService {
     public ResponseEntity<String> editAddress(User user, String address) {
         user.setAddress(address);
         userRepository.save(user);
-        return ResponseEntity.ok("Address changed");
+        return ResponseEntity.ok("Adresse endret");
     }
 
     public ResponseEntity<String> editNumberOfHouseholdMembers(User user, int number) {
         user.setNumberOfHouseholdMembers(number);
         userRepository.save(user);
-        return ResponseEntity.ok("Number of household members changed");
+        return ResponseEntity.ok("Hosholdningsantall endret");
     }
 
     /**
@@ -348,13 +345,13 @@ public class UserService {
     public ResponseEntity<String> createSubUser(User user, SubUserRequest subUserRequest) {
         for (SubUser subUser : subUserRepository.findSubUserByMainUser(user)) {
             if (subUser.getNickname().equals(subUserRequest.getNickname())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sub User with given nickname already exists");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Underbruker med gitt navn eksisterer allerede");
             }
         }
         SubUser subUser = new SubUser(subUserRequest.getNickname(), subUserRequest.getRole());
         subUserRepository.save(subUser);
         userRepository.save(user);
-        return ResponseEntity.ok("Sub User added");
+        return ResponseEntity.ok("Underbruker lager");
     }
 
     /**

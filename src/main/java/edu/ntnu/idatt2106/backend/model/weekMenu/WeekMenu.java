@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.model.WeekMenu;
+package edu.ntnu.idatt2106.backend.model.weekMenu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
@@ -7,9 +7,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -27,23 +24,23 @@ public class WeekMenu {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "recipe1_id", nullable = true)
+    @JoinColumn(name = "recipe1_id")
     private Recipe recipe1;
 
     @ManyToOne
-    @JoinColumn(name = "recipe2_id", nullable = true)
+    @JoinColumn(name = "recipe2_id")
     private Recipe recipe2;
 
     @ManyToOne
-    @JoinColumn(name = "recipe3_id", nullable = true)
+    @JoinColumn(name = "recipe3_id")
     private Recipe recipe3;
 
     @ManyToOne
-    @JoinColumn(name = "recipe4_id", nullable = true)
+    @JoinColumn(name = "recipe4_id")
     private Recipe recipe4;
 
     @ManyToOne
-    @JoinColumn(name = "recipe5_id", nullable = true)
+    @JoinColumn(name = "recipe5_id")
     private Recipe recipe5;
 
     @Column(nullable = false)

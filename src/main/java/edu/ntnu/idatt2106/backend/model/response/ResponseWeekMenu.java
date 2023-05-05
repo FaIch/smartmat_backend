@@ -1,4 +1,4 @@
-package edu.ntnu.idatt2106.backend.model.Response;
+package edu.ntnu.idatt2106.backend.model.response;
 
 public class ResponseWeekMenu {
 

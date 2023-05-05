@@ -1,6 +1,6 @@
 package edu.ntnu.idatt2106.backend.JUnit.weekmenu;
 
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuData;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenuData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
