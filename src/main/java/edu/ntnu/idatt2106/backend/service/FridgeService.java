@@ -22,12 +22,11 @@ public class FridgeService {
     private final ItemService itemService;
 
     /**
-     * Constructor for FridgeService that injects dependencies for the UserRepository, FridgeRepository,
-     * and FridgeItemRepository.
+     * Constructor for the FridgeService class.
      *
-     * @param fridgeRepository     the FridgeRepository
-     * @param fridgeItemRepository the FridgeItemRepository
-     * @param itemService          the ItemService
+     * @param fridgeRepository     the repository for the fridge
+     * @param fridgeItemRepository the repository for the fridge items
+     * @param itemService          the service for the items
      */
     @Autowired
     public FridgeService(FridgeRepository fridgeRepository
@@ -60,6 +59,11 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
+    /**
+     * Gets the number of fridge items, split into expired and unexpired items
+     * @param user the user whose fridge items are to be counted
+     * @return a ResponseEntity containing a map with the number of expired and unexpired items if the user is found
+     */
     public ResponseEntity<Map<String, Integer>> getNumberOfFridgeItemsByUserID(User user) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isEmpty()) {
@@ -82,6 +86,12 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(itemCounts);
     }
 
+    /**
+     * Gets a list of expired fridge items belonging to a specific user.
+     *
+     * @param user the user whose expired fridge items are to be retrieved
+     * @return a ResponseEntity containing the list of expired fridge items
+     */
     public ResponseEntity<List<FridgeItem>> getExpiredFridgeItemsByUserId(User user) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isEmpty()) {
@@ -98,6 +108,12 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
+    /**
+     * Gets a list of fridge items that are either expired or will expire within the next three days.
+     *
+     * @param user the user whose fridge items are to be retrieved
+     * @return a ResponseEntity containing the list of fridge items that are expired or are about to expire
+     */
     public ResponseEntity<List<FridgeItem>> getExpiredAndAlmostExpiredFridgeItemsByUser(User user){
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         if (fridgeOptional.isEmpty()) {
@@ -114,7 +130,13 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItems);
     }
 
-
+    /**
+     * Adds a list of fridge items
+     *
+     * @param user the user whose fridge items are to be added
+     * @param fridgeItemRequests the list of fridge items to be added
+     * @return a ResponseEntity containing a message indicating whether the fridge items were added successfully
+     */
     public ResponseEntity<String> addListOfFridgeItems(User user, List<FridgeItemRequest> fridgeItemRequests) {
         Optional<Fridge> fridgeOptional = fridgeRepository.findFridgeByUser(user);
         List<FridgeItem> fridgeItems = convertListOfFridgeItemsRequestsToFridgeItems(fridgeItemRequests);
@@ -134,8 +156,7 @@ public class FridgeService {
      *
      * @param fridgeItemIds the list of IDs of the fridge items to be removed
      * @param user the User of which fridge the fridge items are in
-     * @return a ResponseEntity containing a "Fridge item removed" message if the item is found and removed
-     * successfully, or a NOT_FOUND status code if the item is not found
+     * @return a ResponseEntity containing a message indicating if the item was removed successfully or not
      */
     public ResponseEntity<String> removeListOfFridgeItems(List<Long> fridgeItemIds, User user) {
         for (Long fridgeItemId : fridgeItemIds) {
@@ -156,8 +177,7 @@ public class FridgeService {
      * Updates the expiration date and quantity of a specific fridge item.
      *
      * @param updatedFridgeItem the updated fridge item object
-     * @return a ResponseEntity containing a "Fridge item updated" message if the item is found and
-     * updated successfully, or a NOT_FOUND status code if the item is not found
+     * @return a ResponseEntity containing the updated fridge item with a status code
      */
     public ResponseEntity<FridgeItem> editFridgeItem(FridgeItemRequest updatedFridgeItem, User user) {
         Optional<FridgeItem> fridgeItemOptional = fridgeItemRepository.findById(updatedFridgeItem.getItemId());
@@ -178,6 +198,13 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body(fridgeItemRepository.findAll(sort));
     }
 
+    /**
+     * Removes a list of fridge items from the database.
+     *
+     * @param items the list of fridge items to be removed
+     * @param user the User of which fridge the fridge items are in
+     * @return a ResponseEntity containing a message indicating if the item was removed successfully or not
+     */
     public ResponseEntity<String> removeFridgeItemsByRecipe(List<FridgeItemRequest> items, User user) {
         for (FridgeItemRequest item : items) {
             int quantity = item.getQuantity();
@@ -196,6 +223,12 @@ public class FridgeService {
         return ResponseEntity.status(HttpStatus.OK).body("Fridge items removed");
     }
 
+    /**
+     * Converts a list of FridgeItemRequests to a list of FridgeItems
+     *
+     * @param fridgeItemRequests the list of FridgeItemRequests to be converted
+     * @return a list of fridgeItems generated with the values of the fridgeItemRequests
+     */
     private List<FridgeItem> convertListOfFridgeItemsRequestsToFridgeItems(List<FridgeItemRequest> fridgeItemRequests) {
         List<FridgeItem> fridgeItems = new ArrayList<>();
 
@@ -211,6 +244,12 @@ public class FridgeService {
         return fridgeItems;
     }
 
+    /**
+     * Gets the number of days a fridge item is good for based on its category
+     *
+     * @param category the category of the fridge item
+     * @return the number of days the fridge item is good for
+     */
     private int getGoodForDaysFromCategory(String category) {
         return switch (category) {
             case "FISH", "CHICKEN", "MEAT", "VEGETABLES" -> 5;

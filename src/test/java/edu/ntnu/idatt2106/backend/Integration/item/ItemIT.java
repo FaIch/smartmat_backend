@@ -1,7 +1,6 @@
 package edu.ntnu.idatt2106.backend.Integration.item;
 
 import edu.ntnu.idatt2106.backend.model.item.Category;
-/*import edu.ntnu.idatt2106.backend.model.item.CustomItem;*/
 import edu.ntnu.idatt2106.backend.model.item.Item;
 import edu.ntnu.idatt2106.backend.model.item.Unit;
 import edu.ntnu.idatt2106.backend.model.user.UserRequest;
