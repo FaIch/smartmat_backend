@@ -161,4 +161,33 @@ public class WeekMenuService {
         return weekMenuRepository.save(weekMenu);
     }
 
+    public WeekMenu newMenu(User user) {
+        Optional<WeekMenu> weekMenuOptional = weekMenuRepository.findByUser(user);
+        WeekMenu weekMenu = weekMenuOptional.get();
+        List<WeekMenuRecipe> weekMenuRecipes = weekMenu.getWeekMenuRecipes();
+        List<Recipe> allRecipes = recipeRepository.findAll();
+        List<Long> weekMenuRecipeIds = weekMenuRecipes.stream()
+                .map(weekMenuRecipe -> weekMenuRecipe.getRecipe().getId())
+                .collect(Collectors.toList());
+
+        List<Recipe> availableRecipes = allRecipes.stream()
+                .filter(recipe -> !weekMenuRecipeIds.contains(recipe.getId()))
+                .collect(Collectors.toList());
+
+        if (availableRecipes.isEmpty()) {
+            throw new IllegalStateException("No available recipes to reroll.");
+        }
+
+        // Replace the recipe in the WeekMenuRecipe object
+        Random random = new Random();
+        for (WeekMenuRecipe weekMenuRecipe : weekMenuRecipes) {
+            Recipe newRecipe = availableRecipes.get(random.nextInt(availableRecipes.size()));
+            availableRecipes.remove(newRecipe);
+            weekMenuRecipe.setRecipe(newRecipe);
+            weekMenuRecipe.setCompleted(false);
+        }
+
+        // Save the updated WeekMenu
+        return weekMenuRepository.save(weekMenu);
+    }
 }

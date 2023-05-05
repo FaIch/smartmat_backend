@@ -71,4 +71,10 @@ public class WeekMenuController {
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
+    @GetMapping("/new-menu")
+    public ResponseEntity<String> newMenu(@AuthenticationPrincipal User user) {
+        weekMenuService.newMenu(user);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
 }

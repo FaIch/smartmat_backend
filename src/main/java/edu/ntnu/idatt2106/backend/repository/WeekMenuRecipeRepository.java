@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WeekMenuRecipeRepository extends JpaRepository<WeekMenuRecipe, Long> {
+    void deleteAllByWeekMenuId(Long id);
 }
