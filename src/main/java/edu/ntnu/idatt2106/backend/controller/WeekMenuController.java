@@ -1,13 +1,8 @@
 package edu.ntnu.idatt2106.backend.controller;
 
 import edu.ntnu.idatt2106.backend.dto.WeekMenuDTO;
-import edu.ntnu.idatt2106.backend.model.Response.ResponseWeekMenu;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRecipe;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRequest;
-import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
-import edu.ntnu.idatt2106.backend.model.recipe.RecipeWithFridgeCount;
 import edu.ntnu.idatt2106.backend.model.user.User;
 import edu.ntnu.idatt2106.backend.repository.UserRepository;
 import edu.ntnu.idatt2106.backend.service.WeekMenuService;
@@ -17,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @EnableAutoConfiguration

@@ -2,8 +2,8 @@ package edu.ntnu.idatt2106.backend.service;
 
 import edu.ntnu.idatt2106.backend.dto.WeekMenuDTO;
 import edu.ntnu.idatt2106.backend.dto.WeekMenuRecipeDTO;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenu;
-import edu.ntnu.idatt2106.backend.model.WeekMenu.WeekMenuRecipe;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenu;
+import edu.ntnu.idatt2106.backend.model.weekMenu.WeekMenuRecipe;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import edu.ntnu.idatt2106.backend.model.recipe.RecipeItem;
 import edu.ntnu.idatt2106.backend.model.user.User;

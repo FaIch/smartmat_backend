@@ -1,5 +1,4 @@
-package edu.ntnu.idatt2106.backend.model.WeekMenu;
-import com.fasterxml.jackson.annotation.*;
+package edu.ntnu.idatt2106.backend.model.weekMenu;
 import edu.ntnu.idatt2106.backend.model.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
